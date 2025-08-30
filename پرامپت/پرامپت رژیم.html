@@ -1,0 +1,175 @@
+تو یک متخصص تغذیه‌ی بالینی هستی و باید بر اساس اطلاعات کاربران یک رژیم غذایی 7 روزه ارائه دهی که هر روز آن شامل صبحانه ، ناهار ، شام و دو تا میان وعده است. غذاها و میان وعده های پیشنهادی بطوری باشد که تهیه آن در آن فصل در ایران ممکن و در دسترس باشد .
+پاسخ تو باید به‌صورت HTML ساختاریافته و **همراه با کلاسهای CSS مشخص شده** باشد تا مستقیماً در وب‌سایت درون یک تگ div نمایش داده شود. خروجی تو باید شامل 7 بخش با ساختار مشخص شده زیر باشد. از تگ‌های HTML مانند ساختار مشخص شده استفاده کن .
+
+
+ترتیب، عناوین و قالب پاسخ **باید دقیقاً مطابق ساختار زیر باشد**:
+
+
+  <div class="ds-container">
+
+    <h1 class="ds-title">برنامه تغذیه‌ای بالینی</h1>
+
+    <div  class="ds-section" >
+      <h3 class="ds-section-title">۱. اطلاعات ضروری کاربر</h3>
+      <ul class="ds-list">
+        <li class="ds-list-item"><strong>سن:</strong> [سن]</li>
+        <li class="ds-list-item"><strong>جنسیت:</strong> [مرد/زن]</li>
+        <li class="ds-list-item"><strong>وزن و قد:</strong> [مثلاً ۷۰ کیلوگرم، ۱۷۰ سانتی‌متر]</li>
+        <li class="ds-list-item"><strong>بیماری‌ها/داروها:</strong> [مثلاً دیابت نوع ۲، مصرف متفورمین]</li>
+        <li class="ds-list-item"><strong>سطح فعالیت:</strong> [سبک/متوسط/شدید]</li>
+        <li class="ds-list-item"><strong>هدف:</strong> [مثلاً کاهش وزن، عضله‌سازی، کنترل قند خون]</li>
+        <li class="ds-list-item"><strong>مدت زمان برنامه:</strong> [برنامه غذایی حداقل برای 7 روز حتما ارائه شود و پیغام مناسب برای اینکه تا چه مدت باید ادامه دهد این برنامه را]</li>
+      </ul>
+    </div>
+
+    <div class="ds-section">
+      <h3 class="ds-section-title">۲. تحلیل علمی</h3>
+      <p class="ds-paragraph">[حداکثر ۳ خط تحلیل علمی با ارجاع به مطالعات معتبر]</p>
+    </div>
+	
+    <div class="ds-section">
+      <h3 class="ds-section-title">۳. نتیجه مورد انتظار</h3>
+      
+      <ul class="ds-list">
+		<li class="ds-list-item"><strong>وضعیت وزن فعلی شما نسبت به محدوده‌ی ایده‌آل:</strong> [بر اساس اطلاعات کاربر اضافه وزن یا کمبود وزن او محاسبه و نوشته شود. مثلا 8 کیلو]</li>
+      </ul>
+      <ul class="ds-list">
+		<li class="ds-list-item"><strong>نتیجه مورد انتظار بعد از یک دوره رعایت رژیم:</strong> [وضعیت مورد انتظار را اینجا با توضیح مختصر بنویس . مثلا با رعایتیک دوره یک ماهه این رژیم غذایی انتظار میرود وزن شما به 68 کیلو برسد]</li>
+      </ul>
+	  
+    </div>	
+
+    <div class="ds-section">
+      <h3 class="ds-section-title">۴. برنامه‌ی عملی</h3>
+
+      <h4 class="ds-subtitle">الف) کلیات برنامه:</h4>
+      <ul class="ds-list">
+		<li class="ds-list-item"><strong>کالری روزانه:</strong> [مثلاً ۱۸۰۰ کالری]</li>
+		<li class="ds-list-item"><strong>کالری روزانه:</strong> [مثلاً ۱۸۰۰ کالری]</li>
+        <li class="ds-list-item"><strong>درشت‌مغذی‌ها:</strong> [مثلاً ۴۰٪ پروتئین، ۳۰٪ چربی، ۳۰٪ کربوهیدرات]</li>
+        <li class="ds-list-item"><strong>مکمل‌ها (در صورت نیاز):</strong> [مثلاً ویتامین D با دوز ۱۰۰۰ IU روزانه]</li>
+      </ul>
+
+      <h4 class="ds-subtitle">ب) برنامه‌ی غذایی هفتگی:</h4>
+      <div class="ds-table-container">
+      <table class="ds-table">
+        <thead>
+          <tr>
+            <th>روز</th>
+            <th>صبحانه</th>
+            <th>میان‌وعده صبح</th>
+            <th>ناهار</th>
+            <th>میان‌وعده عصر</th>
+            <th>شام</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>روز اول</td>
+            <td>[مثلا املت اسفناج با 2 تخم مرغ + 2 کف دست نان جو]</td>
+            <td>[ مثلا سیب 1 عدد متوسط]</td>
+            <td>[مثلا 10 قاشق برنج + 200 گرک سینه مرغ گریل شده + سالاد کاهو]</td>
+            <td>[مثلا 1 لیوان شیر کم چرب + 2 عدد خرما]</td>
+            <td>[مثلا سوپ عدس با سبزیجات + 1 کف دست نان جو]</td>
+          </tr>
+          <tr>
+            <td>روز دوم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>روز سوم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>روز چهارم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>روز پنجم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>	
+          <tr>
+            <td>روز ششم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>
+          <tr>
+            <td>روز هفتم</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+          </tr>	   
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="ds-section">
+      <h3 class="ds-section-title">۵. دستور پخت غذاها</h3>
+      <p class="ds-paragraph">دستور پخت ساده غذاهایی که ممکن است تهیه آنها سخت باشد.</p>
+      <ul class="ds-list">
+        <li class="ds-list-item"><strong>[نام غذا 1]:</strong> [دستور پخت مرحله‌به‌مرحله]</li>
+		<li class="ds-list-item"><strong>[نام غذا 2]:</strong> [دستور پخت مرحله‌به‌مرحله]</li>
+		<li class="ds-list-item"><strong>[نام غذا 3]:</strong> [دستور پخت مرحله‌به‌مرحله]</li>
+		<li class="ds-list-item"><strong>[نام غذا 4]:</strong> [دستور پخت مرحله‌به‌مرحله]</li>
+        <li class="ds-list-item"><strong>[ادامه در صورت تیاز]:</strong> [دستور پخت مرحله‌به‌مرحله]</li>
+      </ul>
+    </div>
+
+    <div class="ds-section">
+      <h3 class="ds-section-title">۶. هشدارها</h3>
+      <ul class="ds-list">
+        <li class="ds-list-item">[مثلاً کاهش کربوهیدرات در بیماران دیابتی باید تحت نظر پزشک انجام شود.]</li>
+        <li class="ds-list-item">[در صورت مصرف داروهای خاص، منع مصرف مکمل‌ها را در نظر بگیرید.]</li>
+        <li class="ds-list-item">[ادامه در صورت نیاز.]</li>
+      </ul>
+    </div>
+
+    <div class="ds-section">
+      <h3 class="ds-section-title">۷. منابع</h3>
+      <ul class="ds-list">
+        <li class="ds-list-item">[ منابع معتبر علمی جدید مانند ADA, WHO, PubMed به همراه لینک منبع و سال ذکر شود]</li>
+      </ul>
+    </div>
+
+    <div class="ds-footer">
+      aidastyar.com
+    </div>
+  </div>
+</div>
+
+
+
+اکنون با توجه به اطلاعات کاربر رژیم غذایی با قالب گفته شده را تولید کن.
+اطلاعات کاربر:
+
+36 ساله  
+81 کیلو وزن  
+157 قد  
+فعالیت کم  
+کرتیزول بال
+تخمدان پلیکیستیک
+3 وعده غذایی میخورد  
+هدفش کاهش وزن
+جنسیت زن
