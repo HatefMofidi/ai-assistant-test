@@ -1,0 +1,1051 @@
+
+/* ========== Base and Variables ========== */
+
+/* استایل‌های پایه و متغیرها */
+:root {
+  --primary-color: #4a6fa5;
+  --primary-dark-color: #3a5a8a;
+  --secondary-color: #3a5a8a;
+  --success-color: #4CAF50;
+  --error-color: #f44336;
+  --text-color: #333;
+  --light-gray: #f5f5f5;
+  --white: #ffffff;
+  --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+body {
+  font-family: 'Tahoma', 'Segoe UI', sans-serif;
+  line-height: 1.2;
+  color: var(--text-color);
+  background-color: var(--light-gray);
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== General Styles ========== */
+
+/* استایل‌های عمومی */
+.ai-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.ai-main {
+  min-height: 80vh;
+  /*padding: 20px 0;*/
+}
+
+/* ========== Header ========== */
+
+/* استایل‌های هدر */
+.ai-header {
+  background: var(--white);
+  box-shadow: var(--box-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.ai-header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-logo-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.ai-logo a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.ai-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.ai-nav a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+
+.ai-nav a:hover {
+  color: var(--primary-color);
+}
+
+.ai-user-section {
+  display: flex; 
+  align-items: center;
+  gap: 15px;
+}
+
+.ai-wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.ai-wallet-amount {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.glass-div {
+    background: rgba(255, 255, 255, 0.7); /* سفید با ۲۰٪ opacity */
+    backdrop-filter: blur(20px); /* بلور پس‌زمینه */
+
+}
+
+/* ========== Buttons ========== */
+
+/* استایل‌های دکمه */
+.ai-button,
+.ai-wallet-button,
+.ai-login-button,
+.ai-register-button,
+.ai-payment-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.ai-button:hover,
+.ai-wallet-button:hover,
+.ai-register-button:hover,
+.ai-payment-button:hover {
+  background: var(--primary-dark-color);
+}
+
+.ai-login-button {
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 15px;
+}
+
+.ai-wallet-button {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+/* ========== Cards ========== */
+
+/* استایل‌های کارت */
+.ai-card,
+.ai-dashboard-card,
+.ai-balance-card,
+.ai-wallet-form,
+.ai-wallet-info,
+.ai-history-empty {
+  background: var(--white);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--box-shadow);
+ margin-bottom: 10px; 
+}
+
+/* ========== Footer ========== */
+
+/* استایل‌های فوتر */
+.ai-footer {
+  background: #2c3e50;
+  color: white;
+  padding: 40px 0 0;
+  margin-top: 40px;
+}
+
+.ai-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+}
+
+.ai-footer-logo a {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.ai-footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.ai-footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-footer-column h3 {
+  margin: 0 0 15px;
+  font-size: 18px;
+}
+
+.ai-footer-column a {
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.ai-footer-column a:hover {
+  color: var(--primary-color);
+}
+
+.ai-footer-bottom {
+  background: #1a252f;
+  padding: 20px 0;
+  margin-top: 40px;
+  text-align: center;
+}
+
+/* ========== Grid/Services ========== */
+
+/* استایل‌های شبکه‌ای */
+.ai-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+  margin-top: 30px;
+}
+
+
+/*----------------*/
+
+/* استایل‌های جدید برای سرویس */
+
+/* استایل اصلی کارت */
+.main-ai-service-card {
+    display: block;
+    text-decoration: none;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    margin-bottom: 20px;
+    color: inherit;
+    padding: 16px;
+}
+
+.main-ai-service-info {
+    padding: 20px;
+}
+
+.main-ai-service-info h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.main-ai-service-info p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.main-ai-service-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+/* حالت دسکتاپ - همان طرح قبلی */
+@media (min-width: 769px) {
+    /* طرح عمودی با تصویر در پایین */
+}
+
+/* حالت موبایل - طرح افقی */
+@media (max-width: 768px) {
+    .main-ai-service-card {
+        display: flex;
+        flex-direction: row-reverse; /* تصویر در سمت چپ، محتوا در سمت راست */
+        align-items: stretch;
+        min-height: 120px; /* ارتفاع ثابت برای کارت افقی */
+    }
+    
+    .main-ai-service-info {
+        flex: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: right;
+    }
+    
+    .main-ai-service-image {
+        width: 60%; /* افزایش عرض تصویر به 40% از کارت */
+        min-width: 150px; /* حداقل عرض */
+        height: auto;
+        aspect-ratio: 1/1; /* حفظ نسبت مربعی */
+        flex-shrink: 0;
+    }
+    
+    .main-ai-service-info h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .main-ai-service-info p {
+        font-size: 13px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* محدود کردن پاراگراف به دو خط */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* بهینه‌سازی برای موبایل‌های بسیار کوچک */
+@media (max-width: 480px) {
+    .main-ai-service-card {
+        min-height: 100px;
+    }
+    
+    .main-ai-service-image {
+        width: 100px;
+    }
+    
+    .main-ai-service-info h3 {
+        font-size: 15px;
+    }
+    
+    .main-ai-service-info p {
+        font-size: 12px;
+    }
+}
+
+
+/*----------------*/
+
+.main-ai-service-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.main-ai-service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.ai-service-icon {
+  font-size: 10px;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.ai-service-price {
+  color: var(--success-color);
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.ai-service-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+}
+
+/* ========== Forms ========== */
+
+/* استایل‌های فرم */
+.ai-form-group {
+  margin-bottom: 15px;
+}
+
+.ai-form-group label,
+.ai-form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.ai-form-input {
+  width: 100%; /* عرض را کاملاً پر می‌کند */
+  padding: 12px 15px 12px 70px; /* padding-left بیشتر برای جلوگیری از همپوشانی با "تومان" */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box; /* تضمین می‌کند padding باعث افزایش عرض نشود */
+}
+
+.ai-amount-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.ai-amount-preset {
+  background: #f0f4ff;
+  border: 1px solid #d0d8f0;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.ai-amount-preset:hover {
+  background: #e0e8ff;
+  border-color: var(--primary-color);
+}
+
+.ai-amount-preset.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.ai-custom-amount {
+  position: relative;
+  width: 98%; /* عرض را 90% والدش قرار می‌دهد (مثلاً 90% صفحه در موبایل) */
+  max-width: 700px; /* حداکثر عرض برای جلوگیری از خیلی پهن شدن در دسکتاپ */
+  margin: 0 auto; /* وسط‌چین کردن */  
+}
+
+.ai-currency {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+  pointer-events: none; /* امکان کلیک روی متن "تومان" را غیرفعال می‌کند */
+}
+
+/* ========== Response ========== */
+
+/* استایل‌های پاسخ */
+
+.ai-response-content {
+/*    
+  background: var(--light-gray);
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+*/  
+}
+
+
+
+/* ========== Dashboard ========== */
+
+/* استایل‌های داشبورد */
+.ai-dashboard,
+.ai-services-page,
+.ai-history-page,
+.ai-wallet-charge-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ai-dashboard-header,
+.ai-services-header,
+.ai-history-header,
+.ai-wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.ai-dashboard-header h1,
+.ai-services-header h1,
+.ai-history-header h1,
+.ai-wallet-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 24px;
+}
+
+.ai-back-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.ai-wallet-balance {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.ai-wallet-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.ai-wallet-value,
+.ai-balance-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.ai-balance-label {
+  display: block;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.ai-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.ai-quick-links {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-quick-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.ai-quick-link:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.ai-activity-list {
+  margin-top: 15px;
+}
+
+.ai-activity-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+}
+
+/* ========== History ========== */
+
+/* استایل‌های تاریخچه */
+.ai-history-table-responsive {
+  overflow-x: auto;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.ai-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.ai-history-table th {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: right;
+  font-weight: bold;
+  color: #555;
+}
+
+.ai-history-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.ai-history-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ai-history-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.ai-service-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ai-status-completed {
+  background: #e6f7ee;
+  color: #10b759;
+}
+
+.ai-history-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ai-status-success {
+    background-color: #e6f7ee;
+    color: #28a745;
+}
+
+.ai-status-warning {
+    background-color: #fff3cd;
+    color: #d39e00;
+}
+
+.ai-view-button,
+.ai-delete-button,
+.ai-repeat-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.ai-view-button {
+  background: #e6f0ff;
+  color: #3d7eff;
+}
+
+.ai-delete-button {
+  background: #feecec;
+  color: #ff3d3d;
+}
+
+.ai-repeat-button {
+  background: #fff4e6;
+  color: #ff8f3d;
+}
+
+.ai-view-button:hover,
+.ai-delete-button:hover,
+.ai-repeat-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.ai-history-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.ai-history-pagination .page-numbers {
+  display: inline-block;
+  padding: 8px 15px;
+  margin: 0 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.3s;
+}
+
+.ai-history-pagination .page-numbers.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.ai-history-pagination .page-numbers:hover:not(.current) {
+  background: #f5f5f5;
+}
+
+.ai-empty-state {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ai-empty-state .dashicons {
+  font-size: 50px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.ai-empty-state h3 {
+  margin: 15px 0 10px;
+  color: #555;
+}
+
+.ai-empty-state p {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* ========== Mobile Menu ========== */
+
+/* استایل‌های منوی موبایل */
+.ai-mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  align-items: center; /* تراز عمودی وسط برای آیکون */
+}
+
+.ai-nav-wrapper {
+    
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ========== Animations ========== */
+
+/* انیمیشن‌ها */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ai-activity-loading .dashicons {
+  animation: spin 1.5s linear infinite;
+}
+
+/* ========== Responsive ========== */
+
+/* استایل‌های واکنش‌گرا */
+@media (max-width: 768px) {
+  .ai-header-container,
+  .ai-dashboard-header,
+  .ai-services-header,
+  .ai-history-header,
+  .ai-wallet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .ai-logo-nav,
+  .ai-user-section {
+    width: 100%;
+    justify-content: space-between;
+        
+      align-items: center; /* تراز عمودی وسط */
+      justify-content: space-between; /* تراز افقی با فاصله بین عناصر */
+      width: 90%; /* عرض کمتر برای باریک‌تر شدن */
+      max-width: 1200px; /* حداکثر عرض */
+      margin: 0 auto; /* وسط چین کردن */
+      padding: 10px 0; /* فضای بالا و پایین */    
+  }
+  
+  .ai-user-section {
+        flex-direction:column;  
+  }
+    
+  .ai-nav {
+    width: 90%;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto;
+  }
+  
+
+  .ai-footer-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-footer-links {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-footer-column {
+    text-align: center;
+  }
+  
+  .ai-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-service-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .ai-amount-presets {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .ai-form-input {
+    padding: 12px 15px 12px 60px;
+  }
+  
+  .ai-history-table th,
+  .ai-history-table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .ai-history-actions {
+    gap: 5px;
+  
+  }
+  
+  .ai-view-button,
+  .ai-delete-button,
+  .ai-repeat-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .ai-mobile-menu-toggle {
+    display: block;
+  }
+  
+  .ai-nav-wrapper {
+    display: none;
+    width: 100%; 
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+   
+  }
+  
+  .ai-user-profile  {
+      
+    display: flex;
+
+  }
+  
+   .right-profile {
+        margin-left: 120px; /* فاصله بین عناصر راست */
+    }
+    
+    .left-profile {
+        margin-right: auto; /* می‌چسبد به چپ */
+    }  
+}
+
+@media (min-width: 769px) {
+  .ai-nav-wrapper {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  .ai-nav {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 480px) {
+  
+  .ai-logo  {
+  margin: 0; /* حذف marginهای اضافه */
+  padding: 0;
+  display: flex;
+  align-items: center; /* تراز عمودی برای متن */
+  }    
+    
+  .ai-logo a {
+    font-size: 18px;
+    white-space: nowrap; /* جلوگیری از شکستن خط */
+  }
+  
+  .ai-nav a {
+    font-size: 14px;
+  }
+  
+   .ai-nav-wrapper .ai-nav a:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 1px;
+        display: inline-block;
+        width: 100%;
+    }
+    
+  
+  .ai-header-container {
+    padding: 8px 10px;
+  }
+  
+  .ai-service-card {
+    padding: 12px;
+  }
+  
+  .ai-footer {
+    padding: 30px 0 0;
+  }
+  
+  .ai-footer-bottom {
+    padding: 15px 0;
+  }
+  
+  .ai-wallet-info {
+    width: 100%; 
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+  }
+  
+  .ai-wallet-amount {
+    text-align: center;
+  }
+}
+
+/* ========== Other ========== */
+
+/*  ----     خروجی سرویس    ------------ */
+/* کلاس‌های عمومی با پیشوند ds- */
+.ds-container {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.ds-title {
+    color: #2c3e50;
+    text-align: center;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.ds-section {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-right: 4px solid #3498db;
+}
+
+.ds-section-title {
+    color: #2c3e50;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 8px;
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.ds-list {
+    padding-left: 20px;
+    list-style-type: none;
+    margin: 15px 0;
+}
+
+.ds-list-item {
+    margin-bottom: 8px;
+}
+
+.ds-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.ds-subtitle {
+    margin: 15px 0 10px 0;
+    font-weight: 500;
+    color: #34495e;
+}
+
+.ds-table-container {
+    overflow-x: auto;
+}
+
+.ds-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.ds-table th {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    padding: 12px 8px;
+    text-align: right;
+}
+
+.ds-table td {
+    border: 1px solid #e0e0e0;
+    padding: 10px 8px;
+}
+
+.ds-table tr:nth-child(odd) {
+    background-color: white;
+}
+
+.ds-table tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+.ds-footer {
+    text-align: center;
+    color: rgba(0,0,0,0.3);
+    font-size: 12px;
+    margin-top: 40px;
+}
+
+.ds-paragraph {
+    margin: 15px 0;
+    line-height: 1.8;
+}

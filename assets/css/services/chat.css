@@ -1,0 +1,29 @@
+/* استایل‌های سرویس چت */
+.ai-chat-container {
+  margin: 20px auto;
+  max-width: 100%;
+  padding: 0 15px;
+}
+
+@media (max-width: 768px) {
+  .ai-chat-container {
+    padding: 0 10px;
+  }
+  
+  #ai-chat-input {
+    min-height: 250px !important;
+    font-size: 18px !important;
+    padding: 15px !important;
+  }
+  
+  .ai-button {
+    padding: 16px 28px !important;
+    font-size: 19px !important;
+    min-width: 100% !important;
+  }
+  
+  .ai-response-content {
+    font-size: 17px !important;
+    line-height: 1.8 !important;
+  }
+}
