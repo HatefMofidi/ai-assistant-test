@@ -174,63 +174,140 @@ body {
 
 /* ========== Footer ========== */
 
-/* استایل‌های فوتر */
-.ai-footer {
-  background: #2c3e50;
-  color: white;
-  padding: 40px 0 0;
-  margin-top: 40px;
+/* استایل فوتر ساده */
+.simple-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 25px 0;
+    margin-top: 50px;
 }
 
-.ai-footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 40px;
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.ai-footer-logo a {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  text-decoration: none;
+/* نماد اعتماد */
+.trust-symbol {
+    margin-bottom: 10px;
 }
 
-.ai-footer-links {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+.trust-symbol img {
+    border-radius: 8px;
+    transition: transform 0.3s ease;
 }
 
-.ai-footer-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.trust-symbol img:hover {
+    transform: scale(1.05);
 }
 
-.ai-footer-column h3 {
-  margin: 0 0 15px;
-  font-size: 18px;
+/* شبکه‌های اجتماعی */
+.footer-social {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }
 
-.ai-footer-column a {
-  color: #ecf0f1;
-  text-decoration: none;
-  transition: color 0.3s;
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.ai-footer-column a:hover {
-  color: var(--primary-color);
+.social-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.ai-footer-bottom {
-  background: #1a252f;
-  padding: 20px 0;
-  margin-top: 40px;
-  text-align: center;
+.social-icon .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
 }
+
+/* رنگ‌های شبکه‌های اجتماعی */
+.social-icon.instagram:hover {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    color: white;
+    border-color: transparent;
+}
+
+.social-icon.telegram:hover {
+    background-color: #0088cc;
+    color: white;
+    border-color: transparent;
+}
+
+.social-icon.twitter:hover {
+    background-color: #1DA1F2;
+    color: white;
+    border-color: transparent;
+}
+
+.social-icon.linkedin:hover {
+    background-color: #0077B5;
+    color: white;
+    border-color: transparent;
+}
+
+/* کپی رایت */
+.copyright {
+    text-align: center;
+}
+
+.copyright p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 768px) {
+    .simple-footer {
+        padding: 20px 0;
+    }
+    
+    .footer-content {
+        gap: 15px;
+    }
+    
+    .trust-symbol img {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .social-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .social-icon .dashicons {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+    }
+    
+    .copyright p {
+        font-size: 12px;
+    }
+}
+
+
 
 /* ========== Grid/Services ========== */
 
@@ -408,6 +485,7 @@ body {
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
+        text-decoration: none;
         transition: background-color 0.2s ease-in-out;
     }
     
@@ -476,6 +554,220 @@ body {
         color: #6b47dc;
         font-weight: 500;
     }
+    
+    /* استایل‌های اضافه برای کاربران لاگین نکرده */
+    .guest-actions {
+        padding: 20px 25px;
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .auth-buttons-container {
+        margin-bottom: 20px;
+    }
+    
+    .auth-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 90%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(107, 71, 220, 0.25);
+    }
+    
+    .login-btn {
+        background: linear-gradient(135deg, #6b47dc, #8a63d2);
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .login-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .login-btn:hover::before {
+        left: 100%;
+    }
+    
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(107, 71, 220, 0.35);
+    }
+    
+    .login-btn:active {
+        transform: translateY(0);
+    }
+    
+    .login-btn .dashicons {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+    }
+    
+    .guest-quick-access {
+        margin-top: 25px;
+        padding: 18px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .guest-quick-access p {
+        font-size: 15px;
+        color: #666;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .quick-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #eee;
+    }
+    
+    .quick-link:hover {
+        background-color: #f8f9ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 71, 220, 0.15);
+        border-color: #6b47dc;
+    }
+    
+    .quick-link .dashicons {
+        color: #6b47dc;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+    
+    /* استایل برای آیتم‌های منوی مهمان */
+    .menu-item-card .dashicons {
+        color: #6b47dc;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+    
+        
+/* استایل بخش شبکه‌های اجتماعی */
+.social-media-section {
+    margin-top: 10px;
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.social-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f2f5;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.social-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.social-link .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* رنگ‌های خاص برای هر شبکه اجتماعی */
+.social-link.instagram:hover {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    color: white;
+    border-color: transparent;
+}
+
+.social-link.twitter:hover {
+    background-color: #1DA1F2;
+    color: white;
+    border-color: transparent;
+}
+
+.social-link.telegram:hover {
+    background-color: #0088cc;
+    color: white;
+    border-color: transparent;
+}
+
+.social-link.linkedin:hover {
+    background-color: #0077B5;
+    color: white;
+    border-color: transparent;
+}
+
+.social-link.youtube:hover {
+    background-color: #FF0000;
+    color: white;
+    border-color: transparent;
+}
+
+.social-link.aparat:hover {
+    background-color: #EA4335;
+    color: white;
+    border-color: transparent;
+}
+
+
+
 }
 
 /* بهینه‌سازی برای موبایل‌های بسیار کوچک */
@@ -960,17 +1252,6 @@ body {
   /*}*/
   
 
-  .ai-footer-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .ai-footer-links {
-    grid-template-columns: 1fr;
-  }
-  
-  .ai-footer-column {
-    text-align: center;
-  }
   
   .ai-dashboard-grid {
     grid-template-columns: 1fr;
@@ -1086,13 +1367,7 @@ body {
     padding: 12px;
   }
   
-  .ai-footer {
-    padding: 30px 0 0;
-  }
-  
-  .ai-footer-bottom {
-    padding: 15px 0;
-  }
+
   
   .ai-wallet-info {
     width: 90%; 

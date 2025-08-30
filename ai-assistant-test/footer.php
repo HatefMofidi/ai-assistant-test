@@ -1,47 +1,35 @@
 <!--/home/aidastya/public_html/wp-content/themes/ai-assistant/footer.php-->
 </main>
 
-<footer class="ai-footer">
-    <div class="ai-footer-container">
-        <div class="ai-footer-logo">
-            <a href="<?php echo home_url('/'); ?>">
-                <?php _e('دستیار هوش مصنوعی', 'ai-assistant'); ?>
+<footer class="simple-footer">
+    <div class="footer-content">
+        <!-- نماد اعتماد -->
+
+
+        <!-- شبکه‌های اجتماعی -->
+        <div class="footer-social">
+            <a href="https://instagram.com/yourusername" class="social-icon instagram" target="_blank" rel="noopener" title="اینستاگرام">
+                <span class="dashicons dashicons-instagram"></span>
+            </a>
+            
+            <a href="https://t.me/yourusername" class="social-icon telegram" target="_blank" rel="noopener" title="تلگرام">
+                <span class="dashicons dashicons-phone"></span>
+            </a>
+            
+            <a href="https://twitter.com/yourusername" class="social-icon twitter" target="_blank" rel="noopener" title="توییتر">
+                <span class="dashicons dashicons-twitter"></span>
+            </a>
+            
+            <a href="https://linkedin.com/company/yourcompany" class="social-icon linkedin" target="_blank" rel="noopener" title="لینکدین">
+                <span class="dashicons dashicons-linkedin"></span>
             </a>
         </div>
-        
-        <div class="ai-footer-links">
-            <div class="ai-footer-column">
-                <h3><?php _e('لینک‌های سریع', 'ai-assistant'); ?></h3>
-                <a href="<?php echo home_url('/ai-services'); ?>"><?php _e('سرویس‌ها', 'ai-assistant'); ?></a>
-                <a href="<?php echo home_url('/pricing'); ?>"><?php _e('تعرفه‌ها', 'ai-assistant'); ?></a>
-                <a href="<?php echo home_url('/faq'); ?>"><?php _e('سوالات متداول', 'ai-assistant'); ?></a>
-            </div>
-            
-            <div class="ai-footer-column">
-                <h3><?php _e('حساب کاربری', 'ai-assistant'); ?></h3>
-                <?php if (is_user_logged_in()): ?>
-                    <a href="<?php echo home_url('/ai-dashboard'); ?>"><?php _e('داشبورد', 'ai-assistant'); ?></a>
-                    <a href="<?php echo home_url('/profile'); ?>"><?php _e('پروفایل', 'ai-assistant'); ?></a>
-                    <a href="<?php echo wp_logout_url(); ?>"><?php _e('خروج', 'ai-assistant'); ?></a>
-                <?php else: ?>
-                    <a href="<?php echo wp_login_url(); ?>"><?php _e('ورود', 'ai-assistant'); ?></a>
-                    <a href="<?php echo wp_registration_url(); ?>"><?php _e('ثبت نام', 'ai-assistant'); ?></a>
-                <?php endif; ?>
-            </div>
-            
-            <div class="ai-footer-column">
-                <h3><?php _e('تماس با ما', 'ai-assistant'); ?></h3>
-                <a href="mailto:info@example.com">info@example.com</a>
-                <a href="tel:+989123456789">۰۹۱۲۳۴۵۶۷۸۹</a>
-                <a href="<?php echo home_url('/contact'); ?>"><?php _e('فرم تماس', 'ai-assistant'); ?></a>
-            </div>
+
+        <!-- کپی رایت -->
+        <div class="copyright">
+            <p>© ۲۰۲۴ <?php bloginfo('name'); ?> - تمام حقوق محفوظ است</p>
         </div>
     </div>
-    
-    <div class="ai-footer-bottom">
-        <p>&copy; <?php echo date('Y'); ?> <?php _e('کلیه حقوق برای دستیار هوش مصنوعی محفوظ است.', 'ai-assistant'); ?></p>
-    </div>
-    
     <?php wp_footer(); ?>
 </footer>
 

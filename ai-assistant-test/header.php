@@ -111,19 +111,26 @@
                             </a>
                             
                         <?php else: ?>
-                            <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card"><?php _e('سرویس‌ها', 'ai-assistant'); ?></a>
+                            <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card">
+                                <span class="dashicons dashicons-admin-tools"></span>
+                                سرویس‌ها
+                            </a>
+                            
+                            <a href="<?php echo home_url('/blog'); ?>" class="menu-item-card">
+                                <span class="dashicons dashicons-welcome-write-blog"></span>
+                                وبلاگ
+                            </a>
+                            
+                            <a href="<?php echo home_url('/about-us'); ?>" class="menu-item-card">
+                                <span class="dashicons dashicons-info"></span>
+                                درباره ما
+                            </a>
                         <?php endif; ?>
                                        
                     
                         <div>
                             <?php if (is_user_logged_in()): ?>
-                                <div class="wallet-section">
-                                    <span class="wallet-title">موجودی کیف پول شما</span>
-                                    <div class="wallet-balance">
-                                        <span class="amount"><?php echo number_format(AI_Assistant_Payment_Handler::get_instance()->get_user_credit(get_current_user_id())); ?></span>
-                                        <span class="decimal">تومان</span>
-                                    </div>
-                                </div>
+
                                 
                                 <div class="menu-actions">
                                     <a href="<?php echo home_url('/wallet-charge'); ?>" class="btn btn-primary">
@@ -147,15 +154,47 @@
                                 </div>
                                 
                             <?php else: ?>
-                                <a href="<?php echo wp_login_url(); ?>" class="ai-login-button">
-                                    <?php _e('ورود', 'ai-assistant'); ?>
-                                </a>
-                                <a href="<?php echo wp_registration_url(); ?>" class="ai-register-button">
-                                    <?php _e('ثبت نام', 'ai-assistant'); ?>
-                                </a>
+                                <div class="guest-actions">
+                                    <div class="auth-buttons-container">
+                                        <a href="<?php echo wp_login_url(); ?>" class="btn auth-btn login-btn">
+                                            <span class="dashicons dashicons-admin-users"></span>
+                                            ورود / ثبت نام
+                                        </a>
+                                    </div>
+ 
+                                </div>
                             <?php endif; ?>
                         </div>
-                        
+                    
+                        <!-- بخش شبکه‌های اجتماعی -->
+                        <div class="social-media-section">
+                            <p class="social-title">ما را دنبال کنید</p>
+                            <div class="social-links">
+                                <a href="https://instagram.com/yourusername" class="social-link instagram" target="_blank" rel="noopener" title="اینستاگرام">
+                                    <span class="dashicons dashicons-instagram"></span>
+                                </a>
+                                
+                                <a href="https://twitter.com/yourusername" class="social-link twitter" target="_blank" rel="noopener" title="توییتر">
+                                    <span class="dashicons dashicons-twitter"></span>
+                                </a>
+                                
+                                <a href="https://t.me/yourusername" class="social-link telegram" target="_blank" rel="noopener" title="تلگرام">
+                                    <span class="dashicons dashicons-phone"></span>
+                                </a>
+                                
+                                <a href="https://linkedin.com/company/yourcompany" class="social-link linkedin" target="_blank" rel="noopener" title="لینکدین">
+                                    <span class="dashicons dashicons-linkedin"></span>
+                                </a>
+                                
+                                <a href="https://youtube.com/yourchannel" class="social-link youtube" target="_blank" rel="noopener" title="یوتیوب">
+                                    <span class="dashicons dashicons-youtube"></span>
+                                </a>
+                                
+                                <a href="https://aparat.com/yourchannel" class="social-link aparat" target="_blank" rel="noopener" title="آپارات">
+                                    <span class="dashicons dashicons-video-alt3"></span>
+                                </a>
+                            </div>
+                        </div>                       
                     </nav>     
                 </div>
                 

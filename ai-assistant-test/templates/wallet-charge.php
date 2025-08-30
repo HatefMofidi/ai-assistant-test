@@ -104,6 +104,7 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
             margin: 0;
             color: #37474f;
             line-height: 1.6;
+            text-align: justify;
         }
         </style>
         <?php endif; ?>        
@@ -143,21 +144,15 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
             </div>
 
             <div class="ai-form-section ai-custom-amount-section" id="custom_amount_section">
-                <label for="custom_amount" class="ai-form-label">مبلغ دلخواه (تومان)</label>
+                <label for="custom_amount" class="ai-form-label">مبلغ دلخواه</label>
                 <div class="input-container">
                     <input type="number" 
                            id="custom_amount" 
                            name="custom_amount" 
                            min="<?php echo $minimum_charge; ?>" 
                            step="1000" 
-                           placeholder="حداقل <?php echo $formatted_minimum; ?> تومان"
                            class="ai-form-input" />
-                    <span class="input-field-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                    </span>
+                    <span class="input-currency-hint">تومان</span>
                 </div>
             </div>
 
@@ -620,6 +615,46 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     .ai-wallet-charge-page {
         padding: 0 1.2rem;
     }
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.input-currency-hint {
+    position: absolute;
+    left: 3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.ai-form-input {
+    width: 100%;
+    padding: 1rem 4rem 1rem 3rem; /* فضای بیشتر برای سمت راست */
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: var(--primary-light);
+    color: var(--text-color);
+    direction: ltr; /* برای نمایش صحیح اعداد */
+    text-align: right;
+}
+
+/* وقتی input فوکوس شده یا پر است */
+.ai-form-input:focus,
+.ai-form-input:not(:placeholder-shown) {
+    padding-right: 1rem;
+    padding-left: 4rem;
+}
+
+.ai-form-input:focus + .input-currency-hint,
+.ai-form-input:not(:placeholder-shown) + .input-currency-hint {
+    opacity: 1;
 }
 </style>
 
