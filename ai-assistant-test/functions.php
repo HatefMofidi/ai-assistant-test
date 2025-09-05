@@ -619,3 +619,160 @@ function ai_wallet_format_maximum_charge_fa() {
 
 
 require_once get_template_directory() . '/templates/functions.php';
+
+
+
+
+
+
+
+// افزودن rewrite rule برای wallet-checkout
+function ai_assistant_add_wallet_checkout_rule() {
+    add_rewrite_rule('^wallet-checkout/?$', 'index.php?wallet_checkout=1', 'top');
+}
+add_action('init', 'ai_assistant_add_wallet_checkout_rule');
+
+// اضافه کردن query var برای wallet-checkout
+function ai_assistant_add_wallet_checkout_query_var($vars) {
+    $vars[] = 'wallet_checkout';
+    return $vars;
+}
+add_filter('query_vars', 'ai_assistant_add_wallet_checkout_query_var');
+
+// مدیریت تمپلیت برای wallet-checkout
+function ai_assistant_wallet_checkout_template($template) {
+    if (get_query_var('wallet_checkout')) {
+        $new_template = locate_template(array('wallet-checkout.php'));
+        if (!empty($new_template)) {
+            return $new_template;
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'ai_assistant_wallet_checkout_template');
+
+require_once get_template_directory() . '/inc/class-wallet-checkout-handler.php';
+
+// شروع session در وردپرس
+function ai_assistant_start_session() {
+    if (!session_id() && !headers_sent()) {
+        session_start();
+    }
+}
+add_action('init', 'ai_assistant_start_session', 1);
+
+// ذخیره مبلغ در session هنگام ارسال فرم
+function ai_assistant_save_charge_amount() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['charge_amount']) && !empty($_POST['charge_amount'])) {
+        $_SESSION['wallet_charge_amount'] = intval($_POST['charge_amount']);
+    }
+}
+add_action('template_redirect', 'ai_assistant_save_charge_amount');
+
+// پاکسازی session پس از پرداخت
+function ai_assistant_clear_payment_session() {
+    if (!session_id() && !headers_sent()) {
+        session_start();
+    }
+    
+    // اگر کاربر از صفحه پرداخت خارج شد، session را پاک کنید
+    if (!is_page('wallet-checkout') && isset($_SESSION['wallet_charge_amount'])) {
+        unset($_SESSION['wallet_charge_amount']);
+    }
+    
+    // پس از تکمیل پرداخت، session را پاک کنید
+    if (isset($_GET['payment_verify']) && $_GET['payment_verify'] == '1') {
+        if (isset($_SESSION['wallet_charge_amount'])) {
+            unset($_SESSION['wallet_charge_amount']);
+        }
+        if (isset($_SESSION['wallet_payment_amount'])) {
+            unset($_SESSION['wallet_payment_amount']);
+        }
+        if (isset($_SESSION['wallet_payment_authority'])) {
+            unset($_SESSION['wallet_payment_authority']);
+        }
+    }
+}
+add_action('template_redirect', 'ai_assistant_clear_payment_session');
+
+// تعریف ثابت‌های زرین پال
+define('ZARINPAL_MERCHANT_ID', 'd05ca4ae-fab1-49b3-8da8-2e2d07b32fc9'); // مرچنت کد خود را قرار دهید
+define('ZARINPAL_SANDBOX', true); // حالت sandbox فعال باشد
+define('ZARINPAL_SANDBOX_MERCHANT_ID', 'd05ca4ae-fab1-49b3-8da8-2e2d07b32fc9'); // مرچنت کد sandbox
+
+// تابع برای دریافت مرچنت آیدی مناسب
+function ai_assistant_get_zarinpal_merchant_id() {
+    return ZARINPAL_SANDBOX ? ZARINPAL_SANDBOX_MERCHANT_ID : ZARINPAL_MERCHANT_ID;
+}
+
+// تابع برای دریافت آدرس API مناسب
+function ai_assistant_get_zarinpal_api_url() {
+    return ZARINPAL_SANDBOX ? 
+        'https://sandbox.zarinpal.com/pg/services/WebGate/wsdl' :
+        'https://www.zarinpal.com/pg/services/WebGate/wsdl';
+}
+
+// تابع برای دریافت آدرس درگاه پرداخت مناسب
+function ai_assistant_get_zarinpal_gateway_url() {
+    return ZARINPAL_SANDBOX ?
+        'https://sandbox.zarinpal.com/pg/StartPay/' :
+        'https://www.zarinpal.com/pg/StartPay/';
+}
+
+// پردازش بازگشت از درگاه پرداخت
+function ai_assistant_process_payment_return() {
+    if (isset($_GET['payment_verify']) && $_GET['payment_verify'] == '1') {
+        if (!session_id() && !headers_sent()) {
+            session_start();
+        }
+        
+        // بررسی وجود اطلاعات لازم در session
+        if (isset($_SESSION['wallet_payment_amount']) && isset($_GET['Authority'])) {
+            $amount = $_SESSION['wallet_payment_amount'];
+            $authority = sanitize_text_field($_GET['Authority']);
+            $status = isset($_GET['Status']) ? sanitize_text_field($_GET['Status']) : 'NOK';
+            
+            $payment_handler = AI_Assistant_Wallet_Checkout_Handler::get_instance();
+            
+            if ($status == 'OK') {
+                // تأیید پرداخت
+                $verification_result = $payment_handler->verify_payment($authority, $amount);
+                
+                if ($verification_result['status']) {
+                    // پرداخت موفقیت‌آمیز بود
+                    $user_id = get_current_user_id();
+                    $wallet_handler = AI_Assistant_Payment_Handler::get_instance();
+                    
+                    // افزودن اعتبار به کیف پول
+                    $wallet_handler->add_credit(
+                        $user_id, 
+                        $amount, 
+                        'شارژ کیف پول از طریق درگاه پرداخت - کد پیگیری: ' . $verification_result['ref_id'],
+                        'zarinpal_' . $verification_result['ref_id']
+                    );
+                    
+                    // پاکسازی session
+                    unset($_SESSION['wallet_payment_amount']);
+                    unset($_SESSION['wallet_payment_authority']);
+                    
+                    // نمایش پیام موفقیت
+                    wp_redirect(home_url('/wallet-charge?payment=success&ref_id=' . $verification_result['ref_id']));
+                    exit;
+                } else {
+                    // پرداخت ناموفق بود
+                    wp_redirect(home_url('/wallet-charge?payment=failed&reason=' . urlencode($verification_result['message'])));
+                    exit;
+                }
+            } else {
+                // کاربر از پرداخت انصراف داده است
+                wp_redirect(home_url('/wallet-charge?payment=cancelled'));
+                exit;
+            }
+        } else {
+            // اطلاعات session وجود ندارد
+            wp_redirect(home_url('/wallet-charge?payment=error&reason=session_expired'));
+            exit;
+        }
+    }
+}
+add_action('template_redirect', 'ai_assistant_process_payment_return');

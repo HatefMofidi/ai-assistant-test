@@ -9,6 +9,11 @@ if (!is_user_logged_in()) {
 }
 
 
+// غیرفعال کردن کش برای این صفحه
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 get_header();
 
 $current_user_id = get_current_user_id();
@@ -87,12 +92,7 @@ $logger->log('page-user-history: ', [
                                     <a href="<?php echo esc_url($output_url); ?>" class="ai-view-button" target="_blank" title="مشاهده نتیجه">
                                         <span class="dashicons dashicons-visibility"></span>
                                     </a>
-                                    <a href="#" class="ai-delete-button delete-history" 
-                                       data-nonce="<?php echo esc_attr(wp_create_nonce('delete_history_' . $item->ID)); ?>" 
-                                       data-id="<?php echo esc_attr($item->ID); ?>" 
-                                       title="حذف از تاریخچه">
-                                        <span class="dashicons dashicons-trash"></span>
-                                    </a>
+
                                     <a href="<?php echo esc_url(home_url('/service/' . $item->service_id . '/')); ?>" class="ai-repeat-button" title="استفاده مجدد">
                                         <span class="dashicons dashicons-update"></span>
                                     </a>

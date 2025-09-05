@@ -5,10 +5,34 @@
 
 get_header('service');
 
+
 // دریافت ID از URL
 $history_id = get_query_var('history_id');
 $history_manager = AI_Assistant_History_Manager::get_instance();
 $user_id = get_current_user_id();
+
+
+// دریافت اطلاعات کاربر با متا داده‌ها
+function get_complete_user_data($user_id) {
+    $user_data = get_userdata($user_id);
+    
+    if ($user_data) {
+        return array(
+            'ID' => $user_data->ID,
+            'username' => $user_data->user_login,
+            'email' => $user_data->user_email,
+            'first_name' => get_user_meta($user_id, 'first_name', true),
+            'last_name' => get_user_meta($user_id, 'last_name', true),
+            'phone' => get_user_meta($user_id, 'phone_number', true), // فیلد سفارشی
+            'address' => get_user_meta($user_id, 'user_address', true) // فیلد سفارشی
+        );
+    }
+    
+    return false;
+} 
+
+
+
 
 // بررسی وجود آیتم و مالکیت
 if (!$history_id || !$history_manager->is_user_owner($history_id, $user_id)) {
@@ -97,7 +121,7 @@ if ($item->response && is_string($item->response)) {
                 }
                 
                 .result-container {
-                    max-width: 500px;
+                    max-width: 900px;
                     margin: 0 auto;
                     padding: 0 10px;
                 }
@@ -388,6 +412,40 @@ if ($item->response && is_string($item->response)) {
                     gap: 10px;
                 }
                 
+                
+.user-date-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%); 
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, sans-serif;
+}
+
+.report-user-info, .date-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.report-user-info i, .date-info i {
+    font-size: 16px;
+    background: rgba(255,255,255,0.2);
+    padding: 6px;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}                
+                
                 @media (min-width: 768px) {
                     body {
                         padding: 20px;
@@ -408,6 +466,16 @@ if ($item->response && is_string($item->response)) {
                     .back-button {
                         width: auto;
                     }
+                    
+    .user-date-row {
+     /*   flex-direction: column; */
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .report-user-info, .date-info {
+        justify-content: center;
+    }                    
                 }
                 
                 @media (max-width: 480px) {
@@ -607,6 +675,22 @@ if ($item->response && is_string($item->response)) {
                 <div class="header">
                     <h1><i class="fas fa-utensils"></i> برنامه تغذیه‌ای بالینی</h1>
                     <p>برنامه غذایی شخصی شده بر اساس مشخصات شما</p>
+                    <div class="user-date-row">
+                        <span class="report-user-info">
+                            <i class="fas fa-user"></i>
+                            <?php 
+                                $user_info = get_complete_user_data(get_current_user_id());
+                                if ($user_info && (!empty($user_info['first_name']) || !empty($user_info['last_name']))) {
+                                    echo esc_html(trim($user_info['first_name'] . ' ' . $user_info['last_name']));
+                                } 
+                            ?>
+                        </span>
+                        
+                        <span class="date-info">
+                            <i class="fas fa-calendar-alt"></i>
+                            <?php echo esc_html(date_i18n('j F Y - H:i', strtotime($item->created_at))); ?>
+                        </span>
+                    </div>
                 </div>
                 
                 <div class="action-controls">
@@ -900,6 +984,11 @@ if ($item->response && is_string($item->response)) {
                 
                 return icons[mealIndex] || 'utensils';
             }
+            
+            
+
+
+         
             </script>
         </body>
         </html>

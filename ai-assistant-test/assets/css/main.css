@@ -64,6 +64,10 @@ body {
   gap: 30px;
 }
 
+.ai-logo  {
+margin: 0 auto;
+}
+
 .ai-logo a {
   color: var(--primary-color);
   text-decoration: none;
@@ -367,6 +371,50 @@ body {
     /* طرح عمودی با تصویر در پایین */
 }
 
+
+    /* استایل‌دهی به بخش جدید دکمه‌ها و آیکون کاربر در پایین */
+    .bottom-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+       /* margin-top: 15px; */
+    }    
+    
+    /* استایل جدید برای خلاصه پروفایل کاربر */
+    .user-profile-summary {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background-color: #f8f9fa;
+        border-radius: 25px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .user-profile-summary img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .user-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .user-credit {
+        font-size: 12px;
+        color: #6b47dc;
+        font-weight: 500;
+    }
+
 /* حالت موبایل - طرح افقی */
 @media (max-width: 768px) {
     .main-ai-service-card {
@@ -512,48 +560,7 @@ body {
         background-color: #1a1a1a;
     }    
     
-    /* استایل‌دهی به بخش جدید دکمه‌ها و آیکون کاربر در پایین */
-    .bottom-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: 15px;
-    }    
-    
-    /* استایل جدید برای خلاصه پروفایل کاربر */
-    .user-profile-summary {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 12px;
-        background-color: #f8f9fa;
-        border-radius: 25px;
-        border: 1px solid #e9ecef;
-    }
-    
-    .user-profile-summary img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-    }
-    
-    .user-info {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .user-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .user-credit {
-        font-size: 12px;
-        color: #6b47dc;
-        font-weight: 500;
-    }
+
     
     /* استایل‌های اضافه برای کاربران لاگین نکرده */
     .guest-actions {
@@ -1482,3 +1489,11 @@ body {
     margin: 15px 0;
     line-height: 1.8;
 }
+
+
+
+
+
+/* ========== Desktop Menu Styles ========== */
+
+

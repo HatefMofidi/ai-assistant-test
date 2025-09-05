@@ -9,6 +9,25 @@ if (!is_user_logged_in()) {
     exit;
 }
 
+// (قبل از get_header() اضافه کنید)
+// نمایش پیام‌های پرداخت
+if (isset($_GET['payment'])) {
+    switch ($_GET['payment']) {
+        case 'success':
+            $message = 'پرداخت با موفقیت انجام شد.';
+            $message .= isset($_GET['ref_id']) ? ' کد پیگیری: ' . $_GET['ref_id'] : '';
+            echo '<div class="ai-alert ai-alert-success">' . $message . '</div>';
+            break;
+        case 'failed':
+            $reason = isset($_GET['reason']) ? urldecode($_GET['reason']) : 'خطای نامشخص';
+            echo '<div class="ai-alert ai-alert-error">پرداخت ناموفق بود. دلیل: ' . $reason . '</div>';
+            break;
+        case 'cancelled':
+            echo '<div class="ai-alert ai-alert-warning">پرداخت توسط شما لغو شد.</div>';
+            break;
+    }
+}
+
 get_header();
 
 $user_id = get_current_user_id();
@@ -30,18 +49,11 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
 
 ?>
 
-<div class="ai-wallet-charge-page">
-    <div class="ai-wallet-header">
-        <div class="ai-header-content">
-            <a href="<?php echo esc_url(home_url('/ai-dashboard')); ?>" class="ai-back-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m12 19-7-7 7-7"></path>
-                    <path d="M19 12H5"></path>
-                </svg>
-                بازگشت به داشبورد
-            </a>
-            <div class="ai-header-title">
-                <span class="ai-header-icon">
+<div class="wall-chrg-ai-wallet-charge-page">
+    <div class="wall-chrg-ai-wallet-header">
+        <div class="wall-chrg-ai-header-content">
+            <div class="wall-chrg-ai-header-title">
+                <span class="wall-chrg-ai-header-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
                         <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
@@ -53,18 +65,18 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
         </div>
     </div>
 
-    <div class="ai-wallet-container">
-        <div class="ai-balance-card">
-            <div class="ai-balance-icon">
+    <div class="wall-chrg-ai-wallet-container">
+        <div class="wall-chrg-ai-balance-card">
+            <div class="wall-chrg-ai-balance-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
                     <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
                     <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
                 </svg>
             </div>
-            <div class="ai-balance-info">
-                <span class="ai-balance-label">موجودی فعلی شما</span>
-                <span class="ai-balance-amount"><?php echo format_number_fa($current_credit); ?> <span class="currency">تومان</span></span>
+            <div class="wall-chrg-ai-balance-info">
+                <span class="wall-chrg-ai-balance-label">موجودی فعلی شما</span>
+                <span class="wall-chrg-ai-balance-amount"><?php echo format_number_fa($current_credit); ?> <span class="wall-chrg-currency">تومان</span></span>
             </div>
         </div>
         
@@ -109,66 +121,68 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
         </style>
         <?php endif; ?>        
 
-        <form method="POST" class="ai-charge-form">
-            <div class="ai-form-section">
-                <h3 class="ai-form-title">مبلغ مورد نظر برای شارژ را انتخاب کنید</h3>
+        <form method="POST" action="<?php echo home_url('/wallet-checkout'); ?>" class="ai-charge-form">
+            <div class="wall-chrg-ai-form-section">
+                <h3 class="wall-chrg-ai-form-title">مبلغ مورد نظر برای شارژ را انتخاب کنید</h3>
                 
-                <div class="ai-amount-presets">
-                    <div class="ai-preset-row">
-                        <input type="radio" id="amount_50000" name="preset_amount" value="50000" class="ai-amount-radio" required>
-                        <label for="amount_50000" class="ai-amount-preset">
-                            <span class="ai-amount-value">۵۰,۰۰۰</span>
-                            <span class="ai-amount-currency">تومان</span>
+                <div class="wall-chrg-ai-amount-presets">
+                    <div class="wall-chrg-ai-preset-row">
+                        <input type="radio" id="amount_50000" name="preset_amount" value="50000" class="wall-chrg-ai-amount-radio" required>
+                        <label for="amount_50000" class="wall-chrg-ai-amount-preset">
+                            <span class="wall-chrg-ai-amount-value">۵۰,۰۰۰</span>
+                            <span class="wall-chrg-ai-amount-currency">تومان</span>
                         </label>
                         
-                        <input type="radio" id="amount_100000" name="preset_amount" value="100000" class="ai-amount-radio">
-                        <label for="amount_100000" class="ai-amount-preset">
-                            <span class="ai-amount-value">۱۰۰,۰۰۰</span>
-                            <span class="ai-amount-currency">تومان</span>
+                        <input type="radio" id="amount_100000" name="preset_amount" value="100000" class="wall-chrg-ai-amount-radio">
+                        <label for="amount_100000" class="wall-chrg-ai-amount-preset">
+                            <span class="wall-chrg-ai-amount-value">۱۰۰,۰۰۰</span>
+                            <span class="wall-chrg-ai-amount-currency">تومان</span>
                         </label>
                         
-                        <input type="radio" id="amount_200000" name="preset_amount" value="200000" class="ai-amount-radio">
-                        <label for="amount_200000" class="ai-amount-preset">
-                            <span class="ai-amount-value">۲۰۰,۰۰۰</span>
-                            <span class="ai-amount-currency">تومان</span>
+                        <input type="radio" id="amount_200000" name="preset_amount" value="200000" class="wall-chrg-ai-amount-radio">
+                        <label for="amount_200000" class="wall-chrg-ai-amount-preset">
+                            <span class="wall-chrg-ai-amount-value">۲۰۰,۰۰۰</span>
+                            <span class="wall-chrg-ai-amount-currency">تومان</span>
                         </label>
                     </div>
                     
-                    <div class="ai-preset-row">
-                        <input type="radio" id="amount_custom" name="preset_amount" value="custom" class="ai-amount-radio">
-                        <label for="amount_custom" class="ai-amount-preset ai-custom-preset">
-                            <span class="ai-amount-value">مبلغ دلخواه</span>
+                    <div class="wall-chrg-ai-preset-row">
+                        <input type="radio" id="amount_custom" name="preset_amount" value="custom" class="wall-chrg-ai-amount-radio">
+                        <label for="amount_custom" class="wall-chrg-ai-amount-preset wall-chrg-ai-custom-preset">
+                            <span class="wall-chrg-ai-amount-value">مبلغ دلخواه</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div class="ai-form-section ai-custom-amount-section" id="custom_amount_section">
-                <label for="custom_amount" class="ai-form-label">مبلغ دلخواه</label>
-                <div class="input-container">
-                    <input type="number" 
-                           id="custom_amount" 
-                           name="custom_amount" 
-                           min="<?php echo $minimum_charge; ?>" 
-                           step="1000" 
-                           class="ai-form-input" />
+            <div class="wall-chrg-ai-form-section wall-chrg-ai-custom-amount-section" id="custom_amount_section">
+                <label for="custom_amount" class="wall-chrg-ai-form-label">مبلغ دلخواه</label>
+                <div class="wall-chrg-input-container">
+                <input type="number" 
+                       id="custom_amount" 
+                       name="custom_amount" 
+                       min="<?php echo $minimum_charge; ?>" 
+                       max="<?php echo ai_wallet_get_maximum_charge(); ?>"
+                       step="1" 
+                       class="wall-chrg-ai-form-input" />
                     <span class="input-currency-hint">تومان</span>
                 </div>
             </div>
 
             <input type="hidden" name="charge_amount" id="charge_amount" value="" />
 
-            <div class="ai-important-notes">
+            <div class="wall-chrg-ai-important-notes">
                 <h4>نکات مهم:</h4>
                 <ul>
                     <li>حداقل مبلغ شارژ <?php echo $formatted_minimum; ?> تومان می‌باشد.</li>
+                    <li>حداکثر مبلغ شارژ در هر تراکنش <?php echo ai_wallet_format_maximum_charge_fa(); ?> تومان می‌باشد.</li>
                     <li>پس از پرداخت، مبلغ بلافاصله به کیف پول شما اضافه می‌شود.</li>
                     <li>در صورت بروز مشکل در پرداخت، با پشتیبانی تماس بگیرید.</li>
                 </ul>
             </div>
 
-            <div class="ai-form-actions">
-                <button type="submit" name="wallet_charge_submit" class="ai-payment-button">
+            <div class="wall-chrg-ai-form-actions">
+                <button type="submit" name="wallet_charge_submit" class="wall-chrg-ai-payment-button">
                     پرداخت و شارژ کیف پول
                 </button>
             </div>
@@ -202,14 +216,14 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     --success-text: #166534;
 }
 
-.ai-amount-value, .ai-balance-amount, .currency {
+.wall-chrg-ai-amount-value, .wall-chrg-ai-balance-amount, .wall-chrg-currency {
     font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     direction: ltr; /* برای اعداد */
     unicode-bidi: embed;
 }
 
 /* استایل های جدید برای صفحه شارژ کیف پول */
-.ai-wallet-charge-page {
+.wall-chrg-ai-wallet-charge-page {
     max-width: 500px; /* محدودیت عرض جدید */
     margin: 0 auto; /* مرکز کردن صفحه */
     padding: 1rem;
@@ -219,29 +233,28 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     border-radius: 12px;
 }
 
-.ai-wallet-header {
+.wall-chrg-ai-wallet-header {
     margin-bottom: 2rem;
     padding: 1.5rem 0;
     border-bottom: 1px solid var(--border-color);
 }
 
-.ai-header-content {
+.wall-chrg-ai-header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
     position: relative;
 }
 
-.ai-header-title {
+.wall-chrg-ai-header-title {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-right: auto; /* برای فاصله از دکمه بازگشت */
 }
 
-.ai-header-icon {
+.wall-chrg-ai-header-icon {
     display: flex;
     color: var(--primary-medium);
     background-color: var(--primary-light);
@@ -249,43 +262,20 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     border-radius: 8px;
 }
 
-.ai-wallet-header h1 {
+.wall-chrg-ai-wallet-header h1 {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--primary-dark);
     margin: 0;
 }
 
-.ai-back-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background-color: var(--primary-light);
-    color: var(--primary-dark);
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    order: -1; /* انتقال دکمه به ابتدای محتوا */
-    margin-right: auto; /* انتقال به سمت چپ */
-}
-
-.ai-back-button:hover {
-    background-color: var(--primary-medium);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 101, 92, 0.2);
-}
-
-.ai-wallet-container {
+.wall-chrg-ai-wallet-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.ai-wallet-card {
+.wall-chrg-ai-wallet-card {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -294,8 +284,9 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
 }
 
 /* اصلاح رنگ‌بندی کارت موجودی */
-.ai-balance-card {
+.wall-chrg-ai-balance-card {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 1rem;
     padding: 1.5rem;
@@ -306,42 +297,43 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
 }
 
-.ai-balance-icon {
+.wall-chrg-ai-balance-icon {
     display: flex;
     padding: 0.75rem;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 8px;
 }
 
-.ai-balance-info {
+.wall-chrg-ai-balance-info {
     display: flex;
     flex-direction: column;
 }
 
-.ai-balance-label {
+.wall-chrg-ai-balance-label {
     font-size: 0.875rem;
     opacity: 0.9;
     margin-bottom: 0.5rem;
     color: #ffffff;
 }
 
-.ai-balance-amount {
+.wall-chrg-ai-balance-amount {
     font-size: 1.75rem;
     font-weight: 700;
     color: #ffffff;
+    direction: rtl;
 }
 
-.currency {
-    font-size: 1rem;
+.wall-chrg-currency {
+    font-size: 1.75rem;
     font-weight: 500;
     color: #ffffff;
 }
 
-.ai-form-section {
+.wall-chrg-ai-form-section {
     margin-bottom: 2rem;
 }
 
-.ai-form-title {
+.wall-chrg-ai-form-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--primary-dark);
@@ -350,23 +342,25 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     border-bottom: 2px solid var(--primary-light);
 }
 
-.ai-amount-presets {
+.wall-chrg-ai-amount-presets {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.ai-preset-row {
+.wall-chrg-ai-preset-row {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    flex-direction: column;
+    
 }
 
-.ai-amount-radio {
+.wall-chrg-ai-amount-radio {
     display: none;
 }
 
-.ai-amount-preset {
+.wall-chrg-ai-amount-preset {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -382,49 +376,49 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     text-align: center;
 }
 
-.ai-amount-preset:hover {
+.wall-chrg-ai-amount-preset:hover {
     border-color: var(--primary-medium);
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 101, 92, 0.15);
 }
 
-.ai-amount-radio:checked + .ai-amount-preset {
+.wall-chrg-ai-amount-radio:checked + .wall-chrg-ai-amount-preset {
     border-color: var(--primary-medium);
     background-color: var(--primary-light);
     color: var(--primary-dark);
     box-shadow: 0 0 0 3px rgba(0, 133, 122, 0.3);
 }
 
-.ai-custom-preset {
+.wall-chrg-ai-custom-preset {
     background: var(--primary-light);
     border: 2px dashed var(--primary-medium);
 }
 
-.ai-custom-preset:hover {
+.wall-chrg-ai-custom-preset:hover {
     background: rgba(244, 192, 23, 0.1);
     border: 2px dashed var(--primary-accent);
 }
 
-.ai-amount-value {
+.wall-chrg-ai-amount-value {
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--primary-dark);
 }
 
-.ai-amount-currency {
+.wall-chrg-ai-amount-currency {
     font-size: 0.8rem;
     opacity: 0.9;
     color: var(--primary-medium);
 }
 
-.ai-custom-amount-section {
+.wall-chrg-ai-custom-amount-section {
     display: none;
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
 
-#amount_custom:checked ~ .ai-custom-amount-section {
+#amount_custom:checked ~ .wall-chrg-ai-custom-amount-section {
     display: block;
     animation: fadeIn 0.5s ease;
 }
@@ -434,7 +428,7 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.ai-form-label {
+.wall-chrg-ai-form-label {
     display: block;
     font-weight: 600;
     color: var(--primary-dark);
@@ -442,12 +436,13 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     font-size: 1rem;
 }
 
-.input-container {
+.wall-chrg-input-container {
     position: relative;
+    display:flex;
     margin-bottom: 1rem;
 }
 
-.ai-form-input {
+.wall-chrg-ai-form-input {
     width: 100%;
     padding: 1rem 1rem 1rem 3rem;
     border: 2px solid var(--border-color);
@@ -458,28 +453,20 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     color: var(--text-color);
 }
 
-.ai-form-input:focus {
+.wall-chrg-ai-form-input:focus {
     outline: none;
     border-color: var(--primary-medium);
     box-shadow: 0 0 0 3px rgba(0, 133, 122, 0.3);
     background: linear-gradient(135deg, #e6f7f5 0%, #ffffff 100%);
 }
 
-.ai-form-input:not(:placeholder-shown) {
+.wall-chrg-ai-form-input:not(:placeholder-shown) {
     background: linear-gradient(135deg, #e6f7f5 0%, #ffffff 100%);
     border-color: var(--primary-medium);
 }
 
-.input-field-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--primary-medium);
-}
-
 /* اصلاح نکات مهم */
-.ai-important-notes {
+.wall-chrg-ai-important-notes {
     background-color: rgba(244, 192, 23, 0.1);
     border: 1px solid var(--primary-accent);
     border-radius: 10px;
@@ -487,7 +474,7 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     margin: 2rem 0;
 }
 
-.ai-important-notes h4 {
+.wall-chrg-ai-important-notes h4 {
     margin: 0 0 1rem 0;
     color: var(--primary-dark);
     font-size: 1.1rem;
@@ -497,11 +484,11 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     gap: 0.5rem;
 }
 
-.ai-important-notes h4:before {
+.wall-chrg-ai-important-notes h4:before {
     content: "⚠️";
 }
 
-.ai-important-notes ul {
+.wall-chrg-ai-important-notes ul {
     margin: 0;
     padding-right: 1.5rem;
     color: var(--primary-dark);
@@ -509,13 +496,13 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     line-height: 1.8; /* افزایش فاصله خطوط برای خوانایی بهتر */
 }
 
-.ai-important-notes li {
+.wall-chrg-ai-important-notes li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
     position: relative;
 }
 
-.ai-important-notes li:before {
+.wall-chrg-ai-important-notes li:before {
     content: "•";
     color: var(--primary-accent);
     font-weight: bold;
@@ -525,11 +512,11 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     margin-left: 0.5em;
 }
 
-.ai-form-actions {
+.wall-chrg-ai-form-actions {
     margin-top: 2rem;
 }
 
-.ai-payment-button {
+.wall-chrg-ai-payment-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -548,78 +535,62 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     box-shadow: 0 4px 12px rgba(0, 101, 92, 0.3);
 }
 
-.ai-payment-button:hover {
+.wall-chrg-ai-payment-button:hover {
     background: linear-gradient(135deg, var(--primary-dark) 0%, #00544d 100%);
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(0, 101, 92, 0.4);
 }
 
-.ai-payment-button:active {
+.wall-chrg-ai-payment-button:active {
     transform: translateY(-1px);
 }
 
 /* رسپانسیو برای موبایل */
 @media (max-width: 768px) {
-    .ai-header-content {
+    .wall-chrg-ai-header-content {
         flex-direction: column;
         align-items: flex-start;
     }
     
-    .ai-back-button {
-        order: 0; /* بازگرداندن ترتیب طبیعی برای موبایل */
-        margin-right: 0;
-        margin-bottom: 1rem;
-        align-self: flex-start;
-    }
-    
-    .ai-header-title {
+    .wall-chrg-ai-header-title {
         margin-right: 0;
         width: 100%;
         justify-content: center;
     }
     
-    .ai-preset-row {
-        flex-direction: column;
-    }
-    
-    .ai-amount-preset {
+    .wall-chrg-ai-amount-preset {
         min-width: auto;
     }
     
-    .ai-wallet-card {
+    .wall-chrg-ai-wallet-card {
         padding: 1.5rem;
     }
     
-    .ai-balance-card {
+    .wall-chrg-ai-balance-card {
         flex-direction: column;
         text-align: center;
         padding: 1.25rem;
     }
     
-    .ai-payment-button {
+    .wall-chrg-ai-payment-button {
         padding: 1rem 1.5rem;
         font-size: 1rem;
     }
     
     /* اصلاح نکات مهم برای موبایل */
-    .ai-important-notes ul {
+    .wall-chrg-ai-important-notes ul {
         padding-right: 1rem;
     }
     
-    .ai-important-notes li:before {
+    .wall-chrg-ai-important-notes li:before {
         margin-left: 0.3em;
     }
 }
 
 @media (max-width: 500px) {
-    .ai-wallet-charge-page {
+    .wall-chrg-ai-wallet-charge-page {
         padding: 0 1.2rem;
     }
-}
-
-.input-container {
-    position: relative;
-    margin-bottom: 1rem;
 }
 
 .input-currency-hint {
@@ -632,7 +603,7 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     pointer-events: none;
 }
 
-.ai-form-input {
+.wall-chrg-ai-form-input {
     width: 100%;
     padding: 1rem 4rem 1rem 3rem; /* فضای بیشتر برای سمت راست */
     border: 2px solid var(--border-color);
@@ -646,14 +617,14 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
 }
 
 /* وقتی input فوکوس شده یا پر است */
-.ai-form-input:focus,
-.ai-form-input:not(:placeholder-shown) {
+.wall-chrg-ai-form-input:focus,
+.wall-chrg-ai-form-input:not(:placeholder-shown) {
     padding-right: 1rem;
     padding-left: 4rem;
 }
 
-.ai-form-input:focus + .input-currency-hint,
-.ai-form-input:not(:placeholder-shown) + .input-currency-hint {
+.wall-chrg-ai-form-input:focus + .input-currency-hint,
+.wall-chrg-ai-form-input:not(:placeholder-shown) + .input-currency-hint {
     opacity: 1;
 }
 </style>
@@ -720,10 +691,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.ai-charge-form');
     form.addEventListener('submit', function(e) {
         const minAmount = <?php echo $minimum_charge; ?>;
-        if (!chargeAmountInput.value || parseInt(chargeAmountInput.value) < minAmount) {
+        const maxAmount = <?php echo ai_wallet_get_maximum_charge(); ?>;
+        const amount = parseInt(chargeAmountInput.value);
+        
+        if (!chargeAmountInput.value || amount < minAmount || amount > maxAmount) {
             e.preventDefault();
-            alert('لطفاً مبلغی معتبر (حداقل ' + toPersianNumber(minAmount) + ' تومان) وارد کنید.');
+            alert('لطفاً مبلغی بین ' + toPersianNumber(minAmount) + ' تا ' + toPersianNumber(maxAmount) + ' تومان وارد کنید.');
             return false;
+        }
+    });
+    
+    // اعتبارسنجی لحظه‌ای برای input
+    customAmountInput.addEventListener('input', function() {
+        const maxAmount = <?php echo ai_wallet_get_maximum_charge(); ?>;
+        if (this.value && parseInt(this.value) > maxAmount) {
+            this.value = maxAmount;
+            alert('حداکثر مبلغ مجاز ' + toPersianNumber(maxAmount) + ' تومان است.');
         }
     });
 });
@@ -734,8 +717,9 @@ document.addEventListener('DOMContentLoaded', function() {
 if (isset($_POST['wallet_charge_submit']) && !empty($_POST['charge_amount'])) {
     $amount = (int) $_POST['charge_amount'];
     $minimum_charge = ai_wallet_get_minimum_charge();
+    $maximum_charge = ai_wallet_get_maximum_charge();
 
-    if ($amount >= $minimum_charge) {
+    if ($amount >= $minimum_charge && $amount <= $maximum_charge) {
         $user_id = get_current_user_id();
         $wallet = AI_Assistant_Payment_Handler::get_instance();
 

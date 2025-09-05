@@ -1,4 +1,3 @@
-<!--/home/aidastya/public_html/wp-content/themes/ai-assistant/header.php-->
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> dir="rtl">
 <head>
@@ -28,62 +27,45 @@
                     
                       <!-- منوی دسکتاپ -->
                     <nav class="ai-nav ai-nav-desktop">
-                        <?php if (is_user_logged_in()): ?>
-                        
-                            <a href="<?php echo home_url('/ai-dashboard'); ?>">
-                                <div >  
-                                    <?php echo get_avatar(get_current_user_id(), 32); ?>
-                                    <span><?php echo wp_get_current_user()->display_name; ?></span>                                
-                                </div> 
-                            </a>
-                            
-                            <a href="<?php echo home_url('/ai-dashboard'); ?>">
-                            داشبورد
-                            </a>
-                            
-                            <a href="<?php echo home_url('/ai-services'); ?>">
-                            سرویس ها
-                            </a>
-                            
-                            <a href="<?php echo home_url('/service-history'); ?>">
-                            تاریخچه
-                            </a>
-                        <?php else: ?>
-                            <a href="<?php echo home_url('/ai-services'); ?>"><?php _e('سرویس‌ها', 'ai-assistant'); ?></a>
-                        <?php endif; ?>
+
+
+
                         
                         
                         
                         <div class="ai-user-section">
                             <?php if (is_user_logged_in()): ?>
-                                <div class="ai-wallet-info">
-                                    <span class="ai-wallet-amount">
-                                        <?php echo number_format(AI_Assistant_Payment_Handler::get_instance()->get_user_credit(get_current_user_id())); ?>
-                                        <?php _e('تومان', 'ai-assistant'); ?>
-                                    </span>
-                                    <a href="<?php echo home_url('/wallet-charge'); ?>" class="ai-wallet-button">
-                                        <?php _e('شارژ', 'ai-assistant'); ?>
-                                    </a>
-                                </div>
+                                    <div class="bottom-actions">
+                                        <a href="<?php echo wp_logout_url(); ?>" class="btn btn-secondary">
+                                            <?php _e('خروج', 'ai-assistant'); ?>
+                                        </a>
+                                        
+                                        <!-- نمایش خلاصه پروفایل کاربر به جای دکمه -->
+                                        <div class="user-profile-summary">
+                                            <?php echo get_avatar(get_current_user_id(), 40); ?>
+                                            <div class="user-info">
+                                                <span class="user-name"><?php echo wp_get_current_user()->display_name; ?></span>
+                                                <span class="user-credit"><?php echo number_format(AI_Assistant_Payment_Handler::get_instance()->get_user_credit(get_current_user_id())); ?> تومان</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 
-                                <div class="ai-user-profile">
-    
-                                    <a href="<?php echo wp_logout_url(); ?>" class="ai-logout-button left-profile ai-button">
-                                        <?php _e('خروج', 'ai-assistant'); ?>
-                                    </a>                                
-                                </div>
+
                                 
     
                             <?php else: ?>
                                 <a href="<?php echo wp_login_url(); ?>" class="ai-login-button">
-                                    <?php _e('ورود', 'ai-assistant'); ?>
+                                    <?php _e('ورود/ثبت نام', 'ai-assistant'); ?>
                                 </a>
-                                <a href="<?php echo wp_registration_url(); ?>" class="ai-register-button">
-                                    <?php _e('ثبت نام', 'ai-assistant'); ?>
-                                </a>
+
                             <?php endif; ?>
-                        </div>                        
+                        </div> 
+                        
+
                     </nav>
+                    
+                    
+                   
                     
                     
                     <!-- منوی موبایل -->
@@ -166,41 +148,58 @@
                             <?php endif; ?>
                         </div>
                     
-                        <!-- بخش شبکه‌های اجتماعی -->
-                        <div class="social-media-section">
-                            <p class="social-title">ما را دنبال کنید</p>
-                            <div class="social-links">
-                                <a href="https://instagram.com/yourusername" class="social-link instagram" target="_blank" rel="noopener" title="اینستاگرام">
-                                    <span class="dashicons dashicons-instagram"></span>
-                                </a>
-                                
-                                <a href="https://twitter.com/yourusername" class="social-link twitter" target="_blank" rel="noopener" title="توییتر">
-                                    <span class="dashicons dashicons-twitter"></span>
-                                </a>
-                                
-                                <a href="https://t.me/yourusername" class="social-link telegram" target="_blank" rel="noopener" title="تلگرام">
-                                    <span class="dashicons dashicons-phone"></span>
-                                </a>
-                                
-                                <a href="https://linkedin.com/company/yourcompany" class="social-link linkedin" target="_blank" rel="noopener" title="لینکدین">
-                                    <span class="dashicons dashicons-linkedin"></span>
-                                </a>
-                                
-                                <a href="https://youtube.com/yourchannel" class="social-link youtube" target="_blank" rel="noopener" title="یوتیوب">
-                                    <span class="dashicons dashicons-youtube"></span>
-                                </a>
-                                
-                                <a href="https://aparat.com/yourchannel" class="social-link aparat" target="_blank" rel="noopener" title="آپارات">
-                                    <span class="dashicons dashicons-video-alt3"></span>
-                                </a>
-                            </div>
-                        </div>                       
-                    </nav>     
+                    </nav>  
+                    
+                    
+                    
                 </div>
                 
 
                 
             </div>
+            
+            <div class=" ai-nav ai-nav-desktop">
+                <?php if (is_user_logged_in()): ?>
+                    <a href="<?php echo home_url('/ai-dashboard'); ?>" class="">
+                        
+                        داشبورد
+                    </a>
+                    
+                    <a href="<?php echo home_url('/ai-services'); ?>" class="">
+                       
+                        سرویس ها
+                    </a>
+                    
+                    <a href="<?php echo home_url('/page-user-history'); ?>" class="">
+                        
+                        تاریخچه
+                    </a>
+                    
+                    <!-- اضافه کردن لینک پروفایل در منوی اصلی -->
+                    <a href="<?php echo home_url('/ai-dashboard'); ?>" class=" user-profile-menu-item">
+                        
+                        پروفایل کاربری
+                    </a>
+                    
+                <?php else: ?>
+                    <a href="<?php echo home_url('/ai-services'); ?>" class="">
+                       
+                        سرویس‌ها
+                    </a>
+                    
+                    <a href="<?php echo home_url('/blog'); ?>" class="">
+                        
+                        وبلاگ
+                    </a>
+                    
+                    <a href="<?php echo home_url('/about-us'); ?>" class="">
+                        
+                        درباره ما
+                    </a>
+                <?php endif; ?>                            
+                    
+            </div>    
+            
         </header>
     
     <main class="ai-main">

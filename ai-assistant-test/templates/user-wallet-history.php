@@ -8,6 +8,11 @@ if (!is_user_logged_in()) {
     exit;
 }
 
+// غیرفعال کردن کش برای این صفحه
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 get_header();
 
 $current_user_id = get_current_user_id();
@@ -36,7 +41,7 @@ $history = $wallet->get_transaction_history($current_user_id, 10, get_query_var(
                             <th>مبلغ (تومان)</th>
                             <th>موجودی</th>
                             <th>توضیحات</th>
-                            <th>عملیات</th>
+                           
                         </tr>
                     </thead>
                     <tbody>
@@ -59,14 +64,7 @@ $history = $wallet->get_transaction_history($current_user_id, 10, get_query_var(
                                 </td>
                                 <td><?php echo number_format($item->new_balance); ?></td>
                                 <td><?php echo esc_html($item->description); ?></td>
-                                <td>
-                                    <a href="#" class="ai-delete-button delete-wallet-history" 
-                                       data-nonce="<?php echo esc_attr(wp_create_nonce('delete_wallet_history_' . $item->id)); ?>" 
-                                       data-id="<?php echo esc_attr($item->id); ?>" 
-                                       title="حذف">
-                                        <span class="dashicons dashicons-trash"></span>
-                                    </a>
-                                </td>
+
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

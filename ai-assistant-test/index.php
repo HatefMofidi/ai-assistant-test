@@ -1,6 +1,6 @@
-<!--/home/aidastya/public_html/wp-content/themes/ai-assistant/index.php-->
 <?php
 /**
+ * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/index.php
  * The main template file
  */
 
