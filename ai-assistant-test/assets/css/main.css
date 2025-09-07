@@ -78,7 +78,9 @@ margin: 0 auto;
 
 .ai-nav-desktop { display: flex; }
 .ai-nav-mobile { display: none; }
-
+  .ai-mobile-menu-toggle {
+    display: none;
+  }
 
 
 
@@ -210,7 +212,7 @@ margin: 0 auto;
     background-color: #f8f9fa;
     border-top: 1px solid #e9ecef;
     padding: 25px 0;
-    margin-top: 50px;
+    /*margin-top: 50px;*/
 }
 
 .footer-content {
@@ -617,11 +619,45 @@ margin: 0 auto;
         color: #ffffff;
         margin-bottom: 12px;
         justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+    }
+    
+    .btn-primary:hover::before {
+        left: 100%;
     }
     
     .btn-primary:hover {
-        background-color: #5a3ba8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(107, 71, 220, 0.35);
     }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+   
     
     .btn-secondary {
         background-color: #333333;
@@ -680,7 +716,7 @@ margin: 0 auto;
         width: 100%;
         height: 100%;
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
+        transition: left 0.6s;
     }
     
     .login-btn:hover::before {
@@ -1258,22 +1294,40 @@ margin: 0 auto;
 /* ========== Mobile Menu ========== */
 
 /* استایل‌های منوی موبایل */
-.ai-mobile-menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: #333;
-  font-size: 24px;
-  cursor: pointer;
-  align-items: center; /* تراز عمودی وسط برای آیکون */
+
+
+
+/* استایل برای منوی موبایل */
+@media (max-width: 768px) {
+    .ai-nav-wrapper {
+        display: none;
+        flex-direction: column;
+        
+    }
+    
+    .ai-mobile-menu-toggle {
+        display: flex;
+        z-index: 1000;
+        background: none;
+        border: none;
+        color: #333;
+        font-size: 24px;
+        cursor: pointer;
+        align-items: center;
+        padding: 5px;
+        transition: transform 0.3s ease;
+    }
+    
+
+    
+    
+    /* استایل برای دکمه همبرگر در حالت باز */
+    .ai-mobile-menu-toggle .dashicons-no {
+        color: #dc3545;
+    }
 }
 
-.ai-nav-wrapper {
-    
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
+
 
 /* ========== Animations ========== */
 
@@ -1374,9 +1428,7 @@ margin: 0 auto;
     height: 28px;
   }
   
-  .ai-mobile-menu-toggle {
-    display: block;
-  }
+
   
   .ai-nav-wrapper {
     display: none;

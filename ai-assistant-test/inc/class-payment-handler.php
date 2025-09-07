@@ -1,4 +1,5 @@
 <?php
+/* /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/inc/class-payment-handler.php */
 class AI_Assistant_Payment_Handler {
     private static $instance;
     private $table_name;

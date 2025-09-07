@@ -1,5 +1,6 @@
 <?php
 /**
+ * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/wallet-checkout.php
  * Template Name: صفحه پرداخت کیف پول
  */
 if (!defined('ABSPATH')) {

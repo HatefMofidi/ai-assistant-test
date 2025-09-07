@@ -1,0 +1,607 @@
+:root {
+    --primary-color: #4CAF50;
+    --primary-dark: #2E7D32;
+    --primary-light: #E8F5E8;
+    --text-color: #333;
+    --light-gray: #f5f5f5;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --transition-time: 0.4s;
+}
+
+.diet-plan-container * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.diet-plan-container {
+    font-family: Vazir, Tahoma, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    line-height: 1.6;
+    direction: rtl;
+    color: var(--text-color);
+    padding: 10px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.diet-plan-container h1, 
+.diet-plan-container h2, 
+.diet-plan-container h3, 
+.diet-plan-container h4, 
+.diet-plan-container h5, 
+.diet-plan-container h6 {
+    text-align: right !important;
+}
+
+.diet-plan-container ul, 
+.diet-plan-container ol {
+    text-align: justify;
+}
+
+.diet-plan-container li {
+    text-align: justify;
+}
+
+.diet-plan-container .result-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.diet-plan-container .header {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: var(--border-radius);
+    color: white;
+    box-shadow: var(--box-shadow);
+}
+
+.diet-plan-container .header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.diet-plan-container .header p {
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* استایل آکاردئون */
+.diet-plan-container .accordion-section {
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-top: 5px solid var(--primary-color);
+}
+
+.diet-plan-container .accordion-header {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    transition: all var(--transition-time) ease;
+}
+
+.diet-plan-container .accordion-header:hover {
+    background-color: var(--primary-light);
+}
+
+.diet-plan-container .accordion-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diet-plan-container .accordion-icon {
+    transition: transform var(--transition-time) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.diet-plan-container .accordion-header.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.diet-plan-container .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: all var(--transition-time) cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.diet-plan-container .accordion-content-inner {
+    padding: 15px 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.diet-plan-container .accordion-content.active {
+    max-height: 50000px;
+    opacity: 1;
+    transform: translateY(0);
+    overflow-x: auto;
+}
+
+.diet-plan-container .accordion-content.active .accordion-content-inner {
+    opacity: 1;
+    transition: opacity 0.3s ease 0.2s;
+}
+
+/* استایل‌های دکمه‌های عمل - بهبود یافته */
+.diet-plan-container .action-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.diet-plan-container .action-btn {
+    padding: 14px 20px;
+    background: var(--primary-dark);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.diet-plan-container .action-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.diet-plan-container .action-btn.print {
+    background: var(--primary-dark);
+}
+
+.diet-plan-container .action-btn.print:hover {
+    background: var(--primary-color);
+}
+
+/* استایل‌های باقی مانده */
+.diet-plan-container h3 {
+    color: var(--primary-color);
+    margin: 15px 0 10px;
+    font-size: 1rem;
+    padding-right: 10px;
+    border-right: 3px solid var(--primary-color);
+}
+
+.diet-plan-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.diet-plan-container ul li {
+    padding: 10px;
+    border-bottom: 1px dashed #ddd;
+    background-color: var(--light-gray);
+    margin-bottom: 8px;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+}
+
+.diet-plan-container ul li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.diet-plan-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    display: none;
+}
+
+.diet-plan-container table th, 
+.diet-plan-container table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.diet-plan-container table th {
+    background: var(--primary-color);
+    color: white;
+}
+
+.diet-plan-container .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.diet-plan-container .day-card {
+    background: var(--primary-light);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease;
+}
+
+.diet-plan-container .day-card:hover {
+    transform: translateY(-5px);
+}
+
+.diet-plan-container .day-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.diet-plan-container .meal-section {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+}
+
+.diet-plan-container .meal-title {
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diet-plan-container .footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #777;
+    padding: 15px;
+    font-size: 0.9rem;
+}        
+
+.diet-plan-container .back-button {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 14px 20px;
+    background: var(--primary-dark);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    border: none;
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 100%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.diet-plan-container .back-button:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.diet-plan-container .error {
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 15px 0;
+    border-right: 4px solid #d32f2f;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diet-plan-container .credit-info {
+    background: var(--primary-light);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 15px 0;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* رسپانسیو برای تبلت و دسکتاپ */
+@media (min-width: 768px) {
+    .diet-plan-container {
+        padding: 20px;
+    }
+    
+    .diet-plan-container .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .diet-plan-container .mobile-cards {
+        display: none;
+    }
+    
+    .diet-plan-container table {
+        display: table;
+    }
+    
+    .diet-plan-container .back-button {
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .diet-plan-container .accordion-header {
+        padding: 12px 15px;
+    }
+    
+    .diet-plan-container .accordion-header h2 {
+        font-size: 1rem;
+    }
+    
+    .diet-plan-container ul li {
+        padding: 8px;
+        font-size: 0.9rem;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .diet-plan-container .day-card {
+        padding: 7px;
+    }
+    
+    .diet-plan-container .day-header {
+        font-size: 0.9rem;
+    }
+}
+
+.diet-plan-container .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.diet-plan-container .badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.diet-plan-container .badge-light {
+    background-color: var(--light-gray);
+    color: var(--text-color);
+}
+
+.diet-plan-container .nutrition-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.diet-plan-container .nutrition-item {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px;
+    background: var(--primary-light);
+    border-radius: 8px;
+}
+
+.diet-plan-container .nutrition-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.diet-plan-container .nutrition-label {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.diet-plan-container .progress-bar {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.diet-plan-container .progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* استایل‌های جدید برای دکمه‌ها - بهبود یافته */
+.diet-plan-container .action-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.diet-plan-container .action-btn {
+    padding: 12px 25px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: Vazir, Tahoma, sans-serif;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: var(--box-shadow);
+    min-width: 160px;
+    justify-content: center;
+}
+
+.diet-plan-container .action-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.diet-plan-container .action-btn.print {
+    background: var(--primary-dark);
+}
+
+.diet-plan-container .action-btn.print:hover {
+    background: var(--primary-color);
+}        
+
+@media (max-width: 480px) {
+    .diet-plan-container .action-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .diet-plan-container .action-btn {
+        width: 100%;
+    }
+}
+
+/* استایل‌های مخصوص چاپ */
+@media print {
+    .diet-plan-container .action-controls,
+    .diet-plan-container .back-button {
+        display: none !important;
+    }
+    
+    .diet-plan-container .accordion-content {
+        display: block !important;
+        max-height: none !important;
+        opacity: 1 !important;
+        height: auto !important;
+    }
+    
+    .diet-plan-container .accordion-header {
+        border-bottom: 2px solid var(--primary-color);
+        pointer-events: none;
+    }
+    
+    .diet-plan-container .accordion-header .accordion-icon {
+        display: none !important;
+    }
+    
+    .diet-plan-container {
+        padding: 0;
+        background: white;
+        color: black;
+        font-size: 12pt;
+    }
+    
+    .diet-plan-container .result-container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .diet-plan-container .header {
+        background: white !important;
+        color: black !important;
+        border: 2px solid black;
+    }
+    
+    .diet-plan-container .accordion-icon,
+    .diet-plan-container .badge {
+        display: none !important;
+    }
+    
+    .diet-plan-container ul li {
+        background: white !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .diet-plan-container .day-card {
+        break-inside: avoid;
+    }            
+}
+
+.diet-plan-container .user-date-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%); 
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, sans-serif;
+}
+
+.diet-plan-container .report-user-info, 
+.diet-plan-container .date-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.diet-plan-container .report-user-info i, 
+.diet-plan-container .date-info i {
+    font-size: 16px;
+    background: rgba(255,255,255,0.2);
+    padding: 6px;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .diet-plan-container .user-date-row {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .diet-plan-container .report-user-info, 
+    .diet-plan-container .date-info {
+        justify-content: center;
+    }
+}

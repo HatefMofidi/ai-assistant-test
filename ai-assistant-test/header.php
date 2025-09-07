@@ -147,7 +147,7 @@
                             </a>
                             
                             <!-- اضافه کردن لینک پروفایل در منوی اصلی -->
-                            <a href="<?php echo home_url('/ai-dashboard'); ?>" class="menu-item-card user-profile-menu-item">
+                            <a href="<?php echo home_url('/profile'); ?>" class="menu-item-card user-profile-menu-item">
                                 <span class="dashicons dashicons-admin-users"></span>
                                 پروفایل کاربری
                             </a>

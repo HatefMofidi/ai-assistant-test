@@ -2,7 +2,6 @@
 // /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/services/diet/template-parts/form.php
 $theme_assets = get_stylesheet_directory_uri();
 ?>
-<script>console.log('form.php : 0917')</script>
 <form id="multi-step-form" class="ai-multistep-form" method="post" action="<?php echo admin_url('admin-ajax.php'); ?>">
     <input type="hidden" name="action" value="submit_diet_form">
     <?php wp_nonce_field('diet_form_nonce', 'diet_form_security'); ?>

@@ -8,3 +8,27 @@ Version: 1.0.0
 Text Domain: ai-assistant
 */
 
+@font-face {
+    font-family: BordeauxBlack;
+    src: url('assets/fonts/BordeauxBlack.woff2') format('woff2'),
+         url('assets/fonts/BordeauxBlack.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Vazir Font Face */
+@font-face {
+    font-family: Vazir;
+    src: url('assets/fonts/Vazir.woff2') format('woff2'),
+         url('assets/fonts/Vazir.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* سایر وزن‌های فونت را اینجا اضافه کنید */
+
+body, button, input, select, textarea, h1, h2, h3, h4, h5, h6 {
+    font-family: Vazir, Tahoma, sans-serif !important;
+}

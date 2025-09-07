@@ -106,7 +106,6 @@ window.showPaymentConfirmation = function(formData) {
             // ایجاد المان پاپ‌آپ با قیمت داینامیک
             const popup = document.createElement('div');
             popup.className = 'payment-confirmation-popup';
-            // در بخش ایجاد پاپ‌آپ، تغییرات زیر را اعمال کنید:
             popup.innerHTML = `
                 <div class="payment-confirmation-content">
                     <div class="payment-header">

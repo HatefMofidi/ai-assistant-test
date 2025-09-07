@@ -9,26 +9,46 @@ if (!is_user_logged_in()) {
     exit;
 }
 
-// (قبل از get_header() اضافه کنید)
-// نمایش پیام‌های پرداخت
+get_header();
+
 if (isset($_GET['payment'])) {
+    $message_class = '';
+    $message_icon = '';
+    $message_text = '';
+
     switch ($_GET['payment']) {
         case 'success':
-            $message = 'پرداخت با موفقیت انجام شد.';
-            $message .= isset($_GET['ref_id']) ? ' کد پیگیری: ' . $_GET['ref_id'] : '';
-            echo '<div class="ai-alert ai-alert-success">' . $message . '</div>';
+            $message_class = 'wall-chrg-ai-alert-success';
+            $message_icon = '✅';
+            $message_text = 'پرداخت با موفقیت انجام شد.';
+            $message_text .= isset($_GET['ref_id']) ? ' کد پیگیری: <span dir="ltr">' . $_GET['ref_id'] . '</span>' : '';
             break;
         case 'failed':
+            $message_class = 'wall-chrg-ai-alert-error';
+            $message_icon = '❌';
             $reason = isset($_GET['reason']) ? urldecode($_GET['reason']) : 'خطای نامشخص';
-            echo '<div class="ai-alert ai-alert-error">پرداخت ناموفق بود. دلیل: ' . $reason . '</div>';
+            $message_text = 'پرداخت ناموفق بود. دلیل: ' . esc_html($reason);
             break;
         case 'cancelled':
-            echo '<div class="ai-alert ai-alert-warning">پرداخت توسط شما لغو شد.</div>';
+            $message_class = 'wall-chrg-ai-alert-warning';
+            $message_icon = '⚠️';
+            $message_text = 'پرداخت توسط شما لغو شد.';
+            break;
+        case 'error':
+            $message_class = 'wall-chrg-ai-alert-error';
+            $message_icon = '🚫';
+            $reason = isset($_GET['reason']) ? urldecode($_GET['reason']) : 'خطای نامشخص';
+            $message_text = 'خطایی رخ داده است: ' . esc_html($reason);
             break;
     }
-}
 
-get_header();
+    if (!empty($message_text)) {
+        echo '<div class="wall-chrg-ai-alert ' . $message_class . '">';
+        echo '<span class="wall-chrg-ai-alert-icon">' . $message_icon . '</span>';
+        echo '<span class="wall-chrg-ai-alert-message">' . $message_text . '</span>';
+        echo '</div>';
+    }
+}
 
 $user_id = get_current_user_id();
 $wallet = AI_Assistant_Payment_Handler::get_instance();
@@ -225,7 +245,7 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
 /* استایل های جدید برای صفحه شارژ کیف پول */
 .wall-chrg-ai-wallet-charge-page {
     max-width: 500px; /* محدودیت عرض جدید */
-    margin: 0 auto; /* مرکز کردن صفحه */
+    margin: auto auto; /* مرکز کردن صفحه */
     padding: 1rem;
     font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     direction: rtl;
@@ -545,6 +565,81 @@ if ($needed_amount > 0 && $needed_amount >= $minimum_charge) {
     transform: translateY(-1px);
 }
 
+.wall-chrg-ai-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin: 0 auto 2rem auto;
+    border-radius: 10px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideInDown 0.5s ease;
+    border: 1px solid transparent;
+}
+
+.wall-chrg-ai-alert-success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.wall-chrg-ai-alert-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.wall-chrg-ai-alert-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #fde68a;
+    color: #d97706;
+}
+
+.wall-chrg-ai-alert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.wall-chrg-ai-alert-message {
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.wall-chrg-ai-alert-message span {
+    font-family: 'Vazir', monospace;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* رسپانسیو برای موبایل */
+@media (max-width: 768px) {
+    .wall-chrg-ai-alert {
+        margin: 1.5rem 1rem 1rem 1rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .wall-chrg-ai-alert-icon {
+        font-size: 1.1rem;
+    }
+    
+    .wall-chrg-ai-alert-message {
+        font-size: 0.9rem;
+    }
+}
 /* رسپانسیو برای موبایل */
 @media (max-width: 768px) {
     .wall-chrg-ai-header-content {

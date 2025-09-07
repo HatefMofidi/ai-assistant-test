@@ -1,14 +1,17 @@
 <?php
 /**
+ * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/templates/profile.php
  * Template Name: پروفایل کاربری
  */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if (!is_user_logged_in()) {
     wp_redirect(wp_login_url(home_url('/profile')));
     exit;
 }
-
-get_header();
 
 $current_user = wp_get_current_user();
 $user_credit = AI_Assistant_Payment_Handler::get_instance()->get_user_credit(get_current_user_id());
@@ -19,6 +22,8 @@ $user_phone = get_user_meta($current_user->ID, 'billing_phone', true) ?: 'ثبت
 $user_first_name = get_user_meta($current_user->ID, 'first_name', true);
 $user_last_name = get_user_meta($current_user->ID, 'last_name', true);
 $full_name = ($user_first_name && $user_last_name) ? $user_first_name . ' ' . $user_last_name : $current_user->display_name;
+
+get_header();
 ?>
 
 <div class="prof-profile-main-container">
@@ -64,40 +69,6 @@ $full_name = ($user_first_name && $user_last_name) ? $user_first_name . ' ' . $u
                     </div>
                 </div>
             </div>
-
-            <div class="prof-profile-section">
-                <h2>
-                    <span class="dashicons dashicons-admin-links"></span>
-                    دسترسی سریع
-                </h2>
-                <div class="prof-quick-links">
-                    <a href="<?php echo home_url('/ai-assistant'); ?>" class="prof-profile-link">
-                        <span class="dashicons dashicons-dashboard"></span>
-                        <span class="prof-link-text">داشبورد کاربری</span>
-                    </a>
-                    <a href="<?php echo home_url('/user-wallet-history'); ?>" class="prof-profile-link">
-                        <span class="dashicons dashicons-money-alt"></span>
-                        <span class="prof-link-text">تاریخچه تراکنش‌ها</span>
-                    </a>
-                    <a href="<?php echo home_url('/page-user-history'); ?>" class="prof-profile-link">
-                        <span class="dashicons dashicons-clock"></span>
-                        <span class="prof-link-text">تاریخچه استفاده</span>
-                    </a>
-                    <a href="<?php echo home_url('/wallet-charge'); ?>" class="prof-profile-link">
-                        <span class="dashicons dashicons-plus-alt"></span>
-                        <span class="prof-link-text">شارژ کیف پول</span>
-                    </a>
-                    <a href="<?php echo admin_url('profile.php'); ?>" class="prof-profile-link">
-                        <span class="dashicons dashicons-admin-settings"></span>
-                        <span class="prof-link-text">ویرایش پروفایل</span>
-                    </a>
-                    <a href="<?php echo esc_url(wp_logout_url(home_url())); ?>" class="prof-profile-link prof-logout-link">
-                        <span class="dashicons dashicons-migrate"></span>
-                        <span class="prof-link-text">خروج از حساب</span>
-                    </a>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
@@ -233,56 +204,6 @@ $full_name = ($user_first_name && $user_last_name) ? $user_first_name . ' ' . $u
     font-size: 14px;
 }
 
-.prof-quick-links {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-}
-
-.prof-profile-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 15px;
-    background: white;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #2d3748;
-    transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.prof-profile-link:hover {
-    background: #00857a;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 133, 122, 0.3);
-}
-
-.prof-profile-link .dashicons {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-.prof-link-text {
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.prof-logout-link {
-    background: #fee2e2;
-    border-color: #fecaca;
-    color: #dc2626;
-}
-
-.prof-logout-link:hover {
-    background: #dc2626;
-    color: white;
-}
-
 @media (max-width: 540px) {
     .prof-profile-main-container {
         padding: 10px;
@@ -344,4 +265,4 @@ $full_name = ($user_first_name && $user_last_name) ? $user_first_name . ' ' . $u
 </style>
 
 <?php
-// get_footer();
+get_footer();
