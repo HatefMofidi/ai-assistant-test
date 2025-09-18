@@ -380,6 +380,12 @@ function ai_assistant_load_test_scripts() {
 }
 add_action('wp_enqueue_scripts', 'ai_assistant_load_test_scripts', 20);
 
+// در فایل functions.php یا فایل اصلی تم
+wp_localize_script('your-script-handle', 'siteEnv', [
+    'otpEnv' => OTP_ENV,
+    'baseUrl' => (OTP_ENV === 'sandbox') ? 'https://test.aidastyar.com' : 'https://aidastyar.com'
+]);
+
 function enqueue_diet_form_scripts() {
     wp_enqueue_script('diet-form-script', get_template_directory_uri() . '/assets/js/services/diet/form-steps.js', array(), '1.0', true);
 
@@ -598,3 +604,24 @@ require_once get_template_directory() . '/templates/profile-functions.php';
 require_once get_template_directory() . '/templates/wallet-functions.php';
 
 require_once get_template_directory() . '/functions/farsi-num-functions.php';
+
+require_once get_template_directory() . '/functions/comments-functions.php';
+
+// بارگذاری گزارش کیف پول
+require get_template_directory() . '/inc/admin/ai-wallet-admin-report.php';
+
+// فراخوانی کلاس‌های مدیریت تخفیف
+require_once get_template_directory() . '/inc/admin/class-discount-db.php';
+require_once get_template_directory() . '/inc/admin/class-discount-admin.php';
+
+// مقداردهی اولیه سیستم تخفیف
+function init_ai_assistant_discounts() {
+    // فقط در بخش ادمین یا زمانی که لازم است کلاس‌ها را مقداردهی کنیم
+    if (is_admin() || defined('DOING_CRON') || wp_doing_ajax()) {
+        AI_Assistant_Discount_DB::get_instance();
+        AI_Assistant_Discount_Admin::get_instance();
+    }
+}
+add_action('init', 'init_ai_assistant_discounts');
+
+require_once get_template_directory() . '/inc/admin/ajax-discount-handlers-functions.php';

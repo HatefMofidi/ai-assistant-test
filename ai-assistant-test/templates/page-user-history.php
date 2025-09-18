@@ -21,9 +21,7 @@ $history_manager = AI_Assistant_History_Manager::get_instance();
 $logger = AI_Assistant_Logger::get_instance();
 $history = $history_manager->get_user_history($current_user_id, 10);
 
-$logger->log('page-user-history: ', [
-    'data:  ' => $history
-]); 
+
 
 // محاسبه تعداد کل آیتم‌ها برای صفحه‌بندی
 global $wpdb;
@@ -59,14 +57,11 @@ $total_items = $wpdb->get_var(
                     </thead>
                     <tbody>
                         <?php foreach ($history as $item) : 
-                            error_log(print_r($item,true));
+                            
                             $service_info = AI_Assistant_Service_Manager::get_instance()->get_service($item->service_id);
                             $service_name = esc_attr($service_info['name']);
                             
-                            
-$logger->log('page-user-history: ', [
-    'service_info:  ' => $service_info
-]);                             
+                        
                             $output_url = home_url('/service-output/' . intval($item->ID) . '/');
                             $delete_url = add_query_arg([
                                 'delete_history' => $item->ID,
@@ -88,14 +83,16 @@ $logger->log('page-user-history: ', [
                                 <td>
                                     <span class="ai-status-badge ai-status-completed">تکمیل شده</span>
                                 </td>
-                                <td class="ai-history-actions">
-                                    <a href="<?php echo esc_url($output_url); ?>" class="ai-view-button" target="_blank" title="مشاهده نتیجه">
-                                        <span class="dashicons dashicons-visibility"></span>
-                                    </a>
-
-                                    <a href="<?php echo esc_url(home_url('/service/' . $item->service_id . '/')); ?>" class="ai-repeat-button" title="استفاده مجدد">
-                                        <span class="dashicons dashicons-update"></span>
-                                    </a>
+                                <td >
+                                    <div class="ai-history-actions">
+                                        <a href="<?php echo esc_url($output_url); ?>" class="ai-view-button" target="_blank" title="مشاهده نتیجه">
+                                            <span class="dashicons dashicons-visibility"></span>
+                                        </a>
+    
+                                        <a href="<?php echo esc_url(home_url('/service/' . $item->service_id . '/')); ?>" class="ai-repeat-button" title="استفاده مجدد">
+                                            <span class="dashicons dashicons-update"></span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

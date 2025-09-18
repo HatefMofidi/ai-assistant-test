@@ -1,6 +1,7 @@
 <?php
 /**
  * Template Name: نمایش خروجی سرویس
+ * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/templates/single-ai_service_history.php
  */
 
 get_header('service');

@@ -8,6 +8,11 @@ if (!is_user_logged_in()) {
     exit;
 }
 
+// غیرفعال کردن کش قبل از هر خروجی
+if (!defined('DONOTCACHEPAGE')) {
+    define('DONOTCACHEPAGE', true);
+}
+
 // غیرفعال کردن کش برای این صفحه
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");

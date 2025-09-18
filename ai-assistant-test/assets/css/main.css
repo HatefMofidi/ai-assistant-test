@@ -349,7 +349,7 @@ margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 10px;
-  margin-top: 30px;
+  /*margin-top: 30px;*/
 }
 
 
@@ -365,7 +365,7 @@ margin: 0 auto;
     border-radius: 8px;
     box-shadow: var(--box-shadow);
     overflow: hidden;
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
     color: inherit;
     padding: 16px;
 }
@@ -1192,6 +1192,7 @@ margin: 0 auto;
   color: #10b759;
 }
 
+
 .ai-history-actions {
   display: flex;
   gap: 10px;
@@ -1415,12 +1416,13 @@ margin: 0 auto;
     padding: 10px;
     font-size: 14px;
   }
-  
+ 
+ 
   .ai-history-actions {
     gap: 5px;
   
   }
-  
+
   .ai-view-button,
   .ai-delete-button,
   .ai-repeat-button {

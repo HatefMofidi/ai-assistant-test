@@ -34,9 +34,6 @@ class AI_Assistant_Service_Manager {
         // اگر سرویس وجود دارد، آن را به‌روزرسانی کن
         if ($this->db->get_service($service_id)) {
             
-        $this->logger->log('service-manager.update_service', [
-                'step' => $data
-            ]);             
             
             return $this->db->update_service($service_id, $sanitized_data);
         }

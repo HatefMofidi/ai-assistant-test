@@ -1,4 +1,0 @@
-[10-Jul-2025 13:15:35 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_action() in /home/aidastya/public_html/wp-content/themes/ai-assistant/functions.php:26
-Stack trace:
-#0 {main}
-  thrown in /home/aidastya/public_html/wp-content/themes/ai-assistant/functions.php on line 26

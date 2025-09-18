@@ -64,3 +64,167 @@
 .form-group textarea {
     min-height: 100px;
 }
+
+
+.ai-wallet-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #0073aa;
+}
+
+.export-buttons {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.export-buttons h3 {
+    margin-top: 0;
+}
+
+.export-buttons .button {
+    margin-right: 10px;
+}
+
+.ai-wallet-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.chart-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chart-container h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.wallet-filters {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.wallet-filters h3 {
+    margin-top: 0;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.wallet-filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-filter-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.wallet-filter-group input,
+.wallet-filter-group select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.ai-wallet-top-users,
+.ai-wallet-recent {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.amount-credit {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.amount-debit {
+    color: #f44336;
+    font-weight: bold;
+}
+
+.tablenav {
+    margin: 10px 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* استایل‌های responsive */
+@media (max-width: 768px) {
+    .ai-wallet-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .ai-wallet-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .export-buttons {
+        text-align: center;
+    }
+    
+    .export-buttons .button {
+        display: block;
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    .filter-buttons {
+        flex-direction: column;
+    }
+    
+    .filter-buttons .button {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -1,0 +1,183 @@
+/* /assets/css/admin/discount-admin.css */
+
+.discount-table {
+    margin-top: 20px;
+}
+
+.discount-table th {
+    font-weight: 600;
+}
+
+.discount-status {
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.discount-status-active {
+    background-color: #46b450;
+    color: white;
+}
+
+.discount-status-inactive {
+    background-color: #dc3232;
+    color: white;
+}
+
+.discount-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.discount-form {
+    max-width: 800px;
+}
+
+.discount-form-section {
+    background: white;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.discount-form-section h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.discount-form-row {
+    margin-bottom: 15px;
+ /*   display: flex; */
+    flex-direction: column;
+}
+
+.discount-form-row label {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.discount-form-row input[type="text"],
+.discount-form-row input[type="number"],
+.discount-form-row input[type="datetime-local"],
+.discount-form-row select {
+    max-width: 400px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #8c8f94;
+}
+
+.discount-form-row select[multiple] {
+    height: 120px;
+}
+
+.discount-value-suffix {
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.discount-form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.description {
+    color: #646970;
+    font-size: 13px;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.button-link-delete {
+    color: #b32d2e;
+}
+
+.button-link-delete:hover {
+    color: #dc3232;
+}
+
+/* /assets/css/admin/discount-admin.css */
+
+.user-search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.user-search-container input {
+    flex: 1;
+}
+
+.users-checkbox-container {
+    width : 85%;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.user-checkbox-label {
+    display: block;
+    padding: 8px;
+    margin: 2px 0;
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-checkbox-label:hover {
+    background-color: #f0f6fc;
+    border-color: #007cba;
+}
+
+.user-checkbox-label input[type="checkbox"] {
+    margin-left: 8px;
+}
+
+.users-loading {
+    text-align: center;
+    padding: 20px;
+    color: #646970;
+}
+
+/* استایل برای حالت انتخاب شده */
+.user-checkbox-label.selected {
+    background-color: #e1f5fe;
+    border-color: #007cba;
+}
+
+/* استایل برای نتایج جستجو */
+.search-highlight {
+    background-color: #fff8e1;
+    font-weight: bold;
+}
+
+@media screen and (min-width: 783px) {
+    .discount-form-row {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .discount-form-row label {
+     /*   width: 200px; */
+        margin-bottom: 0;
+        margin-right: 20px;
+        text-align: right;
+    }
+    
+    .discount-form-row input,
+    .discount-form-row select {
+        flex: 1;
+    }
+}
