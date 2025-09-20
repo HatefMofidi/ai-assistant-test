@@ -190,6 +190,12 @@ class DietPlanRenderer {
 
                         if (sub && sub.type === "list" && sub.items) {
                             const ul = document.createElement("ul");
+                            
+                            // اضافه کردن کلاس خاص اگر وجود دارد
+                            if (sub.className) {
+                                ul.className = sub.className;
+                            }
+                            
                             sub.items.forEach(item => {
                                 const li = document.createElement("li");
                                 if (item && item.label && item.value) {
@@ -279,6 +285,12 @@ class DietPlanRenderer {
                     // پردازش محتوای ساده
                     if (section.content.type === "list" && section.content.items) {
                         const ul = document.createElement("ul");
+                        
+                        // اضافه کردن کلاس خاص اگر وجود دارد
+                        if (section.content.className) {
+                            ul.className = section.content.className;
+                        }
+                        
                         section.content.items.forEach(item => {
                             const li = document.createElement("li");
                             if (typeof item === "string") {
@@ -299,6 +311,12 @@ class DietPlanRenderer {
                     
                     if (section.content.type === "nested_list" && section.content.items) {
                         const ul = document.createElement("ul");
+                        
+                        // اضافه کردن کلاس خاص اگر وجود دارد
+                        if (section.content.className) {
+                            ul.className = section.content.className;
+                        }
+                        
                         section.content.items.forEach(item => {
                             const li = document.createElement("li");
                             if (item && item.label && item.value) {

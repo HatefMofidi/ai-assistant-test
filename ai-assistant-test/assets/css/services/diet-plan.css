@@ -342,6 +342,53 @@
     gap: 10px;
 }
 
+/* استایل برای لیست افقی */
+.horizontal-list {
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+.horizontal-list li {
+  flex-direction: row;
+  background: #f8f9fa;
+}
+
+.diet-plan-container ul.horizontal-list li span:first-child {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    
+}
+
+/* استایل برای لیست عمودی */
+.vertical-list {
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.vertical-list li {
+  background: #e3f2fd;
+  flex-direction: column;
+}
+
+.diet-plan-container ul.vertical-list li span:first-child {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    border-bottom: 2px solid #fff;
+    /*background-color: #e2f3dd;*/
+    
+}
+
+.diet-plan-container ul.vertical-list li span:last-child {
+    color: #7f8c8d;
+}
+
+
+
+
 /* رسپانسیو برای تبلت و دسکتاپ */
 @media (min-width: 768px) {
     .diet-plan-container {
@@ -377,7 +424,7 @@
     .diet-plan-container ul li {
         padding: 8px;
         font-size: 0.9rem;
-        flex-direction: column;
+        /*flex-direction: column;*/
         gap: 5px;
     }
     
@@ -438,7 +485,7 @@
 .diet-plan-container .progress-bar {
     height: 8px;
     background-color: #e0e0e0;
-    border-radius: 4px;
+    borderRadius: 4px;
     overflow: hidden;
     margin: 10px 0;
 }
@@ -446,7 +493,7 @@
 .diet-plan-container .progress-fill {
     height: 100%;
     background-color: var(--primary-color);
-    border-radius: 4px;
+    borderRadius: 4px;
 }
 
 /* استایل‌های جدید برای دکمه‌ها - بهبود یافته */
