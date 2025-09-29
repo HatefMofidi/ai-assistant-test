@@ -36,6 +36,22 @@
             <label>توضیحات</label>
             <textarea name="service_data[description]"><?php echo esc_textarea($service['description'] ?? ''); ?></textarea>
         </div>
+
+        
+        <div class="form-group">
+            <label>توضیحات کامل</label>
+            <?php
+            $content = $service['full_description'] ?? '';
+            $editor_id = 'service_full_description';
+            $settings = array(
+                'textarea_name' => 'service_data[full_description]',
+                'textarea_rows' => 15, // ارتفاع ویرایشگر
+                'media_buttons' => true, // دکمه آپلود مدیا
+                'teeny' => false // حالت کامل ویرایشگر
+            );
+            wp_editor($content, $editor_id, $settings);
+            ?>
+        </div>        
         
         <div class="form-group">
             <label>ساختار ثابت</label>

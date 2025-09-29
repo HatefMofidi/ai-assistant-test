@@ -45,9 +45,9 @@ function ai_assistant_render_services_admin() {
             'name' => sanitize_text_field($data['name']),
             'price' => absint($data['price']),
             'description' => sanitize_textarea_field($data['description'] ?? ''),
-           // 'system_prompt' => sanitize_textarea_field($data['system_prompt'] ?? ''),
+            // 'full_description' =>   wp_kses_post($_POST['service_data']['full_description']),
+            'full_description' => wp_filter_post_kses($_POST['service_data']['full_description']),
             'system_prompt' => $data['system_prompt'],
-           // 'system_prompt' => wp_kses($data['system_prompt'] ?? '', $service_manager->get_allowed_html_tags()),
             'icon' => sanitize_text_field($data['icon']),
             'active' => isset($data['active']) ? (bool)$data['active'] : false,
             'template' => $current_service['template'] ??  '/services/' . $service_id . '/template-parts/form.php' // حفظ مسیر قالب
@@ -83,6 +83,7 @@ function ai_assistant_render_services_admin() {
                 'name' => '',
                 'price' => 0,
                 'description' => '',
+                'full_description' => '',
                 'system_prompt' => '',
                 'icon' => 'dashicons-admin-generic',
                 'active' => true,
@@ -133,14 +134,3 @@ function ai_assistant_render_services_admin() {
     include __DIR__ . '/views/services-list.php';
 }
 
-
-
-// اضافه کردن استایل‌های مدیریت
-add_action('admin_enqueue_scripts', function($hook) {
-    if ($hook === 'toplevel_page_ai-assistant-services') {
-        wp_enqueue_style(
-            'ai-admin-css',
-            get_theme_file_uri('inc/admin/assets/css/admin.css')
-        );
-    }
-});

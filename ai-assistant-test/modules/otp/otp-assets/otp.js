@@ -69,8 +69,7 @@ jQuery(document).ready(function($) {
         $('#mobile-display').text(mobile);
         startCountdown(120);
         
-        // اصلاح این بخش:
-        if(otp_vars.is_sandbox && response.data && response.data.debug_code) {
+        if((otp_vars.is_sandbox || otp_vars.is_bypass) && response.data && response.data.debug_code) {
             const debugCode = response.data.debug_code;
             $('#otp-code').val(debugCode);
             showMessage(`کد آزمایشی: ${debugCode}`, 'success');

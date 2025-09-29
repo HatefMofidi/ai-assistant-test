@@ -1,0 +1,890 @@
+/*/home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/assets/css/discount-frontend-admin.css*/
+.discount-admin-panel {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    font-family: Vazir, Tahoma, sans-serif;
+}
+
+.discount-admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #4e54c8;
+}
+
+.discount-admin-panel-header h2 {
+    color: #2d3748;
+    margin: 0;
+}
+
+.discount-admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.discount-actions-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 2rem;
+}
+
+.discount-stats-summary {
+    display: flex;
+    gap: 2rem;
+}
+
+.discount-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #718096;
+    background: #f7fafc;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+.discount-stat-item strong {
+    font-size: 1.2rem;
+    color: #4e54c8;
+}
+
+.discount-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #4a5568;
+    white-space: nowrap;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+#discount-search {
+    min-width: 200px;
+}
+
+.discount-list-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.discounts-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.discount-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.discount-item:hover {
+    background: #f7fafc;
+}
+
+.discount-item:last-child {
+    border-bottom: none;
+}
+
+.discount-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.discount-info {
+    flex: 1;
+}
+
+.discount-name {
+    margin: 0 0 0.5rem 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+}
+
+.discount-code-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.discount-code {
+    background: #edf2f7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.discount-copy-code {
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.discount-copy-code:hover {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.discount-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.discount-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.discount-status.active {
+    color: #48bb78;
+}
+
+.discount-status.inactive {
+    color: #e53e3e;
+}
+
+.discount-status .fa-circle {
+    font-size: 0.6rem;
+}
+
+.discount-amount {
+    color: #4e54c8;
+    font-weight: 600;
+}
+
+.discount-usage {
+    color: #718096;
+    font-size: 0.85rem;
+}
+
+.discount-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.discount-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.discount-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.discount-btn-primary {
+    background: #4e54c8;
+    color: white;
+}
+
+.discount-btn-success {
+    background: #48bb78;
+    color: white;
+}
+
+.discount-btn-warning {
+    background: #ed8936;
+    color: white;
+}
+
+.discount-btn-danger {
+    background: #f56565;
+    color: white;
+}
+
+.discount-btn-info {
+    background: #4299e1;
+    color: white;
+}
+
+.discount-btn-secondary {
+    background: #a0aec0;
+    color: white;
+}
+
+.discount-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal */
+.discount-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.discount-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.discount-close-modal {
+    color: #aaa;
+    float: left;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+}
+
+.discount-close-modal:hover {
+    color: #000;
+}
+
+/* فرم */
+.discount-form {
+    margin-top: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4e54c8;
+    box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.1);
+}
+
+#generate-code {
+    margin-top: 0.5rem;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+}
+
+.services-checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.checkbox-label input {
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* جزئیات */
+.discount-details-content {
+    line-height: 1.6;
+}
+
+.detail-row {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f7fafc;
+}
+
+.detail-row strong {
+    color: #4a5568;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.services-list {
+    margin: 0.5rem 0;
+    padding-right: 1rem;
+}
+
+.services-list li {
+    margin-bottom: 0.25rem;
+}
+
+/* وضعیت‌ها */
+.no-discounts {
+    text-align: center;
+    padding: 3rem;
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.discounts-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #718096;
+}
+
+.discount-admin-error {
+    text-align: center;
+    padding: 2rem;
+    color: #e53e3e;
+    background: #fed7d7;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+/* پیام‌ها */
+.discount-admin-message {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.discount-admin-message.success {
+    background: #c6f6d5;
+    color: #276749;
+    border: 1px solid #9ae6b4;
+}
+
+.discount-admin-message.error {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+/* رسپانسیو */
+@media (max-width: 768px) {
+    .discount-admin-panel {
+        padding: 0 15px;
+    }
+    
+    .discount-admin-panel-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .discount-actions-top {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .discount-stats-summary {
+        justify-content: center;
+    }
+    
+    .discount-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .discount-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .discount-meta {
+        align-items: flex-start;
+    }
+    
+    .discount-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .discount-actions {
+        justify-content: center;
+    }
+    
+    .discount-btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .discount-modal-content {
+        margin: 10% auto;
+        width: 85%;
+        padding: 1rem;
+    }
+}
+
+.code-input-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.code-input-container input {
+    flex: 1;
+}
+
+#generate-code {
+    white-space: nowrap;
+}
+
+#jalali-date-section {
+    border: 1px solid #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+    background: #f8f9fa;
+    margin-top: 1rem;
+}
+
+#jalali-date-section .form-group {
+    margin-bottom: 0;
+}
+
+#specific-users-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+#discount-specific-users {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+}
+
+#discount-specific-users option {
+    padding: 4px 8px;
+}
+
+.discount-scope-info,
+.discount-users {
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.discount-users strong {
+    color: #2d3748;
+}
+
+.users-list {
+    margin: 0.5rem 0;
+    padding-right: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.users-list li {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f7fafc;
+}
+
+.users-list li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* بهبود ظاهر select کاربران */
+#discount-specific-users {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+#discount-specific-users option {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f7fafc;
+}
+
+#discount-specific-users option:hover {
+    background-color: #f7fafc;
+}
+
+small {
+    font-size: smaller;
+    margin-top: 1rem;
+}
+
+/* استایل‌های لیست چک‌باکس کاربران */
+.users-checkbox-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fff;
+}
+
+.user-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border: 1px solid #f7fafc;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-checkbox-item:hover {
+    background: #f7fafc;
+    border-color: #e2e8f0;
+}
+
+.user-checkbox-item.selected {
+    background: #edf2f7;
+    border-color: #4e54c8;
+}
+
+.user-checkbox-item input[type="checkbox"] {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 2px;
+}
+
+.user-details {
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.user-phone, .user-email {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.users-search-container {
+    margin-bottom: 10px;
+    display: flex;
+}
+
+.users-search-container input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.users-quick-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.users-quick-actions button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+#selected-users-count {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #4a5568;
+    padding: 5px;
+    background: #f7fafc;
+    border-radius: 4px;
+}
+
+.no-users-message {
+    text-align: center;
+    color: #a0aec0;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* رسپانسیو برای موبایل */
+@media (max-width: 768px) {
+    .user-checkbox-item {
+        padding: 10px 8px;
+    }
+    
+    .user-details {
+        display: block;
+    }
+    
+    .user-phone, .user-email {
+        display: block;
+        margin-left: 0;
+        margin-top: 2px;
+    }
+    
+    .users-quick-actions {
+        flex-direction: column;
+    }
+    
+    .users-quick-actions button {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+#visible-users-count {
+    font-size: 0.7rem;
+    color: #718096;
+    margin-bottom: 5px;
+    padding: 3px 8px;
+    background: #f7fafc;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+
+#visible-users-count {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: #f7fafc;
+    border-radius: 4px;
+    border-right: 3px solid #4e54c8;
+    font-weight: 500;
+}
+
+#visible-users-count:empty {
+    display: none;
+}
+
+/* استایل برای حالت خطا (هیچ کاربری یافت نشد) */
+#visible-users-count.no-results {
+    color: #e53e3e;
+    background: #fed7d7;
+    border-right-color: #e53e3e;
+}
+
+/* استایل‌های پیشرفته‌تر برای users-list */
+.users-list {
+    margin: 0.5rem 0;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    list-style: none;
+}
+
+.users-list li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    margin: 0;
+    transition: background-color 0.2s ease;
+}
+
+.users-list li:hover {
+    background-color: #f8fafc;
+}
+
+.users-list li:last-child {
+    border-bottom: none;
+}
+
+.users-list li strong {
+    color: #1e293b;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.users-list .user-details {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.users-list .user-details span {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-right: 3px solid #4e54c8;
+}
+
+/* حالت موبایل */
+@media (max-width: 768px) {
+    .users-list .user-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .users-list .user-details span {
+        display: block;
+    }
+}
+
+
+.users-list {
+    margin: 0.5rem 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    list-style: none;
+}
+
+.users-list li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    margin: 0;
+    transition: background-color 0.2s ease;
+}
+
+.users-list li:hover {
+    background-color: #f8fafc;
+}
+
+.users-list li:last-child {
+    border-bottom: none;
+}
+
+.users-list li strong {
+    color: #1e293b;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.users-list .user-details {
+    margin-top: 4px;
+}
+
+.users-list .user-details span {
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border-right: 3px solid #4e54c8;
+    font-size: 0.85rem;
+    color: #475569;
+    display: inline-block;
+}
+
+/* حالت موبایل */
+@media (max-width: 768px) {
+    .users-list li {
+        padding: 10px 12px;
+    }
+}

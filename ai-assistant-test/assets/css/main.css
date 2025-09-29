@@ -561,6 +561,17 @@ margin: 0 auto;
         border-left: 4px solid #6b47dc;
     }
     
+    
+    .menu-active {
+     
+        border-left: 4px solid #6b47dc;
+        
+  background: #f0f0f0;
+  font-weight: bold;
+  border-radius: 8px;        
+    }
+    
+    
     .wallet-section {
         padding: 20px 25px;
         /*margin-top: 20px;*/
@@ -1620,7 +1631,56 @@ margin: 0 auto;
 }
 
 
+/*----------------------------------------*/
+/*service-info-icon*/
 
+.main-ai-service-card-wrapper {
+    position: relative;
+    display: block;
+}
+
+.service-info-icon {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4e54c8;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.service-info-icon:hover {
+    background: #4e54c8;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(78, 84, 200, 0.3);
+}
+
+.service-info-icon i {
+    font-size: 18px;
+}
+
+/* رسپانسیو برای آیکن اطلاعات */
+@media (max-width: 768px) {
+    .service-info-icon {
+        width: 32px;
+        height: 32px;
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .service-info-icon i {
+        font-size: 16px;
+    }
+}
 
 
 /* ========== Desktop Menu Styles ========== */

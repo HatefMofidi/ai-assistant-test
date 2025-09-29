@@ -11,9 +11,10 @@ function send_otp_request() {
         
         // بررسی محیط اجرا
         $is_sandbox = (defined('OTP_ENV') && OTP_ENV === 'sandbox');
+        $is_bypass = (defined('OTP_ENV') && OTP_ENV === 'bypass');
         
-        // غیرفعال کردن Rate Limit در محیط تستی
-        if (!$is_sandbox) {
+        // غیرفعال کردن Rate Limit در محیط‌های تستی و bypass
+        if (!$is_sandbox && !$is_bypass) {
             $rate_check = OTP_Handler::check_rate_limit($mobile);
             if (is_wp_error($rate_check)) {
                 throw new Exception($rate_check->get_error_message());
@@ -30,11 +31,11 @@ function send_otp_request() {
         $transient_name = 'otp_' . $mobile;
         set_transient($transient_name, $otp_code, 10 * MINUTE_IN_SECONDS);
         
-        // اگر در محیط sandbox هستیم
-        if ($is_sandbox) {
+        // اگر در محیط sandbox یا bypass هستیم
+        if ($is_sandbox || $is_bypass) {
             wp_send_json_success([
                 'message' => 'کد آزمایشی تولید شد',
-                'debug_code' => $otp_code, // این خط بسیار مهم است
+                'debug_code' => $otp_code,
                 'mobile' => $mobile,
                 'is_test' => true
             ]);

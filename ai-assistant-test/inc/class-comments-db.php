@@ -8,6 +8,10 @@ class AI_Assistant_Comments_DB {
     private static $instance = null;
     private $table_name;
 
+    public function get_table_name() {
+        return $this->table_name;
+    }
+    
     public static function get_instance() {
         if (null === self::$instance) {
             self::$instance = new self();

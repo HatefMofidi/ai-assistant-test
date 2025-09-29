@@ -58,13 +58,14 @@ class OTP_Handler {
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'home_url' => home_url('/'),
                 'nonce' => wp_create_nonce('custom_logout_nonce'),
-                'is_sandbox' => defined('OTP_ENV') && OTP_ENV === 'sandbox' // فقط این خط باقی می‌ماند
+                'is_sandbox' => defined('OTP_ENV') && OTP_ENV === 'sandbox',
+                'is_bypass' => defined('OTP_ENV') && OTP_ENV === 'bypass'
             ]);
         }
     }
     
     public static function check_rate_limit($mobile) {
-        if (defined('OTP_ENV') && OTP_ENV === 'sandbox') {
+        if (defined('OTP_ENV') && (OTP_ENV === 'sandbox' || OTP_ENV === 'bypass')) {
             return true;
         }    
         $max_attempts = 5;

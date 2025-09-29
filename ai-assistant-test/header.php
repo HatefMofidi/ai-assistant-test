@@ -54,6 +54,19 @@
                                 پروفایل کاربری
                             </a>
                             
+                            <?php if ( current_user_can('administrator') ): ?>
+                                <a href="<?php echo home_url('/management-comments'); ?>" class="">
+                                    مدیریت کامنت ها
+                                </a>
+                                
+                                
+                                <a href="<?php echo home_url('/management-discounts/'); ?>" class="">
+                                    مدیریت تخفیف ها
+                                </a>                                 
+                                
+                                
+                            <?php endif; ?>                            
+                            
                         <?php else: ?>
                             <a href="<?php echo home_url('/ai-services'); ?>" class="">
                                
@@ -136,26 +149,40 @@
                     <!-- منوی موبایل -->
                     <nav class="menu-nav ai-nav-mobile">
                         <?php if (is_user_logged_in()): ?>
-                            <a href="<?php echo home_url('/ai-dashboard'); ?>" class="menu-item-card">
+                            <a href="<?php echo home_url('/ai-dashboard'); ?>" class="menu-item-card <?php if (is_page('ai-dashboard')) echo 'menu-active'; ?>"> 
                                 <span class="dashicons dashicons-dashboard"></span>
                                 داشبورد
                             </a>
                             
-                            <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card">
+                            <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card <?php if (is_page('ai-services')) echo 'menu-active'; ?>">
                                 <span class="dashicons dashicons-admin-tools"></span>
                                 سرویس ها
                             </a>
                             
-                            <a href="<?php echo home_url('/page-user-history'); ?>" class="menu-item-card">
+                            <a href="<?php echo home_url('/page-user-history'); ?>" class="menu-item-card <?php if (is_page('page-user-history')) echo 'menu-active'; ?>">
                                 <span class="dashicons dashicons-backup"></span>
                                 تاریخچه
                             </a>
                             
-                            <!-- اضافه کردن لینک پروفایل در منوی اصلی -->
-                            <a href="<?php echo home_url('/profile'); ?>" class="menu-item-card user-profile-menu-item">
+                            
+                            <a href="<?php echo home_url('/profile'); ?>" class="menu-item-card <?php if ( untrailingslashit($_SERVER['REQUEST_URI']) == '/profile' ) echo 'menu-active'; ?>">
                                 <span class="dashicons dashicons-admin-users"></span>
                                 پروفایل کاربری
                             </a>
+                            
+                            <!-- فقط برای ادمین‌ها -->
+                            <?php if ( current_user_can('administrator') ) : ?>
+                                <a href="<?php echo home_url('/management-comments/'); ?>" class="menu-item-card <?php if (is_page('management-comments')) echo 'menu-active'; ?>">
+                                    <span class="dashicons dashicons-admin-comments"></span>
+                                    مدیریت کامنت ها
+                                </a>
+                                
+                                <a href="<?php echo home_url('/management-discounts/'); ?>" class="menu-item-card <?php if (is_page('management-discounts')) echo 'menu-active'; ?>">
+                                    <span class="dashicons dashicons-tickets"></span>
+                                    مدیریت تخفیف ها
+                                </a>                                
+                                
+                            <?php endif; ?>                           
                             
                         <?php else: ?>
                             <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card">
