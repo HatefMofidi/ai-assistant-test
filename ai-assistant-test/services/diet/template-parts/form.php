@@ -224,7 +224,7 @@ $theme_assets = get_stylesheet_directory_uri();
 
     <!-- Step 8: Surgery History -->
     <div id="surgery-step" class="step checkbox-step-container">
-        <h2>سابقه جراحی یا عمل‌های پزشکی مهم</h2>        
+        <h2>سابقه جراحی، سرطان و یا مشکلات کیسه صفرا</h2>
         <div class="checkbox-container first-option stand-alone-none">
             <input type="checkbox" id="surgery-none" class="real-checkbox">
             <label for="surgery-none" class="checkbox-label">
@@ -282,6 +282,69 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">جراحی‌های زنان (هیسترکتومی، اووفورکتومی)</span>
                 </label>
             </div>
+
+            <h3 class="diffrent-category-titles">سرطان و جراحی‌های مرتبط</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="cancer-history" class="real-checkbox">
+                <label for="cancer-history" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سابقه سرطان دارم</span>
+                </label>
+            </div>
+            
+            <!-- جزئیات سرطان -->
+            <div id="cancer-details" style="display: none; margin-top: 15px;">
+                
+                <!-- وضعیت درمان -->
+                <h4 style="margin: 15px 0 10px 0; color: #666;">وضعیت درمان:</h4>
+                <div class="cancer-options">
+                    <div class="cancer-option" data-value="chemo">
+                        <div class="cancer-icon">💊</div>
+                        <div class="cancer-text">شیمی درمانی</div>
+                    </div>
+                    <div class="cancer-option" data-value="radio">
+                        <div class="cancer-icon">☢️</div>
+                        <div class="cancer-text">پرتو درمانی</div>
+                    </div>
+                    <div class="cancer-option" data-value="surgery">
+                        <div class="cancer-icon">🔪</div>
+                        <div class="cancer-text">اخیراً جراحی شده‌ام</div>
+                    </div>
+                    <div class="cancer-option" data-value="finished">
+                        <div class="cancer-icon">✅</div>
+                        <div class="cancer-text">درمانم تمام شده</div>
+                    </div>
+                </div>
+            
+                <!-- نوع سرطان -->
+                <h4 style="margin: 20px 0 10px 0; color: #666;">نوع سرطان:</h4>
+                <div class="cancer-options">
+                    <div class="cancer-option" data-value="breast">
+                        <div class="cancer-icon">🎀</div>
+                        <div class="cancer-text">پستان</div>
+                    </div>
+                    <div class="cancer-option" data-value="colon">
+                        <div class="cancer-icon">🩸</div>
+                        <div class="cancer-text">روده</div>
+                    </div>
+                    <div class="cancer-option" data-value="prostate">
+                        <div class="cancer-icon">👨</div>
+                        <div class="cancer-text">پروستات</div>
+                    </div>
+                    <div class="cancer-option" data-value="lung">
+                        <div class="cancer-icon">🫁</div>
+                        <div class="cancer-text">ریه</div>
+                    </div>
+                    <div class="cancer-option" data-value="blood">
+                        <div class="cancer-icon">🩸</div>
+                        <div class="cancer-text">خون</div>
+                    </div>
+                    <div class="cancer-option" data-value="other">
+                        <div class="cancer-icon">❓</div>
+                        <div class="cancer-text">سایر</div>
+                    </div>
+                </div>
+            </div>
             
             <h3 class="diffrent-category-titles">جراحی‌های عمده</h3>
             <div class="checkbox-container">
@@ -305,6 +368,29 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">جراحی قلب</span>
                 </label>
             </div>
+            
+            <h3 class="diffrent-category-titles">مشکلات کیسه صفرا</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="gallbladder-stones" class="real-checkbox">
+                <label for="gallbladder-stones" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سنگ کیسه صفرا (بدون جراحی)</span>
+                </label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="gallbladder-inflammation" class="real-checkbox">
+                <label for="gallbladder-inflammation" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">التهاب کیسه صفرا</span>
+                </label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="gallbladder-issues" class="real-checkbox">
+                <label for="gallbladder-issues" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سایر مشکلات کیسه صفرا</span>
+                </label>
+            </div>            
         </div>
     </div>
 
@@ -337,6 +423,13 @@ $theme_assets = get_stylesheet_directory_uri();
                 <label for="hormonal-hyperthyroidism" class="checkbox-label">
                     <span class="check-icon"></span>
                     <span class="label-text">پرکاری تیروئید (هیپرتیروئیدی)</span>
+                </label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="hormonal-hashimoto" class="real-checkbox">
+                <label for="hormonal-hashimoto" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)</span>
                 </label>
             </div>
             
@@ -443,6 +536,13 @@ $theme_assets = get_stylesheet_directory_uri();
                 <label for="stomach-fullness" class="checkbox-label">
                     <span class="check-icon"></span>
                     <span class="label-text">سیری زودرس</span>
+                </label>
+            </div>        
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-helicobacter" class="real-checkbox">
+                <label for="stomach-helicobacter" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">عفونت هلیکوباکتر پیلوری (H. Pylori)</span>
                 </label>
             </div>            
             
@@ -714,7 +814,13 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">کلسترول یا تری گلیسیرید بالا</span>
                 </label>
             </div>
-            
+            <div class="checkbox-container">
+                <input type="checkbox" id="info-fatty-liver" class="real-checkbox">
+                <label for="info-fatty-liver" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کبد چرب</span>
+                </label>
+            </div>            
             <!-- بیماری‌های گوارشی -->
             <h3 class="diffrent-category-titles">بیماری‌های گوارشی</h3>
             <div class="checkbox-container">
@@ -1072,7 +1178,7 @@ $theme_assets = get_stylesheet_directory_uri();
             localStorage.setItem('diet-theme', isDark ? 'dark' : 'light');
         }
     };
-    
+
     // بارگذاری تم ذخیره شده
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('diet-theme') || 'light';

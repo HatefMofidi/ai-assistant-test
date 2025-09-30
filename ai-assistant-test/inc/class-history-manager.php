@@ -215,6 +215,52 @@ class AI_Assistant_History_Manager {
             'th' => ['style' => true, 'colspan' => true],
         ];
     }
+    
+    
+        
+    // اضافه کردن این متدها به کلاس AI_Assistant_History_Manager
+    
+    /**
+     * بررسی آیا سرویس مربوط به رژیم غذایی است
+     */
+    public function is_diet_service($service_id) {
+        $diet_services = ['diet_plan', 'nutrition_plan', 'diet_service']; // شناسه سرویس‌های رژیم غذایی
+        return in_array($service_id, $diet_services);
+    }
+    
+    /**
+     * دریافت اطلاعات کامل یک آیتم تاریخچه
+     */
+    public function get_history_item($history_id) {
+        global $wpdb;
+        
+        $this->maybe_create_table();
+        
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM {$this->table_name} WHERE id = %d", $history_id)
+        );
+    }
+    
+    /**
+     * به‌روزرسانی پاسخ یک آیتم تاریخچه
+     */
+    public function update_history_response($history_id, $new_response) {
+        global $wpdb;
+        
+        $this->maybe_create_table();
+        
+        $result = $wpdb->update(
+            $this->table_name,
+            [
+                'response' => wp_kses($new_response, $this->get_allowed_html_tags())
+            ],
+            ['id' => $history_id],
+            ['%s'],
+            ['%d']
+        );
+        
+        return $result !== false;
+    }    
 }
 
 // راه‌اندازی کلاس

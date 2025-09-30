@@ -107,6 +107,9 @@ window.setupComplexCheckboxSelection = function(step, config) {
 };
 
 window.setupSurgerySelection = function(currentStep) {
+    if (state.currentStep !== currentStep) return;
+
+    // تنظیم انتخاب‌های اصلی جراحی
     setupComplexCheckboxSelection(currentStep, {
         noneCheckboxId: 'surgery-none',
         dataKey: 'surgery',
@@ -120,9 +123,110 @@ window.setupSurgerySelection = function(currentStep) {
             { key: 'gynecology', id: 'surgery-gynecology' },
             { key: 'kidney', id: 'surgery-kidney' },
             { key: 'liver', id: 'surgery-liver' },
-            { key: 'heart', id: 'surgery-heart' }
+            { key: 'heart', id: 'surgery-heart' },
+            { key: 'cancer', id: 'cancer-history' },
+            { key: 'gallbladder-stones', id: 'gallbladder-stones' },
+            { key: 'gallbladder-inflammation', id: 'gallbladder-inflammation' },
+            { key: 'gallbladder-issues', id: 'gallbladder-issues' }            
         ]
     });
+
+    // مدیریت جزئیات سرطان
+    setupCancerDetails();
+};
+
+window.setupCancerDetails = function() {
+    const cancerCheckbox = document.getElementById('cancer-history');
+    const cancerDetails = document.getElementById('cancer-details');
+    const nextButton = document.querySelector(".next-step");
+
+    if (!cancerCheckbox || !cancerDetails) return;
+
+    // مدیریت نمایش/مخفی کردن جزئیات سرطان
+    cancerCheckbox.addEventListener('change', function() {
+        cancerDetails.style.display = this.checked ? 'block' : 'none';
+        
+        // اگر سرطان انتخاب نشد، اطلاعات سرطان را پاک کنید
+        if (!this.checked) {
+            state.updateFormData('cancerTreatment', '');
+            state.updateFormData('cancerType', '');
+            resetCancerSelections();
+        }
+        
+        // به‌روزرسانی وضعیت دکمه
+        validateNextButton();
+    });
+
+    // مدیریت انتخاب وضعیت درمان و نوع سرطان
+    const cancerOptions = document.querySelectorAll('.cancer-option[data-value]');
+    cancerOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const category = this.closest('.cancer-options');
+            if (!category) return;
+
+            // فقط یک گزینه در هر دسته می‌تواند انتخاب شود
+            category.querySelectorAll('.cancer-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            this.classList.add('selected');
+
+            // تشخیص نوع داده (درمان یا نوع سرطان)
+            const isTreatment = category.querySelector('.cancer-option[data-value="chemo"]');
+            if (isTreatment) {
+                state.updateFormData('cancerTreatment', this.dataset.value);
+            } else {
+                state.updateFormData('cancerType', this.dataset.value);
+            }
+            
+            // به‌روزرسانی وضعیت دکمه
+            validateNextButton();
+        });
+    });
+
+    function validateNextButton() {
+        if (cancerCheckbox.checked) {
+            const hasTreatment = state.formData.cancerTreatment !== '';
+            const hasType = state.formData.cancerType !== '';
+            
+            // اگر سرطان انتخاب شده، باید هر دو فیلد پر شوند
+            nextButton.disabled = !(hasTreatment && hasType);
+        } else {
+            // اگر سرطان انتخاب نشده، وضعیت دکمه توسط تابع اصلی مدیریت می‌شود
+            const surgeryConfig = {
+                noneCheckboxId: 'surgery-none',
+                options: [
+                    { key: 'metabolic', id: 'surgery-metabolic' },
+                    { key: 'gallbladder', id: 'surgery-gallbladder' },
+                    { key: 'intestine', id: 'surgery-intestine' },
+                    { key: 'thyroid', id: 'surgery-thyroid' },
+                    { key: 'pancreas', id: 'surgery-pancreas' },
+                    { key: 'gynecology', id: 'surgery-gynecology' },
+                    { key: 'kidney', id: 'surgery-kidney' },
+                    { key: 'liver', id: 'surgery-liver' },
+                    { key: 'heart', id: 'surgery-heart' },
+                    { key: 'cancer', id: 'cancer-history' }
+                ]
+            };
+            
+            const noneChecked = document.getElementById(surgeryConfig.noneCheckboxId).checked;
+            const anyOtherChecked = surgeryConfig.options.some(option => {
+                if (option.key === 'cancer') return false; // سرطان جداگانه بررسی می‌شود
+                const element = document.getElementById(option.id);
+                return element ? element.checked : false;
+            });
+            
+            nextButton.disabled = !(noneChecked || anyOtherChecked);
+        }
+    }
+
+    function resetCancerSelections() {
+        document.querySelectorAll('.cancer-option.selected').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+    }
+
+    // بررسی اولیه
+    validateNextButton();
 };
 
 window.setupHormonalSelection = function(currentStep) {
@@ -138,7 +242,8 @@ window.setupHormonalSelection = function(currentStep) {
             { key: 'pcos', id: 'hormonal-pcos' },
             { key: 'menopause', id: 'hormonal-menopause' },
             { key: 'cortisol', id: 'hormonal-cortisol' },
-            { key: 'growth', id: 'hormonal-growth' }
+            { key: 'growth', id: 'hormonal-growth' },
+            { key: 'hashimoto', id: 'hormonal-hashimoto' }
         ]
     });
 };
@@ -152,6 +257,7 @@ window.setupStomachDiscomfortSelection = function(currentStep) {
             { key: 'pain', id: 'stomach-pain' },
             { key: 'heartburn', id: 'stomach-heartburn' },
             { key: 'nausea', id: 'stomach-nausea' },
+            { key: 'helicobacter', id: 'stomach-helicobacter' },
             { key: 'indigestion', id: 'stomach-indigestion' },
             { key: 'constipation', id: 'stomach-constipation' },
             { key: 'diarrhea', id: 'stomach-diarrhea' },
@@ -174,7 +280,8 @@ window.setupAdditionalInfoSelection = function(currentStep) {
             { key: 'ibs', id: 'info-ibs' },
             { key: 'celiac', id: 'info-celiac' },
             { key: 'lactose', id: 'info-lactose' },
-            { key: 'food-allergy', id: 'info-food-allergy' }
+            { key: 'food-allergy', id: 'info-food-allergy' },
+            { key: 'fatty-liver', id: 'info-fatty-liver' }
         ]
     });
 };

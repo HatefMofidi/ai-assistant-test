@@ -1,5 +1,18 @@
 // /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/assets/js/services/diet/form-events.js
 
+   
+// انتخاب گزینه‌های سرطان
+document.querySelectorAll('.cancer-option').forEach(option => {
+    option.addEventListener('click', function() {
+        this.classList.toggle('selected');
+    });
+});
+
+// نمایش/مخفی کردن جزئیات
+document.getElementById('cancer-history').addEventListener('change', function() {
+    document.getElementById('cancer-details').style.display = this.checked ? 'block' : 'none';
+});
+
 function setupScrollIndicator(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -298,7 +311,9 @@ window.handleFormSubmit = function(event) {
         noSeafood: state.formData.foodRestrictions?.includes('no-seafood') || false,
     };
 
-    console.log('Form submitted:', formData);
+    if (aiAssistantVars.environment && aiAssistantVars.environment !== 'production') {
+        console.log('Form submitted:', formData);
+    }
     
     // غیرفعال کردن دکمه سابمیت
     document.getElementById('SubmitBtn').disabled = true;
@@ -356,6 +371,9 @@ window.showSummary = function() {
     const surgeryText = [];
     if (surgery.includes('metabolic')) surgeryText.push('جراحی متابولیک');
     if (surgery.includes('gallbladder')) surgeryText.push('جراحی کیسه صفرا');
+    if (surgery.includes('gallbladder-stones')) surgeryText.push('سنگ کیسه صفرا');
+    if (surgery.includes('gallbladder-inflammation')) surgeryText.push('التهاب کیسه صفرا');
+    if (surgery.includes('gallbladder-issues')) surgeryText.push('سایر مشکلات کیسه صفرا');    
     if (surgery.includes('intestine')) surgeryText.push('جراحی روده');
     if (surgery.includes('thyroid')) surgeryText.push('جراحی تیروئید');
     if (surgery.includes('pancreas')) surgeryText.push('جراحی لوزالمعده');
@@ -375,6 +393,7 @@ window.showSummary = function() {
     if (hormonal.includes('menopause')) hormonalText.push('یائسگی/پیش یائسگی');
     if (hormonal.includes('cortisol')) hormonalText.push('مشکلات کورتیزول');
     if (hormonal.includes('growth')) hormonalText.push('اختلال هورمون رشد');
+    if (hormonal.includes('hashimoto')) hormonalText.push('هاشیموتو');
     if (hormonal.includes('none')) hormonalText.push('هیچکدام');
 
     // مشکلات معده
@@ -383,6 +402,7 @@ window.showSummary = function() {
     if (stomachDiscomfort.includes('pain')) stomachDiscomfortText.push('درد یا گرفتگی معده');
     if (stomachDiscomfort.includes('heartburn')) stomachDiscomfortText.push('سوزش سر دل');
     if (stomachDiscomfort.includes('nausea')) stomachDiscomfortText.push('حالت تهوع');
+    if (stomachDiscomfort.includes('helicobacter')) stomachDiscomfortText.push('عفونت هلیکوباکتر پیلوری');
     if (stomachDiscomfort.includes('indigestion')) stomachDiscomfortText.push('سوء هاضمه مزمن');
     if (stomachDiscomfort.includes('constipation')) stomachDiscomfortText.push('یبوست');
     if (stomachDiscomfort.includes('diarrhea')) stomachDiscomfortText.push('اسهال');
@@ -401,6 +421,7 @@ window.showSummary = function() {
     if (additionalInfo.includes('celiac')) additionalInfoText.push('بیماری سلیاک');
     if (additionalInfo.includes('lactose')) additionalInfoText.push('عدم تحمل لاکتوز');
     if (additionalInfo.includes('food-allergy')) additionalInfoText.push('حساسیت غذایی');
+    if (additionalInfo.includes('fatty-liver')) additionalInfoText.push('کبد چرب');
     if (additionalInfo.includes('none')) additionalInfoText.push('هیچکدام');
 
     // سبک‌های غذایی
@@ -469,6 +490,39 @@ window.showSummary = function() {
             <span class="summary-label">سابقه جراحی:</span>
             <span class="summary-value">${surgeryText.join('، ') || 'ثبت نشده'}</span>
         </div>  
+        `;
+        
+        // در تابع showSummary، بعد از بخش جراحی این کد را اضافه کنید:
+        if (surgery.includes('cancer')) {
+            const cancerTreatmentText = {
+                'chemo': 'شیمی درمانی',
+                'radio': 'پرتو درمانی', 
+                'surgery': 'اخیراً جراحی شده',
+                'finished': 'درمان تمام شده'
+            }[state.formData.cancerTreatment];
+        
+            const cancerTypeText = {
+                'breast': 'پستان',
+                'colon': 'روده',
+                'prostate': 'پروستات',
+                'lung': 'ریه',
+                'blood': 'خون',
+                'other': 'سایر'
+            }[state.formData.cancerType];
+        
+            summaryContainer.innerHTML += `
+                <div class="summary-item">
+                    <span class="summary-label">وضعیت درمان سرطان:</span>
+                    <span class="summary-value">${cancerTreatmentText || 'ثبت نشده'}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">نوع سرطان:</span>
+                    <span class="summary-value">${cancerTypeText || 'ثبت نشده'}</span>
+                </div>
+            `;
+        }   
+        
+        summaryContainer.innerHTML += `
         <div class="summary-item">
             <span class="summary-label">اختلالات هورمونی:</span>
             <span class="summary-value">${hormonalText.join('، ') || 'ثبت نشده'}</span>
@@ -506,6 +560,8 @@ window.showSummary = function() {
             <span class="summary-value">${foodPreferencesText.join('، ') || 'ثبت نشده'}</span>
         </div>
     `;
+    
+ 
 }
 
 // Initialize event listeners

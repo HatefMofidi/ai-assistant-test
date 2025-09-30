@@ -31,6 +31,13 @@ require_once get_template_directory() . '/inc/class-service-manager.php';
 require_once get_template_directory() . '/inc/class-payment-handler.php';
 
 
+require_once get_template_directory() . '/inc/class-history-manager.php';
+// سپس کلاس‌های جدید مشاور
+require_once get_template_directory() . '/inc/class-notification-manager.php';
+require_once get_template_directory() . '/inc/class-diet-consultation-db.php';
+require_once get_template_directory() . '/inc/class-nutrition-consultant-manager.php';
+
+
 function ai_assistant_load_css() {
     
     // بارگذاری main.css
@@ -635,6 +642,8 @@ require_once get_template_directory() . '/inc/class-comments-frontend-admin.php'
 
 require_once get_template_directory() . '/functions/discounts-functions.php';
 
+require_once get_template_directory() . '/templates/consultant-dashboard-functions.php';
+
 
 
 // ثبت کرون جاب برای مدیریت تخفیف‌های مناسبتی
@@ -653,3 +662,24 @@ function ai_assistant_handle_annual_occasions_callback() {
     }
 }
 add_action('ai_assistant_handle_annual_occasions', 'ai_assistant_handle_annual_occasions_callback');
+
+// ایجاد نقش مشاور تغذیه
+function add_nutrition_consultant_role() {
+    add_role('nutrition_consultant', 'مشاور تغذیه', [
+        'read' => true,
+        'edit_posts' => false,
+        'delete_posts' => false,
+        'upload_files' => true,
+        'manage_nutrition_consultation' => true
+    ]);
+}
+add_action('init', 'add_nutrition_consultant_role');
+
+// اضافه کردن capability به ادمین
+function add_consultant_cap_to_admin() {
+    $role = get_role('administrator');
+    if ($role) {
+        $role->add_cap('manage_nutrition_consultation');
+    }
+}
+add_action('init', 'add_consultant_cap_to_admin');
