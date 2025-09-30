@@ -1,33 +1,35 @@
-class ConsultantDashboard {
+class ConsultantDashboardAdmin {
     constructor() {
         this.currentRequestId = null;
         this.originalData = null;
+        this.currentTab = 'pending';
         this.init();
     }
 
     init() {
-        console.log('ConsultantDashboard initialized');
+        console.log('ConsultantDashboardAdmin initialized');
         this.setupTabs();
         this.setupModal();
         this.setupEventListeners();
     }
 
     setupTabs() {
-        const tabs = document.querySelectorAll('.consultant-tabs .tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-
+        const tabs = document.querySelectorAll('.consultant-tab-button');
+        
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 // غیرفعال کردن همه تب‌ها
                 tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.consultant-tab-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                });
 
                 // فعال کردن تب انتخاب شده
                 tab.classList.add('active');
-                const tabId = tab.getAttribute('data-tab');
-                const contentElement = document.getElementById(`${tabId}-content`);
-                if (contentElement) {
-                    contentElement.classList.add('active');
+                this.currentTab = tab.dataset.tab;
+                const targetPane = document.getElementById(`${this.currentTab}-tab`);
+                if (targetPane) {
+                    targetPane.classList.add('active');
                 }
             });
         });
@@ -40,10 +42,16 @@ class ConsultantDashboard {
             return;
         }
 
-        this.closeBtn = this.modal.querySelector('.modal-close');
+        // استفاده از کلاس جدید برای close button
+        this.closeBtn = this.modal.querySelector('.consultant-close-modal');
         this.editorContainer = document.getElementById('consultation-editor');
 
-        this.closeBtn.addEventListener('click', () => this.closeModal());
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.closeModal());
+        } else {
+            console.error('Close button not found in modal');
+        }
+
         this.modal.addEventListener('click', (e) => {
             if (e.target === this.modal) this.closeModal();
         });
@@ -58,14 +66,18 @@ class ConsultantDashboard {
             }
         });
 
-        // دکمه‌های اقدام
-        const saveDraftBtn = document.getElementById('save-draft-btn');
-        const approveBtn = document.getElementById('approve-btn');
-        const rejectBtn = document.getElementById('reject-btn');
-
-        if (saveDraftBtn) saveDraftBtn.addEventListener('click', () => this.saveReview('save_draft'));
-        if (approveBtn) approveBtn.addEventListener('click', () => this.saveReview('approve'));
-        if (rejectBtn) rejectBtn.addEventListener('click', () => this.saveReview('reject'));
+        // دکمه‌های اقدام در مودال
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'save-draft-btn' || e.target.closest('#save-draft-btn')) {
+                this.saveReview('save_draft');
+            }
+            if (e.target.id === 'approve-btn' || e.target.closest('#approve-btn')) {
+                this.saveReview('approve');
+            }
+            if (e.target.id === 'reject-btn' || e.target.closest('#reject-btn')) {
+                this.saveReview('reject');
+            }
+        });
     }
 
     async openReviewModal(requestId) {
@@ -74,8 +86,13 @@ class ConsultantDashboard {
         
         try {
             // نمایش لودینگ
-            this.editorContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> در حال بارگذاری...</div>';
-            this.modal.style.display = 'block';
+            if (this.editorContainer) {
+                this.editorContainer.innerHTML = '<div class="consultant-loading"><i class="fas fa-spinner fa-spin"></i> در حال بارگذاری...</div>';
+            }
+            
+            if (this.modal) {
+                this.modal.style.display = 'block';
+            }
 
             // دریافت داده‌های درخواست
             const response = await this.fetchRequestData(requestId);
@@ -95,10 +112,6 @@ class ConsultantDashboard {
 
     async fetchRequestData(requestId) {
         try {
-            console.log('Fetching data for request:', requestId);
-            console.log('AJAX URL:', consultant_ajax.ajax_url);
-            console.log('Nonce:', consultant_ajax.nonce);
-
             const response = await fetch(consultant_ajax.ajax_url, {
                 method: 'POST',
                 headers: {
@@ -111,15 +124,11 @@ class ConsultantDashboard {
                 })
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
-            console.log('Parsed data:', data);
             return data;
         } catch (error) {
             console.error('Error in fetchRequestData:', error);
@@ -128,13 +137,15 @@ class ConsultantDashboard {
     }
 
     closeModal() {
-        this.modal.style.display = 'none';
+        if (this.modal) {
+            this.modal.style.display = 'none';
+        }
         this.currentRequestId = null;
         this.originalData = null;
     }
 
     renderEditor() {
-        if (!this.originalData) {
+        if (!this.originalData || !this.editorContainer) {
             this.showError('داده‌ها برای نمایش موجود نیست');
             return;
         }
@@ -159,7 +170,7 @@ class ConsultantDashboard {
                 <div class="editor-pane" id="edit-pane">
                     <h4><i class="fas fa-edit"></i> ویرایش رژیم</h4>
                     <div class="edit-controls">
-                        <button class="btn btn-small" id="load-original-btn">
+                        <button class="consultant-btn consultant-btn-primary" id="load-original-btn">
                             <i class="fas fa-download"></i> بارگذاری از رژیم اصلی
                         </button>
                     </div>
@@ -198,11 +209,9 @@ class ConsultantDashboard {
 
     renderSimplePreview(content) {
         try {
-            // سعی کن JSON را parse کن
             const parsed = JSON.parse(content);
             return '<pre>' + JSON.stringify(parsed, null, 2) + '</pre>';
         } catch (e) {
-            // اگر JSON نیست، متن ساده نمایش بده
             return '<div style="white-space: pre-wrap;">' + this.escapeHtml(content) + '</div>';
         }
     }
@@ -227,16 +236,17 @@ class ConsultantDashboard {
     }
 
     setupEditorEvents() {
-        // دکمه بارگذاری از رژیم اصلی
         const loadBtn = document.getElementById('load-original-btn');
         if (loadBtn) {
             loadBtn.addEventListener('click', () => {
-                document.getElementById('diet-editor').value = this.originalData.original_data.ai_response;
-                this.updatePreview();
+                const editor = document.getElementById('diet-editor');
+                if (editor) {
+                    editor.value = this.originalData.original_data.ai_response;
+                    this.updatePreview();
+                }
             });
         }
 
-        // تغییرات در ادیتور
         const editor = document.getElementById('diet-editor');
         if (editor) {
             editor.addEventListener('input', () => {
@@ -246,17 +256,25 @@ class ConsultantDashboard {
     }
 
     updatePreview() {
-        const editorContent = document.getElementById('diet-editor').value;
+        const editor = document.getElementById('diet-editor');
         const previewContainer = document.getElementById('diet-preview');
         
-        if (previewContainer) {
-            previewContainer.innerHTML = this.renderSimplePreview(editorContent);
+        if (editor && previewContainer) {
+            previewContainer.innerHTML = this.renderSimplePreview(editor.value);
         }
     }
 
     async saveReview(action) {
-        const finalDietData = document.getElementById('diet-editor').value;
-        const consultantNotes = document.getElementById('consultant-notes').value;
+        const editor = document.getElementById('diet-editor');
+        const notes = document.getElementById('consultant-notes');
+
+        if (!editor || !notes) {
+            this.showError('عناصر فرم یافت نشد');
+            return;
+        }
+
+        const finalDietData = editor.value;
+        const consultantNotes = notes.value;
 
         try {
             const response = await fetch(consultant_ajax.ajax_url, {
@@ -280,7 +298,7 @@ class ConsultantDashboard {
                 this.showSuccess('تغییرات با موفقیت ذخیره شد.');
                 this.closeModal();
                 setTimeout(() => {
-                    location.reload(); // رفرش صفحه برای بروزرسانی وضعیت
+                    location.reload();
                 }, 2000);
             } else {
                 this.showError(result.data || 'خطا در ذخیره تغییرات');
@@ -300,13 +318,13 @@ class ConsultantDashboard {
 
     showMessage(message, type) {
         // حذف پیام قبلی اگر وجود دارد
-        const existingMessage = document.querySelector('.consultant-message');
+        const existingMessage = document.querySelector('.consultant-admin-message');
         if (existingMessage) {
             existingMessage.remove();
         }
 
         const messageDiv = document.createElement('div');
-        messageDiv.className = `consultant-message ${type}`;
+        messageDiv.className = `consultant-admin-message ${type}`;
         messageDiv.innerHTML = `
             <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i>
             ${message}
@@ -324,5 +342,5 @@ class ConsultantDashboard {
 
 // راه‌اندازی زمانی که DOM لود شد
 document.addEventListener('DOMContentLoaded', () => {
-    new ConsultantDashboard();
+    new ConsultantDashboardAdmin();
 });

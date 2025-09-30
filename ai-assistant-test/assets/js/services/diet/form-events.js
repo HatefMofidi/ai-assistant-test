@@ -202,6 +202,103 @@ window.showPaymentConfirmation = function(formData) {
     });
 };
 
+// اضافه کردن این تابع برای مدیریت جزئیات دیابت
+function setupDiabetesDetails() {
+    const diabetesCheckbox = document.getElementById('hormonal-diabetes');
+    const diabetesDetails = document.getElementById('diabetes-details');
+    const diabetesAdditional = document.getElementById('diabetes-additional');
+    
+    if (!diabetesCheckbox || !diabetesDetails) return;
+
+    // مدیریت نمایش/مخفی کردن جزئیات دیابت
+    diabetesCheckbox.addEventListener('change', function() {
+        diabetesDetails.style.display = this.checked ? 'block' : 'none';
+        
+        if (!this.checked) {
+            // اگر دیابت انتخاب نشد، اطلاعات مربوطه را پاک کنید
+            state.updateFormData('diabetesType', '');
+            state.updateFormData('fastingBloodSugar', '');
+            state.updateFormData('hba1c', '');
+            resetDiabetesSelections();
+            diabetesAdditional.style.display = 'none';
+        }
+    });
+
+    // مدیریت انتخاب نوع دیابت
+    const diabetesOptions = document.querySelectorAll('.diabetes-option');
+    diabetesOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // فقط یک گزینه می‌تواند انتخاب شود
+            diabetesOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.style.backgroundColor = '';
+                opt.style.borderRadius = '4px';
+            });
+            
+            this.classList.add('selected');
+            this.style.backgroundColor = '#e8f5e8';
+            this.style.borderRadius = '4px';
+            this.style.padding = '8px';
+
+            const diabetesType = this.dataset.value;
+            state.updateFormData('diabetesType', diabetesType);
+            
+            // نمایش اطلاعات تکمیلی برای همه انواع دیابت به جز پیش‌دیابت
+            if (diabetesType !== 'prediabetes') {
+                diabetesAdditional.style.display = 'block';
+            } else {
+                diabetesAdditional.style.display = 'none';
+            }
+            
+            validateDiabetesStep();
+        });
+    });
+
+    // مدیریت ورودی‌های عددی
+    const fastingInput = document.getElementById('fasting-blood-sugar');
+    const hba1cInput = document.getElementById('hba1c-level');
+    
+    if (fastingInput) {
+        fastingInput.addEventListener('input', function() {
+            state.updateFormData('fastingBloodSugar', this.value);
+        });
+    }
+    
+    if (hba1cInput) {
+        hba1cInput.addEventListener('input', function() {
+            state.updateFormData('hba1c', this.value);
+        });
+    }
+}
+
+// تابع اعتبارسنجی مرحله دیابت
+function validateDiabetesStep() {
+    const nextButton = document.querySelector(".next-step");
+    if (!nextButton) return;
+
+    const diabetesChecked = document.getElementById('hormonal-diabetes').checked;
+    
+    if (diabetesChecked) {
+        const hasDiabetesType = state.formData.diabetesType !== '';
+        nextButton.disabled = !hasDiabetesType;
+    }
+}
+
+// تابع ریست انتخاب‌های دیابت
+function resetDiabetesSelections() {
+    document.querySelectorAll('.diabetes-option.selected').forEach(opt => {
+        opt.classList.remove('selected');
+        opt.style.backgroundColor = '';
+        opt.style.padding = '';
+    });
+    
+    const fastingInput = document.getElementById('fasting-blood-sugar');
+    const hba1cInput = document.getElementById('hba1c-level');
+    
+    if (fastingInput) fastingInput.value = '';
+    if (hba1cInput) hba1cInput.value = '';
+}
+
 // تابع برای دریافت آدرس پایه بر اساس محیط
 function getBaseUrl() {
     if (typeof siteEnv !== 'undefined' && siteEnv.baseUrl) {
@@ -385,9 +482,27 @@ window.showSummary = function() {
 
     // اطلاعات هورمونی
     const hormonalText = [];
+    if (hormonal.includes('diabetes')) {
+        const diabetesTypeText = {
+            'type1': 'دیابت نوع 1',
+            'type2': 'دیابت نوع 2', 
+            'gestational': 'دیابت بارداری',
+            'prediabetes': 'پیش‌دیابت'
+        }[state.formData.diabetesType];
+        
+        hormonalText.push(`دیابت (${diabetesTypeText || 'نوع مشخص نشده'})`);
+        
+        // اضافه کردن اطلاعات تکمیلی اگر موجود باشد
+        if (state.formData.fastingBloodSugar) {
+            hormonalText.push(`قند ناشتا: ${state.formData.fastingBloodSugar}`);
+        }
+        if (state.formData.hba1c) {
+            hormonalText.push(`HbA1c: ${state.formData.hba1c}%`);
+        }
+    }
     if (hormonal.includes('hypothyroidism')) hormonalText.push('کم کاری تیروئید');
     if (hormonal.includes('hyperthyroidism')) hormonalText.push('پرکاری تیروئید');
-    if (hormonal.includes('diabetes')) hormonalText.push('دیابت');
+    // if (hormonal.includes('diabetes')) hormonalText.push('دیابت');
     if (hormonal.includes('insulin-resistance')) hormonalText.push('مقاومت به انسولین');
     if (hormonal.includes('pcos')) hormonalText.push('سندرم تخمدان پلی کیستیک');
     if (hormonal.includes('menopause')) hormonalText.push('یائسگی/پیش یائسگی');

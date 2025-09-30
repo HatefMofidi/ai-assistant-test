@@ -65,7 +65,14 @@
                                 </a>                                 
                                 
                                 
-                            <?php endif; ?>                            
+                            <?php endif; ?>   
+                            
+                            <?php if ( current_user_can('nutrition_consultant') || current_user_can('administrator')): ?>
+                                <a href="<?php echo home_url('/consultant-dashboard'); ?>" class="">
+                                    کارتابل مشاور تغذیه
+                                </a>
+                                
+                            <?php endif; ?>                             
                             
                         <?php else: ?>
                             <a href="<?php echo home_url('/ai-services'); ?>" class="">
@@ -182,7 +189,15 @@
                                     مدیریت تخفیف ها
                                 </a>                                
                                 
-                            <?php endif; ?>                           
+                            <?php endif; ?>
+                            
+                            <?php if ( current_user_can('nutrition_consultant') || current_user_can('administrator')): ?>
+                                <a href="<?php echo home_url('/consultant-dashboard'); ?>" class="menu-item-card <?php if ( untrailingslashit($_SERVER['REQUEST_URI']) == '/consultant-dashboard' ) echo 'menu-active'; ?>">
+                                    <span class="dashicons dashicons-plus-alt"></span>
+                                    کارتابل مشاور تغذیه
+                                </a>
+                                
+                            <?php endif; ?>                            
                             
                         <?php else: ?>
                             <a href="<?php echo home_url('/ai-services'); ?>" class="menu-item-card">

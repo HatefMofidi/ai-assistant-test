@@ -2328,3 +2328,46 @@ body.dark-mode .floating-document {
     font-weight: bold;
     color: #333;
 }
+
+/* استایل برای گزینه‌های دیابت */
+.diabetes-option {
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.diabetes-option:hover {
+    background-color: #f0f0f0;
+}
+
+.diabetes-option.selected {
+    background-color: #e8f5e8;
+    border-right: 3px solid #4CAF50;
+}
+
+.diabetes-icon {
+    font-size: 16px;
+}
+
+.diabetes-text {
+    font-size: 14px;
+    color: #333;
+}
+
+/* استایل برای فیلدهای عددی */
+#fasting-blood-sugar,
+#hba1c-level {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+#fasting-blood-sugar:focus,
+#hba1c-level:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}

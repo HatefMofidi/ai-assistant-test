@@ -246,6 +246,8 @@ window.setupHormonalSelection = function(currentStep) {
             { key: 'hashimoto', id: 'hormonal-hashimoto' }
         ]
     });
+    
+    setupDiabetesDetails();
 };
 
 window.setupStomachDiscomfortSelection = function(currentStep) {
