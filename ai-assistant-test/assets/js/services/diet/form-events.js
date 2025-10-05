@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollIndicator('food-restriction-selection');
     setupScrollIndicator('goal-selection');
     setupScrollIndicator('activity-selection');
-    setupScrollIndicator('meal-selection');
+    setupScrollIndicator('exercise-selection'); // اضافه کردن این خط
     setupScrollIndicator('diet-style-selection');
     setupScrollIndicator('food-limitations-selection');
     setupScrollIndicator('food-preferences-selection');
@@ -271,6 +271,68 @@ function setupDiabetesDetails() {
     }
 }
 
+function setupChronicDiabetesDetails() {
+    const diabetesCheckbox = document.getElementById('chronic-diabetes');
+    const diabetesDetails = document.getElementById('chronic-diabetes-details');
+    const diabetesAdditional = document.getElementById('chronic-diabetes-additional');
+    
+    if (!diabetesCheckbox || !diabetesDetails) return;
+
+    diabetesCheckbox.addEventListener('change', function() {
+        diabetesDetails.style.display = this.checked ? 'block' : 'none';
+        
+        if (!this.checked) {
+            state.updateFormData('chronicDiabetesType', '');
+            state.updateFormData('chronicFastingBloodSugar', '');
+            state.updateFormData('chronicHba1c', '');
+            resetChronicDiabetesSelections();
+            diabetesAdditional.style.display = 'none';
+        }
+    });
+
+    const diabetesOptions = document.querySelectorAll('#chronic-diabetes-details .diabetes-option');
+    diabetesOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            diabetesOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.style.backgroundColor = '';
+                opt.style.borderRadius = '4px';
+            });
+            
+            this.classList.add('selected');
+            this.style.backgroundColor = '#e8f5e8';
+            this.style.borderRadius = '4px';
+            this.style.padding = '8px';
+
+            const diabetesType = this.dataset.value;
+            state.updateFormData('chronicDiabetesType', diabetesType);
+            
+            if (diabetesType !== 'prediabetes') {
+                diabetesAdditional.style.display = 'block';
+            } else {
+                diabetesAdditional.style.display = 'none';
+            }
+            
+            validateChronicDiabetesStep();
+        });
+    });
+
+    const fastingInput = document.getElementById('chronic-fasting-blood-sugar');
+    const hba1cInput = document.getElementById('chronic-hba1c-level');
+    
+    if (fastingInput) {
+        fastingInput.addEventListener('input', function() {
+            state.updateFormData('chronicFastingBloodSugar', this.value);
+        });
+    }
+    
+    if (hba1cInput) {
+        hba1cInput.addEventListener('input', function() {
+            state.updateFormData('chronicHba1c', this.value);
+        });
+    }
+}
+
 // تابع اعتبارسنجی مرحله دیابت
 function validateDiabetesStep() {
     const nextButton = document.querySelector(".next-step");
@@ -430,7 +492,7 @@ window.showSummary = function() {
         firstName,
         lastName,
         gender, age, height, weight, targetWeight, goal, 
-        activity, meals, waterIntake, surgery = [], hormonal = [],
+        activity, exercise, meals, waterIntake, surgery = [], hormonal = [],
         stomachDiscomfort = [], additionalInfo = [], dietStyle = [],
         foodLimitations = [], foodPreferences = []
     } = state.formData;
@@ -446,10 +508,10 @@ window.showSummary = function() {
     }[goal];
     
     const activityText = { 
-        "very-low": "خیلی کم (کمتر از 1 ساعت)", 
-        "low": "کم (1 تا 2 ساعت)", 
-        "medium": "متوسط (2 تا 4 ساعت)", 
-        "high": "زیاد (بیشتر از 4 ساعت)" 
+        "very-low": "خیلی کم (بی‌تحرک)", 
+        "low": "کم (فعالیت سبک)", 
+        "medium": "متوسط (فعالیت متوسط)", 
+        "high": "زیاد (فعالیت شدید)" 
     }[activity];
     
     const mealsText = { 
@@ -459,6 +521,15 @@ window.showSummary = function() {
         "5": "۵ وعده یا بیشتر",
         "irregular": "وعده‌های نامنظم" 
     }[meals];
+    
+    // اضافه کردن به تابع showSummary
+    const exerciseText = { 
+        "none": "هیچ ورزشی نمی‌کنم",
+        "light": "سبک (۱-۲ روز در هفته)", 
+        "medium": "متوسط (۳-۴ روز در هفته)", 
+        "high": "زیاد (۵-۶ روز در هفته)", 
+        "professional": "ورزشکار حرفه‌ای" 
+    }[exercise];
     
     const waterText = waterIntake === null ? 
         'مشخص نیست' : 
@@ -478,7 +549,7 @@ window.showSummary = function() {
     if (surgery.includes('kidney')) surgeryText.push('پیوند کلیه');
     if (surgery.includes('liver')) surgeryText.push('پیوند کبد');
     if (surgery.includes('heart')) surgeryText.push('جراحی قلب');
-    if (surgery.includes('none')) surgeryText.push('هیچکدام');
+    if (surgery.includes('none')) surgeryText.push('هیچگونه سابقه جراحی ندارم');
 
     // اطلاعات هورمونی
     const hormonalText = [];
@@ -509,7 +580,7 @@ window.showSummary = function() {
     if (hormonal.includes('cortisol')) hormonalText.push('مشکلات کورتیزول');
     if (hormonal.includes('growth')) hormonalText.push('اختلال هورمون رشد');
     if (hormonal.includes('hashimoto')) hormonalText.push('هاشیموتو');
-    if (hormonal.includes('none')) hormonalText.push('هیچکدام');
+    if (hormonal.includes('none')) hormonalText.push('ندارم');
 
     // مشکلات معده
     const stomachDiscomfortText = [];
@@ -525,7 +596,9 @@ window.showSummary = function() {
     if (stomachDiscomfort.includes('acid-reflux')) stomachDiscomfortText.push('رفلاکس اسید معده');
     if (stomachDiscomfort.includes('slow-digestion')) stomachDiscomfortText.push('هضم کند غذا');
     if (stomachDiscomfort.includes('fullness')) stomachDiscomfortText.push('سیری زودرس');
-    if (stomachDiscomfort.includes('none')) stomachDiscomfortText.push('هیچکدام');
+    if (stomachDiscomfort.includes('ibd')) stomachDiscomfortText.push('بیماری التهابی روده');
+    if (stomachDiscomfort.includes('gerd')) stomachDiscomfortText.push('ریفلاکس معده-مروی');
+    if (stomachDiscomfort.includes('none')) stomachDiscomfortText.push('ندارم');
 
     // اطلاعات تکمیلی سلامت
     const additionalInfoText = [];
@@ -537,14 +610,14 @@ window.showSummary = function() {
     if (additionalInfo.includes('lactose')) additionalInfoText.push('عدم تحمل لاکتوز');
     if (additionalInfo.includes('food-allergy')) additionalInfoText.push('حساسیت غذایی');
     if (additionalInfo.includes('fatty-liver')) additionalInfoText.push('کبد چرب');
-    if (additionalInfo.includes('none')) additionalInfoText.push('هیچکدام');
+    if (additionalInfo.includes('none')) additionalInfoText.push('سالم هستم');
 
     // سبک‌های غذایی
     const dietStyleText = [];
     if (dietStyle.includes('vegetarian')) dietStyleText.push('گیاهخواری');
     if (dietStyle.includes('vegan')) dietStyleText.push('وگان');
     if (dietStyle.includes('halal')) dietStyleText.push('حلال');
-    if (dietStyle.includes('none')) dietStyleText.push('هیچکدام');
+    if (dietStyle.includes('none')) dietStyleText.push('سبک غذایی خاصی ندارم');
 
     // محدودیت‌های غذایی
     const foodLimitationsText = [];
@@ -555,7 +628,7 @@ window.showSummary = function() {
     if (foodLimitations.includes('no-dairy')) foodLimitationsText.push('عدم مصرف لبنیات');
     if (foodLimitations.includes('no-eggs')) foodLimitationsText.push('عدم مصرف تخم‌مرغ');
     if (foodLimitations.includes('no-nuts')) foodLimitationsText.push('عدم مصرف آجیل و مغزها');
-    if (foodLimitations.includes('none')) foodLimitationsText.push('هیچکدام');
+    if (foodLimitations.includes('none')) foodLimitationsText.push('ندارم');
 
     // ترجیحات غذایی
     const foodPreferencesText = [];
@@ -563,7 +636,7 @@ window.showSummary = function() {
     if (foodPreferences.includes('low-fat')) foodPreferencesText.push('رژیم کم چربی');
     if (foodPreferences.includes('high-protein')) foodPreferencesText.push('رژیم پرپروتئین');
     if (foodPreferences.includes('organic')) foodPreferencesText.push('مواد غذایی ارگانیک');
-    if (foodPreferences.includes('none')) foodPreferencesText.push('هیچکدام');
+    if (foodPreferences.includes('none')) foodPreferencesText.push('ندارم');
 
     summaryContainer.innerHTML = `
         ${personalInfoText.length > 0 ? `
@@ -605,6 +678,10 @@ window.showSummary = function() {
             <span class="summary-label">سابقه جراحی:</span>
             <span class="summary-value">${surgeryText.join('، ') || 'ثبت نشده'}</span>
         </div>  
+        <div class="summary-item">
+            <span class="summary-label">وضعیت سلامت:</span>
+            <span class="summary-value">${additionalInfoText.join('، ') || 'ثبت نشده'}</span>
+        </div>        
         `;
         
         // در تابع showSummary، بعد از بخش جراحی این کد را اضافه کنید:
@@ -655,13 +732,9 @@ window.showSummary = function() {
             <span class="summary-value">${activityText}</span>
         </div>
         <div class="summary-item">
-            <span class="summary-label">تعداد وعده‌های غذایی:</span>
-            <span class="summary-value">${mealsText}</span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">وضعیت سلامت:</span>
-            <span class="summary-value">${additionalInfoText.join('، ') || 'ثبت نشده'}</span>
-        </div>
+            <span class="summary-label">فعالیت ورزشی:</span>
+            <span class="summary-value">${exerciseText}</span>
+        </div>             
         <div class="summary-item">
             <span class="summary-label">سبک غذایی:</span>
             <span class="summary-value">${dietStyleText.join('، ') || 'ثبت نشده'}</span>
@@ -674,9 +747,7 @@ window.showSummary = function() {
             <span class="summary-label">ترجیحات غذایی:</span>
             <span class="summary-value">${foodPreferencesText.join('، ') || 'ثبت نشده'}</span>
         </div>
-    `;
-    
- 
+        `;
 }
 
 // Initialize event listeners

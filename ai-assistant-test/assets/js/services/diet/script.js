@@ -110,6 +110,11 @@ window.state = {
                 const activityOption = document.querySelector(`.activity-option[data-activity="${this.formData.activity}"]`);
                 if (activityOption) activityOption.classList.add('selected');
             }
+                
+            if (this.formData.exercise) {
+                const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${this.formData.exercise}"]`);
+                if (exerciseOption) exerciseOption.classList.add('selected');
+            }            
     
             // به روزرسانی وعده‌های غذایی
             if (this.formData.meals) {
@@ -239,13 +244,13 @@ window.STEPS = {
     WEIGHT: 6,
     TARGET_WEIGHT: 7,
     GOAL_DISPLAY: 8,
-    SURGERY: 9,
-    HORMONAL: 10, 
-    STOMACH: 11,
-    WATER_INTAKE: 12,
-    ACTIVITY: 13,
-    MEALS: 14,
-    ADDITIONAL_INFO: 15,
+    CHRONIC_CONDITIONS: 9,  // مرحله جدید
+    SURGERY: 10,
+    HORMONAL: 11,
+    STOMACH: 12,
+    WATER_INTAKE: 13,
+    ACTIVITY: 14,
+    EXERCISE: 15,
     DIET_STYLE: 16,
     FOOD_LIMITATIONS: 17,
     FOOD_PREFERENCES: 18,

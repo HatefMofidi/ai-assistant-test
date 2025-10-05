@@ -118,7 +118,19 @@ wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-aw
 wp_enqueue_style('diet-plan-css', get_template_directory_uri() . '/assets/css/services/diet-plan.css');
 
 // بارگذاری اسکریپت کامپوننت
-wp_enqueue_script('diet-plan-js', get_template_directory_uri() . '/assets/js/services/diet/diet-plan.js', array(), null, true);
+// در فایل page-consultant-dashboard.php، بعد از wp_enqueue_script موجود
+wp_enqueue_style('consultant-diet-editor-css', 
+    get_template_directory_uri() . '/assets/css/consultant-diet-editor.css',
+    [],
+    filemtime(get_template_directory() . '/assets/css/consultant-diet-editor.css')
+);
+
+wp_enqueue_script('consultant-diet-editor', 
+    get_template_directory_uri() . '/assets/js/services/diet/consultant-diet-editor.js', 
+    ['jquery'], 
+    filemtime(get_template_directory() . '/assets/js/services/diet/consultant-diet-editor.js'), 
+    true
+);
 
 ?>
 

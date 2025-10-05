@@ -283,6 +283,7 @@ h2 {
 
 #goal-selection,
 #activity-selection,
+#exercise-selection,
 #meal-selection {
     display: flex;
     flex-direction: column;
@@ -297,6 +298,7 @@ h2 {
 
 .goal-option,
 .activity-option,
+.exercise-option,
 .meal-option {
     display: flex;
     flex-direction: row-reverse;
@@ -315,6 +317,7 @@ h2 {
 
 .goal-option img,
 .activity-option img,
+.exercise-option img,
 .meal-option img {
     width: 60px;
     height: 30px;
@@ -324,6 +327,7 @@ h2 {
 
 .goal-option span,
 .activity-option span,
+.exercise-option span,
 .meal-option span {
     flex: 1;
     text-align: right;
@@ -333,6 +337,7 @@ h2 {
 
 .goal-option.selected,
 .activity-option.selected,
+.exercise-option.selected,
 .meal-option.selected {
     border-color: var(--orange-color);
     background-color: var(--option-selected-bg);
@@ -1050,6 +1055,7 @@ body.dark-mode .checked-animation .check-icon {
     .input-container,
     #goal-selection,
     #activity-selection,
+    #exercise-selection,
     #meal-selection,
     button.next-step {
         width: 500px;
@@ -1476,7 +1482,7 @@ button.submit-form:disabled {
 .dont-know-text {
     font-size: 16px;
     color: #ff6d00;
-    font-style: italic;
+    /*font-style: italic;*/
     margin-top: 5px;
 }
 
@@ -1709,12 +1715,14 @@ body.dark-mode .scroll-indicator:hover {
 }
 
 .activity-option:hover,
+.exercise-option:hover,
 .goal-option:hover,
 .meal-option:hover{
     transform: translateY(-2px);
 }
 
 .activity-icon,
+.exercise-icon,
 .goal-icon,
 .meal-icon{
     width: 60px;
@@ -1724,6 +1732,7 @@ body.dark-mode .scroll-indicator:hover {
 }
 
 .activity-icon img,
+.exercise-icon img,
 .goal-icon img,
 .meal-icon img{
     width: 100%;
@@ -1732,6 +1741,7 @@ body.dark-mode .scroll-indicator:hover {
 }
 
 .activity-details,
+.exercise-details,
 .goal-details,
 .meal-details{
     flex: 1;
@@ -1739,6 +1749,7 @@ body.dark-mode .scroll-indicator:hover {
 }
 
 .activity-details h3,
+.exercise-details h3,
 .goal-details h3,
 .meal-details h3{
     margin: 0 0 5px 0;
@@ -1747,6 +1758,7 @@ body.dark-mode .scroll-indicator:hover {
 }
 
 .activity-details p,
+.exercise-details p,
 .goal-details p,
 .meal-details p{
     margin: 0;
@@ -1755,12 +1767,13 @@ body.dark-mode .scroll-indicator:hover {
     font-weight: 500;
 }
 
-.activity-examples {
+.activity-examples,
+.exercise-examples {
     display: block;
     margin-top: 5px;
-    color: var(--light-text-color);
+    color: black;
     font-size: 12px;
-    font-style: italic;
+    /*font-style: italic;*/
 }
 
 /* تم تاریک */
@@ -1888,6 +1901,7 @@ body:not(.dark-mode) .theme-toggle svg.sun-icon {
 /* استایل پایه برای تمام کانتینرهای اسکرول */
 #goal-selection,
 #meal-selection,
+#exercise-selection,
 #activity-selection {
     max-height: 55vh;
     min-height: 250px;
@@ -1903,20 +1917,23 @@ body:not(.dark-mode) .theme-toggle svg.sun-icon {
 
 #goal-selection::-webkit-scrollbar,
 #meal-selection::-webkit-scrollbar,
-#activity-selection::-webkit-scrollbar {
+#exercise-selection::-webkit-scrollbar,
+#activity-selection::-webkit-scrollbar{
     width: 6px;
 }
 
 #goal-selection::-webkit-scrollbar-track,
 #meal-selection::-webkit-scrollbar-track,
-#activity-selection::-webkit-scrollbar-track {
+#exercise-selection::-webkit-scrollbar-track,
+#activity-selection::-webkit-scrollbar-track{
     background: var(--background-color);
     border-radius: 3px;
 }
 
 #goal-selection::-webkit-scrollbar-thumb,
 #meal-selection::-webkit-scrollbar-thumb,
-#activity-selection::-webkit-scrollbar-thumb {
+#exercise-selection::-webkit-scrollbar-thumb,
+#activity-selection::-webkit-scrollbar-thumb{
     background-color: var(--primary-color);
     border-radius: 3px;
 }
@@ -1951,19 +1968,22 @@ body:not(.dark-mode) .theme-toggle svg.sun-icon {
 /* استایل برای حالت تاریک */
 body.dark-mode #goal-selection,
 body.dark-mode #meal-selection,
-body.dark-mode #activity-selection {
+body.dark-mode #exercise-selection,
+body.dark-mode #activity-selection{
     scrollbar-color: #4db6ac #1e1e1e;
 }
 
 body.dark-mode #goal-selection::-webkit-scrollbar-track,
 body.dark-mode #meal-selection::-webkit-scrollbar-track,
-body.dark-mode #activity-selection::-webkit-scrollbar-track {
+body.dark-mode #exercise-selection::-webkit-scrollbar-track,
+body.dark-mode #activity-selection::-webkit-scrollbar-track{
     background: #1e1e1e;
 }
 
 body.dark-mode #goal-selection::-webkit-scrollbar-thumb,
 body.dark-mode #meal-selection::-webkit-scrollbar-thumb,
-body.dark-mode #activity-selection::-webkit-scrollbar-thumb {
+body.dark-mode #exercise-selection::-webkit-scrollbar-thumb,
+body.dark-mode #activity-selection::-webkit-scrollbar-thumb{
     background-color: #4db6ac;
 }
 

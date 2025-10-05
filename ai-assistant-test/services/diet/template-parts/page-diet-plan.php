@@ -7,8 +7,8 @@ get_header();
 ?>
 
 <!-- بارگذاری فونت آیکون -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/fonts/webfonts/all.min.css">
 <!-- بارگذاری استایل‌ها -->
 <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/services/diet-plan.css">
 

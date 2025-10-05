@@ -222,6 +222,220 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
 
+<!-- Step 9: Chronic Conditions -->
+<div id="chronic-conditions-step" class="step checkbox-step-container">
+    <h2>بیماری‌های مزمن و زمینه‌ای</h2>
+    
+    <div class="checkbox-container first-option stand-alone-none">
+        <input type="checkbox" id="chronic-none" class="real-checkbox">
+        <label for="chronic-none" class="checkbox-label">
+            <span class="check-icon"></span>
+            <span class="label-text">هیچگونه بیماری مزمن یا زمینه‌ای ندارم</span>
+        </label>
+    </div>
+    
+    <div class="separator"></div>
+    
+    <div id="chronic-conditions-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
+        <!-- اختلالات متابولیک -->
+        <h3 class="diffrent-category-titles" style="margin-top: 0px;">اختلالات متابولیک</h3>
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-diabetes" class="real-checkbox">
+            <label for="chronic-diabetes" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">دیابت</span>
+            </label>
+        </div>
+        
+        <!-- جزئیات دیابت -->
+        <div id="chronic-diabetes-details" style="display: none; margin: 15px 0 20px 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #4CAF50;">
+            <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">نوع دیابت:</h4>
+            <div class="diabetes-options" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="diabetes-option" data-value="type1">
+                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">💉</div>
+                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 1</div>
+                </div>
+                <div class="diabetes-option" data-value="type2">
+                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🩺</div>
+                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 2</div>
+                </div>
+                <div class="diabetes-option" data-value="gestational">
+                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🤰</div>
+                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت بارداری</div>
+                </div>
+                <div class="diabetes-option" data-value="prediabetes">
+                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">⚠️</div>
+                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">پیش‌دیابت</div>
+                </div>
+            </div>
+            
+            <!-- اطلاعات تکمیلی -->
+            <div id="chronic-diabetes-additional" style="margin-top: 15px; display: none;">
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">میزان قند خون ناشتا (اختیاری):</label>
+                    <input type="number" id="chronic-fasting-blood-sugar" placeholder="مثلاً 120" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                    <span style="margin-right: 5px; font-size: 13px;">mg/dL</span>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">HbA1c (اختیاری):</label>
+                    <input type="number" id="chronic-hba1c-level" step="0.1" placeholder="مثلاً 6.5" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                    <span style="margin-right: 5px; font-size: 13px;">%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-hypertension" class="real-checkbox">
+            <label for="chronic-hypertension" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">فشار خون بالا</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-cholesterol" class="real-checkbox">
+            <label for="chronic-cholesterol" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">کلسترول یا تری گلیسیرید بالا</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-fatty-liver" class="real-checkbox">
+            <label for="chronic-fatty-liver" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">کبد چرب</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-insulin-resistance" class="real-checkbox">
+            <label for="chronic-insulin-resistance" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">مقاومت به انسولین</span>
+            </label>
+        </div>
+
+        <!-- اختلالات هورمونی -->
+        <h3 class="diffrent-category-titles">اختلالات هورمونی</h3>
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-hypothyroidism" class="real-checkbox">
+            <label for="chronic-hypothyroidism" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">کم کاری تیروئید (هیپوتیروئیدی)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-hyperthyroidism" class="real-checkbox">
+            <label for="chronic-hyperthyroidism" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">پرکاری تیروئید (هیپرتیروئیدی)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-hashimoto" class="real-checkbox">
+            <label for="chronic-hashimoto" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container female-only">
+            <input type="checkbox" id="chronic-pcos" class="real-checkbox">
+            <label for="chronic-pcos" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">سندرم تخمدان پلی کیستیک (PCOS)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container female-only">
+            <input type="checkbox" id="chronic-menopause" class="real-checkbox">
+            <label for="chronic-menopause" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">یائسگی یا پیش یائسگی</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-cortisol" class="real-checkbox">
+            <label for="chronic-cortisol" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">مشکلات کورتیزول (استرس مزمن)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-growth" class="real-checkbox">
+            <label for="chronic-growth" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">اختلال هورمون رشد</span>
+            </label>
+        </div>
+
+        <!-- حساسیت‌ها و عدم تحمل‌ها -->
+        <h3 class="diffrent-category-titles">حساسیت‌ها و عدم تحمل‌ها</h3>
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-celiac" class="real-checkbox">
+            <label for="chronic-celiac" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">بیماری سلیاک (حساسیت به گلوتن)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-lactose" class="real-checkbox">
+            <label for="chronic-lactose" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">عدم تحمل لاکتوز</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-food-allergy" class="real-checkbox">
+            <label for="chronic-food-allergy" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">حساسیت غذایی (آلرژی)</span>
+            </label>
+        </div>
+
+        <!-- سایر بیماری‌های مزمن -->
+        <h3 class="diffrent-category-titles">سایر بیماری‌های مزمن</h3>
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-ibs" class="real-checkbox">
+            <label for="chronic-ibs" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">سندرم روده تحریک‌پذیر (IBS)</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-kidney" class="real-checkbox">
+            <label for="chronic-kidney" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">بیماری کلیوی مزمن</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-heart" class="real-checkbox">
+            <label for="chronic-heart" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">بیماری قلبی عروقی</span>
+            </label>
+        </div>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="chronic-autoimmune" class="real-checkbox">
+            <label for="chronic-autoimmune" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">بیماری خودایمنی</span>
+            </label>
+        </div>
+    </div>
+</div>
+
     <!-- Step 8: Surgery History -->
     <div id="surgery-step" class="step checkbox-step-container">
         <h2>سابقه جراحی، سرطان و یا مشکلات کیسه صفرا</h2>
@@ -435,51 +649,51 @@ $theme_assets = get_stylesheet_directory_uri();
             
             <!-- اختلالات متابولیک -->
             <h3 class="diffrent-category-titles">اختلالات متابولیک</h3>
-<!-- در بخش اختلالات متابولیک - بعد از دیابت -->
-<div class="checkbox-container">
-    <input type="checkbox" id="hormonal-diabetes" class="real-checkbox">
-    <label for="hormonal-diabetes" class="checkbox-label">
-        <span class="check-icon"></span>
-        <span class="label-text">دیابت نوع 1 یا 2</span>
-    </label>
-</div>
-
-<!-- جزئیات دیابت -->
-<div id="diabetes-details" style="display: none; margin: 15px 0 20px 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #4CAF50;">
-    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">نوع دیابت:</h4>
-    <div class="diabetes-options" style="display: flex; flex-direction: column; gap: 10px;">
-        <div class="diabetes-option" data-value="type1">
-            <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">💉</div>
-            <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 1</div>
-        </div>
-        <div class="diabetes-option" data-value="type2">
-            <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🩺</div>
-            <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 2</div>
-        </div>
-        <div class="diabetes-option" data-value="gestational">
-            <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🤰</div>
-            <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت بارداری</div>
-        </div>
-        <div class="diabetes-option" data-value="prediabetes">
-            <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">⚠️</div>
-            <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">پیش‌دیابت</div>
-        </div>
-    </div>
-    
-    <!-- اطلاعات تکمیلی -->
-    <div id="diabetes-additional" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 10px;">
-            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">میزان قند خون ناشتا (اختیاری):</label>
-            <input type="number" id="fasting-blood-sugar" placeholder="مثلاً 120" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-            <span style="margin-right: 5px; font-size: 13px;">mg/dL</span>
-        </div>
-        <div>
-            <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">HbA1c (اختیاری):</label>
-            <input type="number" id="hba1c-level" step="0.1" placeholder="مثلاً 6.5" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-            <span style="margin-right: 5px; font-size: 13px;">%</span>
-        </div>
-    </div>
-</div>
+            <!-- در بخش اختلالات متابولیک - بعد از دیابت -->
+            <div class="checkbox-container">
+                <input type="checkbox" id="hormonal-diabetes" class="real-checkbox">
+                <label for="hormonal-diabetes" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">دیابت نوع 1 یا 2</span>
+                </label>
+            </div>
+            
+            <!-- جزئیات دیابت -->
+            <div id="diabetes-details" style="display: none; margin: 15px 0 20px 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #4CAF50;">
+                <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">نوع دیابت:</h4>
+                <div class="diabetes-options" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="diabetes-option" data-value="type1">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">💉</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 1</div>
+                    </div>
+                    <div class="diabetes-option" data-value="type2">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🩺</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 2</div>
+                    </div>
+                    <div class="diabetes-option" data-value="gestational">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🤰</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت بارداری</div>
+                    </div>
+                    <div class="diabetes-option" data-value="prediabetes">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">⚠️</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">پیش‌دیابت</div>
+                    </div>
+                </div>
+                
+                <!-- اطلاعات تکمیلی -->
+                <div id="diabetes-additional" style="margin-top: 15px; display: none;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">میزان قند خون ناشتا (اختیاری):</label>
+                        <input type="number" id="fasting-blood-sugar" placeholder="مثلاً 120" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                        <span style="margin-right: 5px; font-size: 13px;">mg/dL</span>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">HbA1c (اختیاری):</label>
+                        <input type="number" id="hba1c-level" step="0.1" placeholder="مثلاً 6.5" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                        <span style="margin-right: 5px; font-size: 13px;">%</span>
+                    </div>
+                </div>
+            </div>
             <div class="checkbox-container">
                 <input type="checkbox" id="hormonal-insulin-resistance" class="real-checkbox">
                 <label for="hormonal-insulin-resistance" class="checkbox-label">
@@ -615,6 +829,24 @@ $theme_assets = get_stylesheet_directory_uri();
                 </label>
             </div>
 
+            <h3 class="diffrent-category-titles">بیماری‌های التهابی مزمن</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-ibd" class="real-checkbox">
+                <label for="stomach-ibd" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بیماری التهابی روده (کرون یا کولیت اولسراتیو)</span>
+                </label>
+            </div>
+            
+            <!-- ریفلاکس معده-مروی -->
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-gerd" class="real-checkbox">
+                <label for="stomach-gerd" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">ریفلاکس معده-مروی (GERD)</span>
+                </label>
+            </div>
+
             <!-- حساسیت‌های غذایی -->
             <h3 class="diffrent-category-titles">واکنش‌های غذایی</h3>
             <div class="checkbox-container">
@@ -708,10 +940,9 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
     
-    <!-- Step 12: Activity Level -->
     <div id="activity-selection-step" class="step">
         <h2>میزان فعالیت روزانه شما چقدر است؟</h2>
-        <p class="step-description">برای دریافت برنامه غذایی دقیق، لطفاً سطح فعالیت بدنی خود را انتخاب کنید</p>
+        <p class="step-description">لطفاً سطح فعالیت روزمره خود را بر اساس شغل و فعالیت‌های معمول روزانه انتخاب کنید</p>
         
         <div id="activity-selection">
             <div class="activity-option" data-activity="very-low">
@@ -719,9 +950,9 @@ $theme_assets = get_stylesheet_directory_uri();
                     <img src="<?php echo $theme_assets; ?>/assets/images/png/without-activity-min.png" alt="فعالیت خیلی کم">
                 </div>
                 <div class="activity-details">
-                    <h3>سبک</h3>
-                    <p>کمتر از 1 ساعت فعالیت در روز</p>
-                    <span class="activity-examples">(پشت میز نشینی، تحرک بسیار کم)</span>
+                    <h3>خیلی کم (بی‌تحرک)</h3>
+                    <p>بیشتر وقت پشت میز یا در خانه، تحرک بسیار کم</p>
+                    <span class="activity-examples">(پشت میز نشینی، کارمند اداری، خانه‌دار با تحرک کم)</span>
                 </div>
             </div>
             
@@ -730,9 +961,9 @@ $theme_assets = get_stylesheet_directory_uri();
                     <img src="<?php echo $theme_assets; ?>/assets/images/png/alittle-activity-min.png" alt="فعالیت کم">
                 </div>
                 <div class="activity-details">
-                    <h3>نیمه فعال</h3>
-                    <p>1 تا 2 ساعت فعالیت در روز</p>
-                    <span class="activity-examples">(پیاده روی روزانه، کارهای سبک خانه)</span>
+                    <h3>کم (فعالیت سبک)</h3>
+                    <p>کارهای سبک خانه، پیاده‌روی کوتاه، ایستادن متوسط</p>
+                    <span class="activity-examples">(معلم، منشی، فروشنده با تحرک محدود)</span>
                 </div>
             </div>
             
@@ -741,9 +972,9 @@ $theme_assets = get_stylesheet_directory_uri();
                     <img src="<?php echo $theme_assets; ?>/assets/images/png/middle-activity-min.png" alt="فعالیت متوسط">
                 </div>
                 <div class="activity-details">
-                    <h3>فعال</h3>
-                    <p>2 تا 4 ساعت فعالیت در روز</p>
-                    <span class="activity-examples">(ورزش منظم، کارهای فیزیکی متوسط)</span>
+                    <h3>متوسط (فعالیت متوسط)</h3>
+                    <p>کارهایی که نیاز به راه رفتن و حرکت مداوم دارد</p>
+                    <span class="activity-examples">(فروشندگی، پرستاری، راننده تاکسی، خدمات رسانی)</span>
                 </div>
             </div>
             
@@ -752,63 +983,71 @@ $theme_assets = get_stylesheet_directory_uri();
                     <img src="<?php echo $theme_assets; ?>/assets/images/png/alot-activity-min.png" alt="فعالیت زیاد">
                 </div>
                 <div class="activity-details">
-                    <h3>خیلی فعال</h3>
-                    <p>بیشتر از 4 ساعت فعالیت در روز</p>
-                    <span class="activity-examples">(تمرینات سنگین، کارهای فیزیکی سخت)</span>
+                    <h3>زیاد (فعالیت شدید)</h3>
+                    <p>کار فیزیکی سخت که بیشتر روز نیاز به فعالیت بدنی دارد</p>
+                    <span class="activity-examples">(کارگر ساختمانی، کشاورز، مکانیک، باربری)</span>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Step 13: Meal Frequency -->
-    <div id="meal-selection-step" class="step">
-        <h2>تعداد وعده‌های غذایی روزانه</h2>
-        <p class="step-description">لطفاً تعداد وعده‌های غذایی که معمولاً در روز مصرف می‌کنید را انتخاب کنید</p>
+    
+    <!-- Step 13: Weekly Exercise Activity - نسخه با آیکون فونت -->
+    <div id="exercise-activity-step" class="step">
+        <h2>فعالیت ورزشی هفتگی شما چقدر است؟</h2>
+        <p class="step-description">لطفاً میزان و شدت فعالیت ورزشی منظم خود در هفته را انتخاب کنید</p>
         
-        <div id="meal-selection" class="scrollable-container">
-            <div class="meal-option" data-meals="2">
-                <div class="meal-icon">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/gain-weight-min.png" alt="۲ وعده">
-                </div>
-                <div class="meal-details">
-                    <h3>۲ وعده</h3>
-                    <p>صبحانه + شام</p>
-                </div>
-            </div>
-            <div class="meal-option" data-meals="3">
-                <div class="meal-icon">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/gain-weight-min.png" alt="۳ وعده">
-                </div>
-                <div class="meal-details">
-                    <h3>۳ وعده</h3>
-                    <p>صبحانه + ناهار + شام</p>
+        <div id="exercise-selection">
+            <div class="exercise-option" data-exercise="none">
+                <!--<div class="exercise-icon">-->
+                <!--    <span class="exercise-icon-text">🚫</span>-->
+                <!--</div>-->
+                <div class="exercise-details">
+                    <h3>هیچ ورزشی نمی‌کنم</h3>
+                    <p>بدون فعالیت ورزشی منظم در هفته</p>
                 </div>
             </div>
-            <div class="meal-option" data-meals="4">
-                <div class="meal-icon">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/gain-weight-min.png" alt="۴ وعده">
-                </div>
-                <div class="meal-details">
-                    <h3>۴ وعده</h3>
-                    <p>صبحانه + ناهار + عصرانه + شام</p>
-                </div>
-            </div>
-            <div class="meal-option" data-meals="5">
-                <div class="meal-icon">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/gain-weight-min.png" alt="۵ وعده">
-                </div>
-                <div class="meal-details">
-                    <h3>۵ وعده یا بیشتر</h3>
-                    <p>وعده‌های اصلی + میان‌وعده‌ها</p>
+            
+            <div class="exercise-option" data-exercise="light">
+                <!--<div class="exercise-icon">-->
+                <!--    <span class="exercise-icon-text">🚶‍♂️</span>-->
+                <!--</div>-->
+                <div class="exercise-details">
+                    <h3>سبک</h3>
+                    <p>۱-۲ روز در هفته، کمتر از ۳۰ دقیقه</p>
+                    <span class="exercise-examples">(پیاده‌روی آرام، یوگا سبک، حرکات کششی)</span>
                 </div>
             </div>
-            <div class="meal-option" data-meals="irregular">
-                <div class="meal-icon">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/gain-weight-min.png" alt="نامنظم">
+            
+            <div class="exercise-option" data-exercise="medium">
+                <!--<div class="exercise-icon">-->
+                <!--    <span class="exercise-icon-text">🏃‍♂️</span>-->
+                <!--</div>-->
+                <div class="exercise-details">
+                    <h3>متوسط</h3>
+                    <p>۳-۴ روز در هفته، ۳۰-۶۰ دقیقه</p>
+                    <span class="exercise-examples">(دویدن سبک، شنا، بدنسازی متوسط، ورزش‌های هوازی)</span>
                 </div>
-                <div class="meal-details">
-                    <h3>وعده‌های نامنظم</h3>
-                    <p>زمان‌بندی ثابتی ندارم</p>
+            </div>
+            
+            <div class="exercise-option" data-exercise="high">
+                <!--<div class="exercise-icon">-->
+                <!--    <span class="exercise-icon-text">💪</span>-->
+                <!--</div>-->
+                <div class="exercise-details">
+                    <h3>زیاد</h3>
+                    <p>۵-۶ روز در هفته یا بیشتر، ۶۰+ دقیقه</p>
+                    <span class="exercise-examples">(تمرین سنگین، کراس فیت، ورزش‌های رقابتی)</span>
+                </div>
+            </div>
+            
+            <div class="exercise-option" data-exercise="professional">
+                <!--<div class="exercise-icon">-->
+                <!--    <span class="exercise-icon-text">🏆</span>-->
+                <!--</div>-->
+                <div class="exercise-details">
+                    <h3>ورزشکار حرفه‌ای</h3>
+                    <p>تمرین سنگین روزانه و برنامه‌ریزی شده</p>
+                    <span class="exercise-examples">(ورزشکاران حرفه‌ای، بدنسازان، ورزش‌های قهرمانی)</span>
                 </div>
             </div>
         </div>
@@ -935,7 +1174,7 @@ $theme_assets = get_stylesheet_directory_uri();
             </div>
         </div>
     </div>
-    
+
     <!-- Step 16: Food Limitations -->
     <div id="food-limitations-step" class="step checkbox-step-container">
         <h2>چه محدودیت‌های غذایی دارید؟</h2>

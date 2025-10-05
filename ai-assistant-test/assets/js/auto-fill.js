@@ -1,4 +1,3 @@
- 
 // /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/assets/js/auto-fill.js
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 weight: 85,
                 targetWeight: 75,
                 activity: 'medium',
-                meals: '3',
+                exercise: 'medium',
                 waterIntake: 8,
                 surgery: ['none'],
                 hormonal: ['none'],
@@ -57,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     clickNextButton(500);
                 }
             }
+
             // پر کردن مرحله جنسیت
             function fillGenderStep() {
                 if (state.currentStep === STEPS.GENDER) {
@@ -135,17 +135,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-
-            // پر کردن مرحله وعده‌های غذایی
-            function fillMealsStep() {
-                if (state.currentStep === STEPS.MEALS) {
-                    const mealOption = document.querySelector(`.meal-option[data-meals="${testData.meals}"]`);
-                    if (mealOption) {
-                        mealOption.click();
+                        
+            // پر کردن مرحله فعالیت ورزشی هفتگی
+            function fillExerciseStep() {
+                if (state.currentStep === STEPS.EXERCISE) {
+                    const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${testData.exercise}"]`);
+                    if (exerciseOption) {
+                        exerciseOption.click();
                         clickNextButton(500);
                     }
                 }
-            }
+            }     
 
             // پر کردن مرحله مصرف آب
             function fillWaterStep() {
@@ -215,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // پر کردن مرحله تأیید نهایی
-            // در تابع fillConfirmationStep این تغییرات را اعمال کنید
             function fillConfirmationStep() {
                 if (state.currentStep === STEPS.CONFIRMATION) {
                     const confirmCheckbox = document.getElementById('confirm-info');
@@ -264,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fillGoalStep();
             fillNumberSteps();
             fillActivityStep();
-            fillMealsStep();
+            fillExerciseStep();
             fillWaterStep();
             fillCheckboxSteps();
             fillGoalDisplayStep();
@@ -327,4 +326,4 @@ document.addEventListener('DOMContentLoaded', function() {
         // ایجاد دکمه پس از لود کامل صفحه
         setTimeout(createAutoFillButton, 1000);
     }
-}); 
+});

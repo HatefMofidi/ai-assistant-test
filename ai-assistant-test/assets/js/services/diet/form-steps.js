@@ -135,6 +135,37 @@ window.setupSurgerySelection = function(currentStep) {
     setupCancerDetails();
 };
 
+window.setupChronicConditionsSelection = function(currentStep) {
+    setupComplexCheckboxSelection(currentStep, {
+        noneCheckboxId: 'chronic-none',
+        dataKey: 'chronicConditions',
+        genderDependent: true,
+        options: [
+            { key: 'diabetes', id: 'chronic-diabetes' },
+            { key: 'hypertension', id: 'chronic-hypertension' },
+            { key: 'cholesterol', id: 'chronic-cholesterol' },
+            { key: 'fattyLiver', id: 'chronic-fatty-liver' },
+            { key: 'insulinResistance', id: 'chronic-insulin-resistance' },
+            { key: 'hypothyroidism', id: 'chronic-hypothyroidism' },
+            { key: 'hyperthyroidism', id: 'chronic-hyperthyroidism' },
+            { key: 'hashimoto', id: 'chronic-hashimoto' },
+            { key: 'pcos', id: 'chronic-pcos' },
+            { key: 'menopause', id: 'chronic-menopause' },
+            { key: 'cortisol', id: 'chronic-cortisol' },
+            { key: 'growth', id: 'chronic-growth' },
+            { key: 'celiac', id: 'chronic-celiac' },
+            { key: 'lactose', id: 'chronic-lactose' },
+            { key: 'foodAllergy', id: 'chronic-food-allergy' },
+            { key: 'ibs', id: 'chronic-ibs' },
+            { key: 'kidney', id: 'chronic-kidney' },
+            { key: 'heart', id: 'chronic-heart' },
+            { key: 'autoimmune', id: 'chronic-autoimmune' }
+        ]
+    });
+    
+    setupChronicDiabetesDetails();
+};
+
 window.setupCancerDetails = function() {
     const cancerCheckbox = document.getElementById('cancer-history');
     const cancerDetails = document.getElementById('cancer-details');
@@ -266,6 +297,8 @@ window.setupStomachDiscomfortSelection = function(currentStep) {
             { key: 'food-intolerance', id: 'stomach-food-intolerance' },
             { key: 'acid-reflux', id: 'stomach-acid-reflux' },
             { key: 'slow-digestion', id: 'stomach-slow-digestion' },
+            { key: 'ibd', id: 'stomach-ibd' },        
+            { key: 'gerd', id: 'stomach-gerd' },              
             { key: 'fullness', id: 'stomach-fullness' }
         ]
     });
@@ -473,28 +506,74 @@ window.setupConfirmationCheckbox = function(currentStep) {
     validateForm();
 }
 
+// در تابع setupExerciseSelection
+window.setupExerciseSelection = function(currentStep) {
+    if (currentStep !== STEPS.EXERCISE) return;
+
+    const exerciseOptions = document.querySelectorAll('.exercise-option');
+    
+    // اگر قبلاً ورزشی انتخاب شده بود، آن را highlight کن
+    if (state.formData.exercise) {
+        const selectedOption = document.querySelector(`.exercise-option[data-exercise="${state.formData.exercise}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+            selectedOption.style.transform = "translateY(-3px)";
+            selectedOption.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
+        }
+    }
+    
+    exerciseOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // حذف انتخاب از همه گزینه‌ها
+            exerciseOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.style.transform = "";
+                opt.style.boxShadow = "";
+            });
+            
+            // انتخاب گزینه کلیک شده
+            this.classList.add('selected');
+            this.classList.add('selected-with-effect');
+            
+            // افکت بصری
+            setTimeout(() => {
+                this.classList.remove('selected-with-effect');
+                this.style.transform = "translateY(-3px)";
+                this.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
+                
+                // ذخیره داده
+                state.updateFormData('exercise', this.dataset.exercise);
+                
+                setTimeout(() => {
+                    navigateToStep(STEPS.DIET_STYLE); 
+                }, 250);
+            }, 150);
+        });
+    });
+};
+
 window.showStep = function(step) {
     const stepElements = [
-        "gender-selection-step",
-        "personal-info-step",
-        "goal-selection-step",
-        "age-input-step", 
-        "height-input-step",
-        "weight-input-step",
-        "target-weight-step",
-        "goal-weight-display",
-        "surgery-step",
-        "hormonal-disorders-step",
-        "stomach-discomfort-step",
-        "water-intake-step",
-        "activity-selection-step",
-        "meal-selection-step",
-        "additional-info-step",
-        "diet-style-step",       // مرحله 15 جدید
-        "food-limitations-step", // مرحله 16 جدید
-        "food-preferences-step", // مرحله 17 جدید
-        "terms-agreement-step",  // مرحله 18 جدید
-        "confirm-submit-step"    // مرحله 19 جدید
+        "gender-selection-step",        // 1
+        "personal-info-step",           // 2
+        "goal-selection-step",          // 3
+        "age-input-step",               // 4
+        "height-input-step",            // 5
+        "weight-input-step",            // 6
+        "target-weight-step",           // 7
+        "goal-weight-display",          // 8
+        "surgery-step",                 // 9
+        "additional-info-step",         // 10 (انتقال به اینجا)
+        "hormonal-disorders-step",      // 11 (جابجا شده)
+        "stomach-discomfort-step",      // 12 (جابجا شده)
+        "water-intake-step",            // 13 (جابجا شده)
+        "activity-selection-step",      // 14 (جابجا شده)
+        "exercise-activity-step",       // 15 (جابجا شده)
+        "diet-style-step",              // 16 (جابجا شده)
+        "food-limitations-step",        // 17 (جابجا شده)
+        "food-preferences-step",        // 18 (جابجا شده)
+        "terms-agreement-step",         // 19 (جابجا شده)
+        "confirm-submit-step"           // 20 (جابجا شده)
     ];
     
     document.querySelectorAll(".step").forEach(el => {
@@ -567,7 +646,7 @@ window.showStep = function(step) {
             STEPS.GOAL,
             STEPS.WATER_INTAKE, // اضافه شده
             STEPS.ACTIVITY, 
-            STEPS.MEALS
+            STEPS.EXERCISE
         ].includes(step) ? "none" : "block";
     }
 
@@ -595,6 +674,9 @@ window.showStep = function(step) {
     else if (step === STEPS.SURGERY) {
         setupSurgerySelection(step);
     } 
+    else if (step === STEPS.EXERCISE) {
+        setupExerciseSelection(step);
+    }
     else if (step === STEPS.ADDITIONAL_INFO) {
         setupAdditionalInfoSelection(step);
     } 
@@ -602,6 +684,9 @@ window.showStep = function(step) {
         setupDietStyleSelection(step);
         document.getElementById("next-button-container").style.display = "block";
     } 
+    else if (step === STEPS.CHRONIC_CONDITIONS) {
+        setupChronicConditionsSelection(step);
+    }
     else if (step === STEPS.FOOD_LIMITATIONS) {
         setupFoodLimitationsSelection(step);
         document.getElementById("next-button-container").style.display = "block";
