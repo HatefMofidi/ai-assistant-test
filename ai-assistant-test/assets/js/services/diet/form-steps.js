@@ -120,14 +120,11 @@ window.setupSurgerySelection = function(currentStep) {
             { key: 'intestine', id: 'surgery-intestine' },
             { key: 'thyroid', id: 'surgery-thyroid' },
             { key: 'pancreas', id: 'surgery-pancreas' },
-            { key: 'gynecology', id: 'surgery-gynecology' },
+            { key: 'heart', id: 'surgery-heart' },
             { key: 'kidney', id: 'surgery-kidney' },
             { key: 'liver', id: 'surgery-liver' },
-            { key: 'heart', id: 'surgery-heart' },
-            { key: 'cancer', id: 'cancer-history' },
-            { key: 'gallbladder-stones', id: 'gallbladder-stones' },
-            { key: 'gallbladder-inflammation', id: 'gallbladder-inflammation' },
-            { key: 'gallbladder-issues', id: 'gallbladder-issues' }            
+            { key: 'gynecology', id: 'surgery-gynecology' },
+            { key: 'cancer', id: 'cancer-history' }
         ]
     });
 
@@ -231,10 +228,10 @@ window.setupCancerDetails = function() {
                     { key: 'intestine', id: 'surgery-intestine' },
                     { key: 'thyroid', id: 'surgery-thyroid' },
                     { key: 'pancreas', id: 'surgery-pancreas' },
-                    { key: 'gynecology', id: 'surgery-gynecology' },
+                    { key: 'heart', id: 'surgery-heart' },
                     { key: 'kidney', id: 'surgery-kidney' },
                     { key: 'liver', id: 'surgery-liver' },
-                    { key: 'heart', id: 'surgery-heart' },
+                    { key: 'gynecology', id: 'surgery-gynecology' },
                     { key: 'cancer', id: 'cancer-history' }
                 ]
             };
@@ -289,17 +286,18 @@ window.setupStomachDiscomfortSelection = function(currentStep) {
             { key: 'bloating', id: 'stomach-bloating' },
             { key: 'pain', id: 'stomach-pain' },
             { key: 'heartburn', id: 'stomach-heartburn' },
-            { key: 'nausea', id: 'stomach-nausea' },
-            { key: 'helicobacter', id: 'stomach-helicobacter' },
-            { key: 'indigestion', id: 'stomach-indigestion' },
             { key: 'constipation', id: 'stomach-constipation' },
             { key: 'diarrhea', id: 'stomach-diarrhea' },
-            { key: 'food-intolerance', id: 'stomach-food-intolerance' },
-            { key: 'acid-reflux', id: 'stomach-acid-reflux' },
+            { key: 'fullness', id: 'stomach-fullness' },
+            { key: 'nausea', id: 'stomach-nausea' },
             { key: 'slow-digestion', id: 'stomach-slow-digestion' },
-            { key: 'ibd', id: 'stomach-ibd' },        
-            { key: 'gerd', id: 'stomach-gerd' },              
-            { key: 'fullness', id: 'stomach-fullness' }
+            { key: 'acid-reflux', id: 'stomach-acid-reflux' },
+            { key: 'helicobacter', id: 'stomach-helicobacter' },
+            { key: 'ibd', id: 'stomach-ibd' },
+            { key: 'ibs', id: 'stomach-ibs' },
+            { key: 'gerd', id: 'stomach-gerd' },
+            { key: 'indigestion', id: 'stomach-indigestion' },
+            { key: 'food-intolerance', id: 'stomach-food-intolerance' }
         ]
     });
 };
@@ -562,18 +560,18 @@ window.showStep = function(step) {
         "weight-input-step",            // 6
         "target-weight-step",           // 7
         "goal-weight-display",          // 8
-        "surgery-step",                 // 9
-        "additional-info-step",         // 10 (انتقال به اینجا)
-        "hormonal-disorders-step",      // 11 (جابجا شده)
-        "stomach-discomfort-step",      // 12 (جابجا شده)
-        "water-intake-step",            // 13 (جابجا شده)
-        "activity-selection-step",      // 14 (جابجا شده)
-        "exercise-activity-step",       // 15 (جابجا شده)
-        "diet-style-step",              // 16 (جابجا شده)
-        "food-limitations-step",        // 17 (جابجا شده)
-        "food-preferences-step",        // 18 (جابجا شده)
-        "terms-agreement-step",         // 19 (جابجا شده)
-        "confirm-submit-step"           // 20 (جابجا شده)
+        "chronic-conditions-step",      // 9 - مرحله جدید اضافه شده
+        "surgery-step",                 // 10
+        "stomach-discomfort-step",      // 12
+        "hormonal-disorders-step",      // 11
+        "water-intake-step",            // 13
+        "activity-selection-step",      // 14
+        "exercise-activity-step",       // 15
+        "diet-style-step",              // 16
+        "food-limitations-step",        // 17
+        "food-preferences-step",        // 18
+        "terms-agreement-step",         // 19
+        "confirm-submit-step"           // 20
     ];
     
     document.querySelectorAll(".step").forEach(el => {
@@ -677,9 +675,6 @@ window.showStep = function(step) {
     else if (step === STEPS.EXERCISE) {
         setupExerciseSelection(step);
     }
-    else if (step === STEPS.ADDITIONAL_INFO) {
-        setupAdditionalInfoSelection(step);
-    } 
     else if (step === STEPS.DIET_STYLE) {
         setupDietStyleSelection(step);
         document.getElementById("next-button-container").style.display = "block";

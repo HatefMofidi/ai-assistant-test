@@ -86,7 +86,7 @@ class ConsultantDietEditor {
                 <label for="consultant-notes">
                     <i class="fas fa-sticky-note"></i> یادداشت‌های مشاور:
                 </label>
-                <textarea id="consultant-notes" style="width: 100%; height: 100px;" placeholder="یادداشت‌ها و توضیحات خود را اینجا بنویسید...">${this.escapeHtml(this.originalData.consultation_data?.consultant_notes || '')}</textarea>
+                <textarea id="consultant-notes" style="" placeholder="یادداشت‌ها و توضیحات خود را اینجا بنویسید...">${this.escapeHtml(this.originalData.consultation_data?.consultant_notes || '')}</textarea>
             </div>
         `;
     }
@@ -203,30 +203,96 @@ class ConsultantDietEditor {
     }
 
     renderTable(tableData, sectionIndex, subIndex) {
-        let html = `
-            <div class="consultant-table-container">
-                <table class="consultant-table">
-                    <thead>
-                        <tr>
-        `;
+        // استفاده از کارت‌ها به جای جدول
+        return this.renderTableAsCards(tableData, sectionIndex, subIndex);
+    }
+    
+    renderTableAsCards(tableData, sectionIndex, subIndex) {
+        if (!tableData.headers || !tableData.rows) {
+            return '<div class="consultant-error">داده‌های جدول نامعتبر است</div>';
+        }
+    
+        console.log('Rendering table as cards:', tableData);
+    
+        let html = '<div class="consultant-cards-container">';
         
-        tableData.headers.forEach((header, headerIndex) => {
-            html += `<th class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${headerIndex}">${this.escapeHtml(header)}</th>`;
-        });
-        
-        html += '</tr></thead><tbody>';
-        
+        // ایجاد کارت برای هر ردیف
         tableData.rows.forEach((row, rowIndex) => {
-            html += '<tr>';
-            row.forEach((cell, cellIndex) => {
-                html += `<td class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${cellIndex}">${this.escapeHtml(cell)}</td>`;
-            });
-            html += '</tr>';
+            html += this.renderDayCard(row, tableData.headers, sectionIndex, subIndex, rowIndex);
         });
         
-        html += '</tbody></table></div>';
+        html += '</div>';
         
         return html;
+    }
+    
+    renderDayCard(row, headers, sectionIndex, subIndex, rowIndex) {
+        const dayName = row[0] || `روز ${rowIndex + 1}`;
+        
+        let html = `
+            <div class="consultant-day-card">
+                <div class="consultant-day-header">
+                    <i class="fas fa-calendar-day"></i>
+                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.0">${this.escapeHtml(dayName)}</span>
+                </div>
+                <div class="consultant-meals-container">
+        `;
+        
+        // ایجاد بخش‌های غذایی برای هر ستون (به جز ستون اول که نام روز است)
+        for (let i = 1; i < headers.length; i++) {
+            if (row[i] && row[i].trim() !== '') {
+                const mealName = headers[i] || `وعده ${i}`;
+                html += this.renderMealSection(row[i], mealName, sectionIndex, subIndex, rowIndex, i);
+            }
+        }
+        
+        html += `
+                </div>
+            </div>
+        `;
+        
+        return html;
+    }
+    
+    renderMealSection(mealContent, mealName, sectionIndex, subIndex, rowIndex, columnIndex) {
+        const mealIcon = this.getMealIcon(columnIndex, mealName);
+        
+        return `
+            <div class="consultant-meal-section">
+                <div class="consultant-meal-title">
+                    <i class="fas fa-${mealIcon}"></i>
+                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${columnIndex}">${this.escapeHtml(mealName)}</span>
+                </div>
+                <div class="consultant-meal-content editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${columnIndex}">
+                    ${this.escapeHtml(mealContent)}
+                </div>
+            </div>
+        `;
+    }
+    
+    getMealIcon(columnIndex, mealName) {
+        const mealIcons = {
+            'صبحانه': 'sun',
+            'ناهار': 'sun', 
+            'شام': 'moon',
+            'میان‌وعده': 'apple-alt',
+            'میان وعده': 'apple-alt',
+            'میان‌وعده صبح': 'sun',
+            'میان‌وعده عصر': 'apple-alt',
+            'عصرانه': 'apple-alt'
+        };
+        
+        // جستجو بر اساس نام وعده
+        const lowerMealName = mealName.toLowerCase();
+        for (const [key, icon] of Object.entries(mealIcons)) {
+            if (lowerMealName.includes(key.toLowerCase())) {
+                return icon;
+            }
+        }
+        
+        // اگر پیدا نشد، بر اساس index
+        const defaultIcons = ['sun', 'sun', 'moon', 'apple-alt', 'utensils'];
+        return defaultIcons[columnIndex - 1] || 'utensils';
     }
 
     setupEditEvents() {
@@ -359,52 +425,175 @@ class ConsultantDietEditor {
         });
     }
 
-    startEditing(element) {
-        if (this.isEditing) {
-            this.finishEditing(); // اگر در حال ویرایش دیگری هست، اول آن را ذخیره کن
+startEditing(element) {
+    if (this.isEditing) return;
+    
+    this.isEditing = true;
+    this.currentEditElement = element;
+    this.originalText = element.textContent;
+    this.currentPath = element.dataset.path;
+    
+    // محاسبه موقعیت و اندازه دقیق المنت
+    const rect = element.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    
+    // تشخیص نوع المنت برای انتخاب input یا textarea
+    const tagName = element.tagName.toLowerCase();
+    const textLength = element.textContent.length;
+    const isTableCell = element.closest('td, th');
+    const isHeader = tagName === 'h1' || tagName === 'h2' || tagName === 'h3';
+    
+    let input;
+    
+    // برای تیترها، سلول‌های جدول و متن‌های کوتاه از input استفاده کن
+    if (isHeader || isTableCell || textLength < 100) {
+        input = document.createElement('input');
+        input.type = 'text';
+    } else {
+        // برای متن‌های طولانی از textarea استفاده کن
+        input = document.createElement('textarea');
+        input.style.resize = 'vertical';
+        input.style.minHeight = Math.max(rect.height, 60) + 'px';
+    }
+    
+    input.value = this.originalText;
+    input.className = 'consultant-edit-input';
+    input.style.position = 'absolute';
+    input.style.left = (rect.left + scrollLeft) + 'px';
+    input.style.top = (rect.top + scrollTop) + 'px';
+    input.style.width = rect.width + 'px';
+    
+    // برای input ارتفاع ثابت، برای textarea ارتفاع پویا
+    if (input.nodeName === 'INPUT') {
+        input.style.height = rect.height + 'px';
+    } else {
+        input.style.height = Math.max(rect.height, 80) + 'px';
+    }
+    
+    input.style.zIndex = '10000';
+    input.style.fontFamily = getComputedStyle(element).fontFamily;
+    input.style.fontSize = getComputedStyle(element).fontSize;
+    input.style.lineHeight = getComputedStyle(element).lineHeight;
+    input.style.padding = getComputedStyle(element).padding;
+    input.style.margin = getComputedStyle(element).margin;
+    input.style.border = '2px solid #4e54c8';
+    input.style.borderRadius = '4px';
+    input.style.boxShadow = '0 4px 12px rgba(78, 84, 200, 0.3)';
+    input.style.background = '#fff';
+    input.style.outline = 'none';
+    input.style.boxSizing = 'border-box';
+    
+    // مخفی کردن المنت اصلی
+    element.style.visibility = 'hidden';
+    
+    document.body.appendChild(input);
+    this.currentInput = input;
+    
+    // فوکوس و انتخاب متن
+    input.focus();
+    input.select();
+    
+    // مدیریت events
+    const handleKeydown = (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            finishEdit(); // Ctrl+Enter برای ذخیره
+        } else if (e.key === 'Enter' && input.nodeName === 'TEXTAREA') {
+            // در textarea اجازه Enter بده
+            return;
+        } else if (e.key === 'Enter') {
+            finishEdit();
+        } else if (e.key === 'Escape') {
+            cancelEdit();
+        }
+    };
+    
+    const handleBlur = () => {
+        finishEdit();
+    };
+    
+    const handleResize = () => {
+        // اگر پنجره تغییر اندازه داد، موقعیت input را آپدیت کن
+        if (this.currentEditElement && input.parentNode) {
+            const newRect = this.currentEditElement.getBoundingClientRect();
+            const newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const newScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            
+            input.style.left = (newRect.left + newScrollLeft) + 'px';
+            input.style.top = (newRect.top + newScrollTop) + 'px';
+        }
+    };
+    
+    const finishEdit = () => {
+        const newValue = input.value.trim();
+        
+        // بازگرداندن المنت اصلی
+        if (this.currentEditElement && this.currentEditElement.parentNode) {
+            this.currentEditElement.style.visibility = 'visible';
+            this.currentEditElement.textContent = newValue;
         }
         
-        this.isEditing = true;
-        this.currentEditElement = element;
+        // حذف input
+        if (input.parentNode) {
+            input.remove();
+        }
         
-        const originalText = element.textContent;
-        const path = element.dataset.path;
+        // حذف event listeners
+        window.removeEventListener('resize', handleResize);
+        input.removeEventListener('keydown', handleKeydown);
+        input.removeEventListener('blur', handleBlur);
         
-        // ایجاد input
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = originalText;
-        input.className = 'consultant-edit-input';
+        // آپدیت داده‌ها
+        if (newValue !== this.originalText) {
+            this.updateData(this.currentPath, newValue);
+        }
         
-        // ذخیره reference به المنت اصلی
-        input.dataset.originalElement = element.outerHTML;
-        input.dataset.path = path;
+        // پاک کردن
+        this.isEditing = false;
+        this.currentEditElement = null;
+        this.currentInput = null;
+    };
+    
+    const cancelEdit = () => {
+        // بازگرداندن مقدار اصلی
+        if (this.currentEditElement && this.currentEditElement.parentNode) {
+            this.currentEditElement.style.visibility = 'visible';
+        }
         
-        // جایگزینی element با input
-        element.style.display = 'none';
-        element.parentNode.insertBefore(input, element);
+        // حذف input
+        if (input.parentNode) {
+            input.remove();
+        }
         
-        // فوکوس و انتخاب متن
-        input.focus();
-        input.select();
+        // حذف event listeners
+        window.removeEventListener('resize', handleResize);
+        input.removeEventListener('keydown', handleKeydown);
+        input.removeEventListener('blur', handleBlur);
         
-        // مدیریت events با استفاده از arrow functions برای حفظ context
-        this.handleInputKeydown = (e) => {
-            if (e.key === 'Enter') {
-                this.saveEdit(input);
-            } else if (e.key === 'Escape') {
-                this.cancelEditing();
-            }
-        };
+        // پاک کردن
+        this.isEditing = false;
+        this.currentEditElement = null;
+        this.currentInput = null;
+    };
+    
+    input.addEventListener('keydown', handleKeydown);
+    input.addEventListener('blur', handleBlur);
+    window.addEventListener('resize', handleResize);
+    
+    // برای textarea، ارتفاع را بر اساس محتوا تنظیم کن
+    if (input.nodeName === 'TEXTAREA') {
+        setTimeout(() => {
+            input.style.height = 'auto';
+            input.style.height = Math.max(input.scrollHeight, 80) + 'px';
+        }, 0);
         
-        this.handleInputBlur = () => {
-            this.saveEdit(input);
-        };
-        
-        input.addEventListener('keydown', this.handleInputKeydown);
-        input.addEventListener('blur', this.handleInputBlur);
+        // هنگام تایپ، ارتفاع را تنظیم کن
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(this.scrollHeight, 80) + 'px';
+        });
     }
-
+}
     saveEdit(input) {
         // حذف event listeners برای جلوگیری از اجرای تکراری
         input.removeEventListener('keydown', this.handleInputKeydown);
@@ -691,4 +880,22 @@ class ConsultantDietEditor {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
+    
+    
+    // اضافه کردن این متد به کلاس
+    getInputTypeForElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        const textLength = element.textContent.length;
+        const isHeader = tagName === 'h1' || tagName === 'h2' || tagName === 'h3';
+        const isTableCell = element.closest('td, th');
+        const isList = element.closest('li');
+        
+        // برای تیترها و سلول‌های جدول از input استفاده کن
+        if (isHeader || isTableCell || textLength < 100) {
+            return 'input';
+        }
+        
+        // برای متن‌های طولانی از textarea استفاده کن
+        return 'textarea';
+    }    
 }

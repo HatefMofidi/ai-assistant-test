@@ -1649,7 +1649,6 @@ body[data-gender="female"] .female-only {
 .scroll-indicator {
     position: absolute;
     bottom: 15px;
-    left: 50%;
     transform: translateX(-50%);
     width: 40px;
     height: 40px;
@@ -1663,21 +1662,22 @@ body[data-gender="female"] .female-only {
     transition: all 0.3s ease;
     opacity: 1;
     pointer-events: auto;
+    left: 10%;
+}
+
+.scroll-indicator-arrow {
+    width: 24px;
+    height: 24px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" fill="none" stroke="%2300857a" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter"><path d="M20 15 L50 35 L80 15"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 .scroll-indicator.hidden {
     opacity: 0;
     pointer-events: none;
     animation: none;
-}
-
-.scroll-indicator-arrow {
-    width: 24px;
-    height: 24px;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" fill="none" stroke="%2300857a" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter"><path d="M20 15 L50 35 L80 15"/></svg>');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
 }
 
 @keyframes bounce {
@@ -1936,33 +1936,6 @@ body:not(.dark-mode) .theme-toggle svg.sun-icon {
 #activity-selection::-webkit-scrollbar-thumb{
     background-color: var(--primary-color);
     border-radius: 3px;
-}
-
-/* نشانگر اسکرول مشترک */
-.scroll-indicator {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 133, 122, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.scroll-indicator-arrow {
-    width: 24px;
-    height: 24px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" fill="none" stroke="%2300857a" stroke-width="15" stroke-linecap="square" stroke-linejoin="miter"><path d="M20 15 L50 35 L80 15"/></svg>');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
 }
 
 /* استایل برای حالت تاریک */

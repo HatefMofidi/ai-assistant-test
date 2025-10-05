@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollIndicator('additional-info-selection');
     setupScrollIndicator('food-restriction-selection');
     setupScrollIndicator('goal-selection');
+    setupScrollIndicator('chronic-conditions-selection');
     setupScrollIndicator('activity-selection');
     setupScrollIndicator('exercise-selection'); // اضافه کردن این خط
     setupScrollIndicator('diet-style-selection');
@@ -439,7 +440,6 @@ function fetchUserBalance(servicePrice, formData) {
     });
 }
 
-// در تابع window.handleFormSubmit، تغییرات زیر را اعمال کنید:
 window.handleFormSubmit = function(event) {
     event.preventDefault();
     
@@ -454,20 +454,22 @@ window.handleFormSubmit = function(event) {
         targetWeight: state.formData.targetWeight,
         goal: state.formData.goal,
         activity: state.formData.activity,
+        exercise: state.formData.exercise,
         meals: state.formData.meals,
         waterIntake: state.formData.waterIntake,
         // اطلاعات پزشکی
         surgery: state.formData.surgery || [],
         hormonal: state.formData.hormonal || [],
         stomachDiscomfort: state.formData.stomachDiscomfort || [],
+        chronicConditions: state.formData.chronicConditions || [], // اضافه شده
+        dietStyle: state.formData.dietStyle || [],
+        foodLimitations: state.formData.foodLimitations || [],
+        foodPreferences: state.formData.foodPreferences || [],
         
-        // اطلاعات تکمیلی (به صورت جداگانه)
-        diabetes: state.formData.additionalInfo?.includes('diabetes') || false,
-        pressure: state.formData.additionalInfo?.includes('pressure') || false,
-        thyroid: state.formData.additionalInfo?.includes('thyroid') || false,
-        allergy: state.formData.additionalInfo?.includes('allergy') || false,
-        vegetarian: state.formData.foodRestrictions?.includes('vegetarian') || false,
-        noSeafood: state.formData.foodRestrictions?.includes('no-seafood') || false,
+        // اطلاعات تکمیلی بیماری‌های مزمن
+        chronicDiabetesType: state.formData.chronicDiabetesType || '',
+        chronicFastingBloodSugar: state.formData.chronicFastingBloodSugar || '',
+        chronicHba1c: state.formData.chronicHba1c || ''
     };
 
     if (aiAssistantVars.environment && aiAssistantVars.environment !== 'production') {
@@ -493,8 +495,9 @@ window.showSummary = function() {
         lastName,
         gender, age, height, weight, targetWeight, goal, 
         activity, exercise, meals, waterIntake, surgery = [], hormonal = [],
-        stomachDiscomfort = [], additionalInfo = [], dietStyle = [],
-        foodLimitations = [], foodPreferences = []
+        stomachDiscomfort = [], dietStyle = [],
+        foodLimitations = [], foodPreferences = [],
+        chronicConditions = [] // اضافه کردن بیماری‌های مزمن
     } = state.formData;
 
     const personalInfoText = [];
@@ -522,6 +525,46 @@ window.showSummary = function() {
         "irregular": "وعده‌های نامنظم" 
     }[meals];
     
+    const chronicConditionsText = [];
+    if (chronicConditions.includes('diabetes')) {
+        const diabetesTypeText = {
+            'type1': 'دیابت نوع 1',
+            'type2': 'دیابت نوع 2', 
+            'gestational': 'دیابت بارداری',
+            'prediabetes': 'پیش‌دیابت'
+        }[state.formData.chronicDiabetesType];
+        
+        chronicConditionsText.push(`دیابت (${diabetesTypeText || 'نوع مشخص نشده'})`);
+        
+        // اضافه کردن اطلاعات تکمیلی اگر موجود باشد
+        if (state.formData.chronicFastingBloodSugar) {
+            chronicConditionsText.push(`قند ناشتا: ${state.formData.chronicFastingBloodSugar}`);
+        }
+        if (state.formData.chronicHba1c) {
+            chronicConditionsText.push(`HbA1c: ${state.formData.chronicHba1c}%`);
+        }
+    }
+    if (chronicConditions.includes('hypertension')) chronicConditionsText.push('فشار خون بالا');
+    if (chronicConditions.includes('cholesterol')) chronicConditionsText.push('کلسترول/تری گلیسیرید بالا');
+    if (chronicConditions.includes('fattyLiver')) chronicConditionsText.push('کبد چرب');
+    if (chronicConditions.includes('insulinResistance')) chronicConditionsText.push('مقاومت به انسولین');
+    if (chronicConditions.includes('hypothyroidism')) chronicConditionsText.push('کم کاری تیروئید');
+    if (chronicConditions.includes('hyperthyroidism')) chronicConditionsText.push('پرکاری تیروئید');
+    if (chronicConditions.includes('hashimoto')) chronicConditionsText.push('هاشیموتو');
+    if (chronicConditions.includes('pcos')) chronicConditionsText.push('سندرم تخمدان پلی کیستیک');
+    if (chronicConditions.includes('menopause')) chronicConditionsText.push('یائسگی/پیش یائسگی');
+    if (chronicConditions.includes('cortisol')) chronicConditionsText.push('مشکلات کورتیزول');
+    if (chronicConditions.includes('growth')) chronicConditionsText.push('اختلال هورمون رشد');
+    if (chronicConditions.includes('celiac')) chronicConditionsText.push('بیماری سلیاک');
+    if (chronicConditions.includes('lactose')) chronicConditionsText.push('عدم تحمل لاکتوز');
+    if (chronicConditions.includes('foodAllergy')) chronicConditionsText.push('حساسیت غذایی');
+    if (chronicConditions.includes('ibs')) chronicConditionsText.push('سندرم روده تحریک پذیر');
+    if (chronicConditions.includes('kidney')) chronicConditionsText.push('بیماری کلیوی مزمن');
+    if (chronicConditions.includes('heart')) chronicConditionsText.push('بیماری قلبی عروقی');
+    if (chronicConditions.includes('autoimmune')) chronicConditionsText.push('بیماری خودایمنی');
+    if (chronicConditions.includes('none')) chronicConditionsText.push('ندارم');
+
+    
     // اضافه کردن به تابع showSummary
     const exerciseText = { 
         "none": "هیچ ورزشی نمی‌کنم",
@@ -535,21 +578,41 @@ window.showSummary = function() {
         'مشخص نیست' : 
         `${waterIntake} لیوان (≈${(waterIntake * 0.25).toFixed(1)} لیتر)`;
 
-    // اطلاعات جراحی
+    // در تابع showSummary - بخش surgeryText
     const surgeryText = [];
     if (surgery.includes('metabolic')) surgeryText.push('جراحی متابولیک');
     if (surgery.includes('gallbladder')) surgeryText.push('جراحی کیسه صفرا');
-    if (surgery.includes('gallbladder-stones')) surgeryText.push('سنگ کیسه صفرا');
-    if (surgery.includes('gallbladder-inflammation')) surgeryText.push('التهاب کیسه صفرا');
-    if (surgery.includes('gallbladder-issues')) surgeryText.push('سایر مشکلات کیسه صفرا');    
     if (surgery.includes('intestine')) surgeryText.push('جراحی روده');
     if (surgery.includes('thyroid')) surgeryText.push('جراحی تیروئید');
     if (surgery.includes('pancreas')) surgeryText.push('جراحی لوزالمعده');
-    if (surgery.includes('gynecology')) surgeryText.push('جراحی زنان');
+    if (surgery.includes('heart')) surgeryText.push('جراحی قلب');
     if (surgery.includes('kidney')) surgeryText.push('پیوند کلیه');
     if (surgery.includes('liver')) surgeryText.push('پیوند کبد');
-    if (surgery.includes('heart')) surgeryText.push('جراحی قلب');
+    if (surgery.includes('gynecology')) surgeryText.push('جراحی زنان');
+    if (surgery.includes('cancer')) surgeryText.push('سابقه سرطان');
     if (surgery.includes('none')) surgeryText.push('هیچگونه سابقه جراحی ندارم');
+    
+    // اضافه کردن اطلاعات سرطان اگر انتخاب شده
+    if (surgery.includes('cancer')) {
+        const cancerTreatmentText = {
+            'chemo': 'شیمی درمانی',
+            'radio': 'پرتو درمانی', 
+            'surgery': 'اخیراً جراحی شده',
+            'finished': 'درمان تمام شده'
+        }[state.formData.cancerTreatment];
+    
+        const cancerTypeText = {
+            'breast': 'پستان',
+            'colon': 'روده',
+            'prostate': 'پروستات',
+            'lung': 'ریه',
+            'blood': 'خون',
+            'other': 'سایر'
+        }[state.formData.cancerType];
+    
+        if (cancerTreatmentText) surgeryText.push(`درمان: ${cancerTreatmentText}`);
+        if (cancerTypeText) surgeryText.push(`نوع: ${cancerTypeText}`);
+    }
 
     // اطلاعات هورمونی
     const hormonalText = [];
@@ -582,35 +645,24 @@ window.showSummary = function() {
     if (hormonal.includes('hashimoto')) hormonalText.push('هاشیموتو');
     if (hormonal.includes('none')) hormonalText.push('ندارم');
 
-    // مشکلات معده
+    // در تابع showSummary، بخش مشکلات معده را به‌روزرسانی کنید
     const stomachDiscomfortText = [];
     if (stomachDiscomfort.includes('bloating')) stomachDiscomfortText.push('نفخ یا گاز معده');
     if (stomachDiscomfort.includes('pain')) stomachDiscomfortText.push('درد یا گرفتگی معده');
     if (stomachDiscomfort.includes('heartburn')) stomachDiscomfortText.push('سوزش سر دل');
-    if (stomachDiscomfort.includes('nausea')) stomachDiscomfortText.push('حالت تهوع');
-    if (stomachDiscomfort.includes('helicobacter')) stomachDiscomfortText.push('عفونت هلیکوباکتر پیلوری');
-    if (stomachDiscomfort.includes('indigestion')) stomachDiscomfortText.push('سوء هاضمه مزمن');
-    if (stomachDiscomfort.includes('constipation')) stomachDiscomfortText.push('یبوست');
-    if (stomachDiscomfort.includes('diarrhea')) stomachDiscomfortText.push('اسهال');
-    if (stomachDiscomfort.includes('food-intolerance')) stomachDiscomfortText.push('عدم تحمل غذایی');
-    if (stomachDiscomfort.includes('acid-reflux')) stomachDiscomfortText.push('رفلاکس اسید معده');
-    if (stomachDiscomfort.includes('slow-digestion')) stomachDiscomfortText.push('هضم کند غذا');
+    if (stomachDiscomfort.includes('constipation')) stomachDiscomfortText.push('یبوست مزمن');
+    if (stomachDiscomfort.includes('diarrhea')) stomachDiscomfortText.push('اسهال مزمن');
     if (stomachDiscomfort.includes('fullness')) stomachDiscomfortText.push('سیری زودرس');
+    if (stomachDiscomfort.includes('nausea')) stomachDiscomfortText.push('حالت تهوع');
+    if (stomachDiscomfort.includes('slow-digestion')) stomachDiscomfortText.push('هضم کند غذا');
+    if (stomachDiscomfort.includes('acid-reflux')) stomachDiscomfortText.push('ریفلاکس اسید معده');
+    if (stomachDiscomfort.includes('helicobacter')) stomachDiscomfortText.push('عفونت هلیکوباکتر پیلوری');
     if (stomachDiscomfort.includes('ibd')) stomachDiscomfortText.push('بیماری التهابی روده');
+    if (stomachDiscomfort.includes('ibs')) stomachDiscomfortText.push('سندرم روده تحریک پذیر');
     if (stomachDiscomfort.includes('gerd')) stomachDiscomfortText.push('ریفلاکس معده-مروی');
+    if (stomachDiscomfort.includes('indigestion')) stomachDiscomfortText.push('سوء هاضمه مزمن');
+    if (stomachDiscomfort.includes('food-intolerance')) stomachDiscomfortText.push('عدم تحمل غذایی');
     if (stomachDiscomfort.includes('none')) stomachDiscomfortText.push('ندارم');
-
-    // اطلاعات تکمیلی سلامت
-    const additionalInfoText = [];
-    if (additionalInfo.includes('diabetes')) additionalInfoText.push('دیابت');
-    if (additionalInfo.includes('hypertension')) additionalInfoText.push('فشار خون بالا');
-    if (additionalInfo.includes('cholesterol')) additionalInfoText.push('کلسترول/تری گلیسیرید بالا');
-    if (additionalInfo.includes('ibs')) additionalInfoText.push('سندرم روده تحریک پذیر');
-    if (additionalInfo.includes('celiac')) additionalInfoText.push('بیماری سلیاک');
-    if (additionalInfo.includes('lactose')) additionalInfoText.push('عدم تحمل لاکتوز');
-    if (additionalInfo.includes('food-allergy')) additionalInfoText.push('حساسیت غذایی');
-    if (additionalInfo.includes('fatty-liver')) additionalInfoText.push('کبد چرب');
-    if (additionalInfo.includes('none')) additionalInfoText.push('سالم هستم');
 
     // سبک‌های غذایی
     const dietStyleText = [];
@@ -675,44 +727,44 @@ window.showSummary = function() {
             <span class="summary-value">${goalText}</span>
         </div>
         <div class="summary-item">
+            <span class="summary-label">بیماری‌های مزمن:</span>
+            <span class="summary-value">${chronicConditionsText.join('، ') || 'ثبت نشده'}</span>
+        </div>        
+        <div class="summary-item">
             <span class="summary-label">سابقه جراحی:</span>
             <span class="summary-value">${surgeryText.join('، ') || 'ثبت نشده'}</span>
-        </div>  
-        <div class="summary-item">
-            <span class="summary-label">وضعیت سلامت:</span>
-            <span class="summary-value">${additionalInfoText.join('، ') || 'ثبت نشده'}</span>
-        </div>        
+        </div>       
         `;
         
         // در تابع showSummary، بعد از بخش جراحی این کد را اضافه کنید:
-        if (surgery.includes('cancer')) {
-            const cancerTreatmentText = {
-                'chemo': 'شیمی درمانی',
-                'radio': 'پرتو درمانی', 
-                'surgery': 'اخیراً جراحی شده',
-                'finished': 'درمان تمام شده'
-            }[state.formData.cancerTreatment];
+        // if (surgery.includes('cancer')) {
+        //     const cancerTreatmentText = {
+        //         'chemo': 'شیمی درمانی',
+        //         'radio': 'پرتو درمانی', 
+        //         'surgery': 'اخیراً جراحی شده',
+        //         'finished': 'درمان تمام شده'
+        //     }[state.formData.cancerTreatment];
         
-            const cancerTypeText = {
-                'breast': 'پستان',
-                'colon': 'روده',
-                'prostate': 'پروستات',
-                'lung': 'ریه',
-                'blood': 'خون',
-                'other': 'سایر'
-            }[state.formData.cancerType];
+        //     const cancerTypeText = {
+        //         'breast': 'پستان',
+        //         'colon': 'روده',
+        //         'prostate': 'پروستات',
+        //         'lung': 'ریه',
+        //         'blood': 'خون',
+        //         'other': 'سایر'
+        //     }[state.formData.cancerType];
         
-            summaryContainer.innerHTML += `
-                <div class="summary-item">
-                    <span class="summary-label">وضعیت درمان سرطان:</span>
-                    <span class="summary-value">${cancerTreatmentText || 'ثبت نشده'}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">نوع سرطان:</span>
-                    <span class="summary-value">${cancerTypeText || 'ثبت نشده'}</span>
-                </div>
-            `;
-        }   
+        //     summaryContainer.innerHTML += `
+        //         <div class="summary-item">
+        //             <span class="summary-label">وضعیت درمان سرطان:</span>
+        //             <span class="summary-value">${cancerTreatmentText || 'ثبت نشده'}</span>
+        //         </div>
+        //         <div class="summary-item">
+        //             <span class="summary-label">نوع سرطان:</span>
+        //             <span class="summary-value">${cancerTypeText || 'ثبت نشده'}</span>
+        //         </div>
+        //     `;
+        // }   
         
         summaryContainer.innerHTML += `
         <div class="summary-item">

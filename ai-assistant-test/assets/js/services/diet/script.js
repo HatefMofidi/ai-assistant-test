@@ -72,10 +72,10 @@ window.state = {
                 'surgery': { prefix: 'surgery', items: this.formData.surgery || [] },
                 'hormonal': { prefix: 'hormonal', items: this.formData.hormonal || [] },
                 'stomachDiscomfort': { prefix: 'stomach', items: this.formData.stomachDiscomfort || [] },
-                'additionalInfo': { prefix: 'info', items: this.formData.additionalInfo || [] },
                 'dietStyle': { prefix: 'diet-style', items: this.formData.dietStyle || [] },
                 'foodLimitations': { prefix: 'limitation', items: this.formData.foodLimitations || [] },
-                'foodPreferences': { prefix: 'preference', items: this.formData.foodPreferences || [] }
+                'foodPreferences': { prefix: 'preference', items: this.formData.foodPreferences || [] },
+                'chronicConditions': { prefix: 'chronic', items: this.formData.chronicConditions || [] }
             };
     
             Object.entries(checkboxGroups).forEach(([groupKey, groupData]) => {
@@ -244,10 +244,10 @@ window.STEPS = {
     WEIGHT: 6,
     TARGET_WEIGHT: 7,
     GOAL_DISPLAY: 8,
-    CHRONIC_CONDITIONS: 9,  // مرحله جدید
+    CHRONIC_CONDITIONS: 9,
     SURGERY: 10,
-    HORMONAL: 11,
-    STOMACH: 12,
+    STOMACH: 11, // مرحله جدید: علائم و مشکلات فعلی
+    HORMONAL: 12,
     WATER_INTAKE: 13,
     ACTIVITY: 14,
     EXERCISE: 15,

@@ -3,6 +3,7 @@
     display: flex;
     background: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
+    margin-bottom: 10px;
 }
 
 .consultant-editor-tab {
@@ -28,16 +29,20 @@
     min-height: 500px;
 }
 
+
+
 .consultant-editor-pane {
     display: none;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 50%;
+    left: 50%;
+    width: 95%;
     height: 100%;
-    padding: 20px;
+    padding: 2px;
     overflow-y: auto;
+    transform: translate(-50%, -50%);
 }
+
 
 .consultant-editor-pane.active {
     display: block;
@@ -54,7 +59,7 @@
 .consultant-diet-preview {
     background: white;
     border-radius: 8px;
-    padding: 20px;
+    padding: 2px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
@@ -233,6 +238,7 @@
 }
 
 .consultant-notes-section {
+    width: 90%;
     margin-top: 20px;
     padding: 20px;
     background: #f8f9fa;
@@ -249,7 +255,7 @@
 }
 
 .consultant-notes-section textarea {
-    width: 100%;
+    width: 90%;
     height: 100px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -353,7 +359,7 @@
 @media (max-width: 768px) {
     .consultant-modal-content {
         margin: 1% auto;
-        width: 98%;
+        width: 90%;
         max-height: 98vh;
     }
     
@@ -434,4 +440,268 @@
     .consultant-btn:active {
         transform: scale(0.98);
     }
+}
+
+
+
+/* استایل‌های جدید برای ویرایشگر */
+.consultant-edit-input {
+    border: 2px solid #4e54c8 !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    background: #fff !important;
+    box-shadow: 0 4px 20px rgba(78, 84, 200, 0.4) !important;
+    outline: none !important;
+    z-index: 10000 !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+}
+
+.consultant-edit-input:focus {
+    border-color: #6c63ff !important;
+    box-shadow: 0 6px 25px rgba(108, 99, 255, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* استایل مخصوص textarea */
+.consultant-edit-input[type="textarea"],
+textarea.consultant-edit-input {
+    resize: vertical !important;
+    min-height: 80px !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+}
+
+/* استایل مخصوص input */
+.consultant-edit-input[type="text"],
+input.consultant-edit-input {
+    resize: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+}
+
+.editable-text {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    display: inline-block;
+    min-height: 1.2em;
+    line-height: 1.4;
+}
+
+.editable-text:hover {
+    background: rgba(255, 243, 205, 0.6);
+    border: 1px dashed #ffc107;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+
+
+/* استایل‌های کارت‌های مشاور */
+.consultant-cards-container {
+    display: grid;
+    /*grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));*/
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.consultant-day-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.consultant-day-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.consultant-day-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.consultant-day-header i {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.consultant-day-header .editable-text {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.consultant-day-header .editable-text:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.consultant-meals-container {
+    padding: 0;
+}
+
+.consultant-meal-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.consultant-meal-section:hover {
+    background: #fafafa;
+}
+
+.consultant-meal-section:last-child {
+    border-bottom: none;
+}
+
+.consultant-meal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #5a6cdb;
+    font-size: 0.95rem;
+}
+
+.consultant-meal-title i {
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
+}
+
+.consultant-meal-title .editable-text {
+    background: rgba(90, 108, 219, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.consultant-meal-title .editable-text:hover {
+    background: rgba(90, 108, 219, 0.2);
+}
+
+.consultant-meal-content {
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    min-height: 20px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.consultant-meal-content:hover {
+    background: rgba(255, 243, 205, 0.6);
+    border: 1px dashed #ffc107;
+}
+
+/* استایل‌های ویرایش برای کارت‌ها */
+.consultant-day-card .editable-text {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    display: inline-block;
+    min-height: 1.2em;
+    line-height: 1.4;
+}
+
+.consultant-day-card .editable-text:hover {
+    background: rgba(255, 243, 205, 0.8);
+    border: 1px dashed #ffc107;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+/* رسپانسیو برای موبایل */
+@media (max-width: 768px) {
+    .consultant-cards-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .consultant-day-card {
+        border-radius: 10px;
+    }
+    
+    .consultant-day-header {
+        padding: 15px 18px;
+        font-size: 1rem;
+    }
+    
+    .consultant-meal-section {
+        padding: 14px 18px;
+    }
+    
+    .consultant-meal-title {
+        font-size: 0.9rem;
+    }
+    
+    .consultant-meal-content {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    .consultant-cards-container {
+        gap: 12px;
+    }
+    
+    .consultant-day-header {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+    
+    .consultant-meal-section {
+        padding: 12px 15px;
+    }
+    
+    .consultant-day-card .editable-text {
+        padding: 3px 6px;
+    }
+}
+
+/* انیمیشن‌ها */
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.consultant-day-card {
+    animation: cardAppear 0.4s ease-out;
+}
+
+.consultant-day-card:nth-child(odd) {
+    animation-delay: 0.1s;
+}
+
+.consultant-day-card:nth-child(even) {
+    animation-delay: 0.2s;
 }

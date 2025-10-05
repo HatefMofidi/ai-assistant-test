@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const testData = {
                 firstName: "تست",
                 lastName: "کاربر",
-                gender: 'male',
+                gender: 'female',
                 goal: 'weight-loss',
                 age: 30,
                 height: 175,
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 surgery: ['none'],
                 hormonal: ['none'],
                 stomachDiscomfort: ['none'],
-                additionalInfo: ['none'],
                 dietStyle: ['none'],
                 foodLimitations: ['none'],
                 foodPreferences: ['none']
@@ -146,7 +145,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }     
-
+            
+            function fillChronicConditionsStep() {
+                if (state.currentStep === STEPS.CHRONIC_CONDITIONS) {
+                    const noneCheckbox = document.getElementById('chronic-none');
+                    if (noneCheckbox) {
+                        noneCheckbox.checked = true;
+                        noneCheckbox.dispatchEvent(new Event('change'));
+                        clickNextButton(500);
+                    }
+                }
+            }
             // پر کردن مرحله مصرف آب
             function fillWaterStep() {
                 if (state.currentStep === STEPS.WATER_INTAKE) {
@@ -164,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     [STEPS.SURGERY]: {prefix: 'surgery', name: 'جراحی‌ها'},
                     [STEPS.HORMONAL]: {prefix: 'hormonal', name: 'مشکلات هورمونی'},
                     [STEPS.STOMACH]: {prefix: 'stomach', name: 'مشکلات معده'},
-                    [STEPS.ADDITIONAL_INFO]: {prefix: 'info', name: 'اطلاعات اضافه'},
                     [STEPS.DIET_STYLE]: {prefix: 'diet-style', name: 'سبک رژیم'},
                     [STEPS.FOOD_LIMITATIONS]: {prefix: 'limitations', name: 'محدودیت‌های غذایی'},
                     [STEPS.FOOD_PREFERENCES]: {prefix: 'preferences', name: 'ترجیحات غذایی'}
@@ -267,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fillWaterStep();
             fillCheckboxSteps();
             fillGoalDisplayStep();
+            fillChronicConditionsStep();
             fillTermsStep();
             fillConfirmationStep();
         }

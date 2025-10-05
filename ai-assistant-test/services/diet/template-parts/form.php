@@ -222,234 +222,237 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
 
-<!-- Step 9: Chronic Conditions -->
-<div id="chronic-conditions-step" class="step checkbox-step-container">
-    <h2>بیماری‌های مزمن و زمینه‌ای</h2>
-    
-    <div class="checkbox-container first-option stand-alone-none">
-        <input type="checkbox" id="chronic-none" class="real-checkbox">
-        <label for="chronic-none" class="checkbox-label">
-            <span class="check-icon"></span>
-            <span class="label-text">هیچگونه بیماری مزمن یا زمینه‌ای ندارم</span>
-        </label>
-    </div>
-    
-    <div class="separator"></div>
-    
-    <div id="chronic-conditions-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
-        <!-- اختلالات متابولیک -->
-        <h3 class="diffrent-category-titles" style="margin-top: 0px;">اختلالات متابولیک</h3>
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-diabetes" class="real-checkbox">
-            <label for="chronic-diabetes" class="checkbox-label">
+    <!-- Step 9: Chronic Conditions -->
+    <div id="chronic-conditions-step" class="step checkbox-step-container">
+        <h2>بیماری‌های مزمن و زمینه‌ای</h2>
+        
+        <div class="checkbox-container first-option stand-alone-none">
+            <input type="checkbox" id="chronic-none" class="real-checkbox">
+            <label for="chronic-none" class="checkbox-label">
                 <span class="check-icon"></span>
-                <span class="label-text">دیابت</span>
+                <span class="label-text">هیچگونه بیماری مزمن یا زمینه‌ای ندارم</span>
             </label>
         </div>
         
-        <!-- جزئیات دیابت -->
-        <div id="chronic-diabetes-details" style="display: none; margin: 15px 0 20px 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #4CAF50;">
-            <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">نوع دیابت:</h4>
-            <div class="diabetes-options" style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="diabetes-option" data-value="type1">
-                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">💉</div>
-                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 1</div>
-                </div>
-                <div class="diabetes-option" data-value="type2">
-                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🩺</div>
-                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 2</div>
-                </div>
-                <div class="diabetes-option" data-value="gestational">
-                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🤰</div>
-                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت بارداری</div>
-                </div>
-                <div class="diabetes-option" data-value="prediabetes">
-                    <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">⚠️</div>
-                    <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">پیش‌دیابت</div>
-                </div>
+        <div class="separator"></div>
+        
+        <div id="chronic-conditions-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
+            <!-- اختلالات متابولیک -->
+            <h3 class="diffrent-category-titles" style="margin-top: 0px;">اختلالات متابولیک</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-diabetes" class="real-checkbox">
+                <label for="chronic-diabetes" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">دیابت</span>
+                </label>
             </div>
             
-            <!-- اطلاعات تکمیلی -->
-            <div id="chronic-diabetes-additional" style="margin-top: 15px; display: none;">
-                <div style="margin-bottom: 10px;">
-                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">میزان قند خون ناشتا (اختیاری):</label>
-                    <input type="number" id="chronic-fasting-blood-sugar" placeholder="مثلاً 120" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-                    <span style="margin-right: 5px; font-size: 13px;">mg/dL</span>
+            <!-- جزئیات دیابت -->
+            <div id="chronic-diabetes-details" style="display: none; margin: 15px 0 20px 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #4CAF50;">
+                <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">نوع دیابت:</h4>
+                <div class="diabetes-options" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="diabetes-option" data-value="type1">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">💉</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 1</div>
+                    </div>
+                    <div class="diabetes-option" data-value="type2">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🩺</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت نوع 2</div>
+                    </div>
+                    <div class="diabetes-option" data-value="gestational">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">🤰</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">دیابت بارداری</div>
+                    </div>
+                    <div class="diabetes-option" data-value="prediabetes">
+                        <div class="diabetes-icon" style="display: inline-block; width: 24px; text-align: center;">⚠️</div>
+                        <div class="diabetes-text" style="display: inline-block; margin-right: 8px;">پیش‌دیابت</div>
+                    </div>
                 </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">HbA1c (اختیاری):</label>
-                    <input type="number" id="chronic-hba1c-level" step="0.1" placeholder="مثلاً 6.5" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-                    <span style="margin-right: 5px; font-size: 13px;">%</span>
+                
+                <!-- اطلاعات تکمیلی -->
+                <div id="chronic-diabetes-additional" style="margin-top: 15px; display: none;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">میزان قند خون ناشتا (اختیاری):</label>
+                        <input type="number" id="chronic-fasting-blood-sugar" placeholder="مثلاً 120" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                        <span style="margin-right: 5px; font-size: 13px;">mg/dL</span>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #666;">HbA1c (اختیاری):</label>
+                        <input type="number" id="chronic-hba1c-level" step="0.1" placeholder="مثلاً 6.5" style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                        <span style="margin-right: 5px; font-size: 13px;">%</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-hypertension" class="real-checkbox">
-            <label for="chronic-hypertension" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">فشار خون بالا</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-cholesterol" class="real-checkbox">
-            <label for="chronic-cholesterol" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">کلسترول یا تری گلیسیرید بالا</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-fatty-liver" class="real-checkbox">
-            <label for="chronic-fatty-liver" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">کبد چرب</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-insulin-resistance" class="real-checkbox">
-            <label for="chronic-insulin-resistance" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">مقاومت به انسولین</span>
-            </label>
-        </div>
-
-        <!-- اختلالات هورمونی -->
-        <h3 class="diffrent-category-titles">اختلالات هورمونی</h3>
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-hypothyroidism" class="real-checkbox">
-            <label for="chronic-hypothyroidism" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">کم کاری تیروئید (هیپوتیروئیدی)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-hyperthyroidism" class="real-checkbox">
-            <label for="chronic-hyperthyroidism" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">پرکاری تیروئید (هیپرتیروئیدی)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-hashimoto" class="real-checkbox">
-            <label for="chronic-hashimoto" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container female-only">
-            <input type="checkbox" id="chronic-pcos" class="real-checkbox">
-            <label for="chronic-pcos" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">سندرم تخمدان پلی کیستیک (PCOS)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container female-only">
-            <input type="checkbox" id="chronic-menopause" class="real-checkbox">
-            <label for="chronic-menopause" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">یائسگی یا پیش یائسگی</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-cortisol" class="real-checkbox">
-            <label for="chronic-cortisol" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">مشکلات کورتیزول (استرس مزمن)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-growth" class="real-checkbox">
-            <label for="chronic-growth" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">اختلال هورمون رشد</span>
-            </label>
-        </div>
-
-        <!-- حساسیت‌ها و عدم تحمل‌ها -->
-        <h3 class="diffrent-category-titles">حساسیت‌ها و عدم تحمل‌ها</h3>
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-celiac" class="real-checkbox">
-            <label for="chronic-celiac" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">بیماری سلیاک (حساسیت به گلوتن)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-lactose" class="real-checkbox">
-            <label for="chronic-lactose" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">عدم تحمل لاکتوز</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-food-allergy" class="real-checkbox">
-            <label for="chronic-food-allergy" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">حساسیت غذایی (آلرژی)</span>
-            </label>
-        </div>
-
-        <!-- سایر بیماری‌های مزمن -->
-        <h3 class="diffrent-category-titles">سایر بیماری‌های مزمن</h3>
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-ibs" class="real-checkbox">
-            <label for="chronic-ibs" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">سندرم روده تحریک‌پذیر (IBS)</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-kidney" class="real-checkbox">
-            <label for="chronic-kidney" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">بیماری کلیوی مزمن</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-heart" class="real-checkbox">
-            <label for="chronic-heart" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">بیماری قلبی عروقی</span>
-            </label>
-        </div>
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="chronic-autoimmune" class="real-checkbox">
-            <label for="chronic-autoimmune" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">بیماری خودایمنی</span>
-            </label>
+    
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-hypertension" class="real-checkbox">
+                <label for="chronic-hypertension" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">فشار خون بالا</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-cholesterol" class="real-checkbox">
+                <label for="chronic-cholesterol" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کلسترول یا تری گلیسیرید بالا</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-fatty-liver" class="real-checkbox">
+                <label for="chronic-fatty-liver" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کبد چرب</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-insulin-resistance" class="real-checkbox">
+                <label for="chronic-insulin-resistance" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">مقاومت به انسولین</span>
+                </label>
+            </div>
+    
+            <!-- اختلالات هورمونی -->
+            <h3 class="diffrent-category-titles">اختلالات هورمونی</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-hypothyroidism" class="real-checkbox">
+                <label for="chronic-hypothyroidism" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کم کاری تیروئید (هیپوتیروئیدی)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-hyperthyroidism" class="real-checkbox">
+                <label for="chronic-hyperthyroidism" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">پرکاری تیروئید (هیپرتیروئیدی)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-hashimoto" class="real-checkbox">
+                <label for="chronic-hashimoto" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container female-only">
+                <input type="checkbox" id="chronic-pcos" class="real-checkbox">
+                <label for="chronic-pcos" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سندرم تخمدان پلی کیستیک (PCOS)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container female-only">
+                <input type="checkbox" id="chronic-menopause" class="real-checkbox">
+                <label for="chronic-menopause" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">یائسگی یا پیش یائسگی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-cortisol" class="real-checkbox">
+                <label for="chronic-cortisol" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">مشکلات کورتیزول (استرس مزمن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-growth" class="real-checkbox">
+                <label for="chronic-growth" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">اختلال هورمون رشد</span>
+                </label>
+            </div>
+    
+            <!-- حساسیت‌ها و عدم تحمل‌ها -->
+            <h3 class="diffrent-category-titles">حساسیت‌ها و عدم تحمل‌ها</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-celiac" class="real-checkbox">
+                <label for="chronic-celiac" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بیماری سلیاک (حساسیت به گلوتن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-lactose" class="real-checkbox">
+                <label for="chronic-lactose" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">عدم تحمل لاکتوز</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-food-allergy" class="real-checkbox">
+                <label for="chronic-food-allergy" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">حساسیت غذایی (آلرژی)</span>
+                </label>
+            </div>
+    
+            <!-- سایر بیماری‌های مزمن -->
+            <h3 class="diffrent-category-titles">سایر بیماری‌های مزمن</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-ibs" class="real-checkbox">
+                <label for="chronic-ibs" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سندرم روده تحریک‌پذیر (IBS)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-kidney" class="real-checkbox">
+                <label for="chronic-kidney" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بیماری کلیوی مزمن</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-heart" class="real-checkbox">
+                <label for="chronic-heart" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بیماری قلبی عروقی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="chronic-autoimmune" class="real-checkbox">
+                <label for="chronic-autoimmune" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بیماری خودایمنی</span>
+                </label>
+            </div>
         </div>
     </div>
-</div>
 
-    <!-- Step 8: Surgery History -->
+    <!-- Step 10: Surgery History -->
     <div id="surgery-step" class="step checkbox-step-container">
-        <h2>سابقه جراحی، سرطان و یا مشکلات کیسه صفرا</h2>
+        <h2>سابقه جراحی و اقدامات پزشکی</h2>
+        
         <div class="checkbox-container first-option stand-alone-none">
             <input type="checkbox" id="surgery-none" class="real-checkbox">
             <label for="surgery-none" class="checkbox-label">
                 <span class="check-icon"></span>
                 <span class="label-text">هیچگونه سابقه جراحی ندارم</span>
             </label>
-        </div> 
+        </div>
         
         <div class="separator"></div>
-        <div id="surgery-selection" class="checkbox-selection-container checkbox-list-container">
-            <h3 class="diffrent-category-titles" style="margin-top: 0px;">جراحی‌های متابولیک و گوارشی</h3>
+        
+        <div id="surgery-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
+            <!-- 🔪 جراحی‌های گوارشی و متابولیک -->
+            <h3 class="diffrent-category-titles" style="margin-top: 0px;">🔪 جراحی‌های گوارشی و متابولیک</h3>
             <div class="checkbox-container">
                 <input type="checkbox" id="surgery-metabolic" class="real-checkbox">
                 <label for="surgery-metabolic" class="checkbox-label">
@@ -468,11 +471,12 @@ $theme_assets = get_stylesheet_directory_uri();
                 <input type="checkbox" id="surgery-intestine" class="real-checkbox">
                 <label for="surgery-intestine" class="checkbox-label">
                     <span class="check-icon"></span>
-                    <span class="label-text">جراحی روده (رزکسیون، ایلئوستومی)</span>
+                    <span class="label-text">جراحی روده</span>
                 </label>
             </div>
             
-            <h3 class="diffrent-category-titles">جراحی‌های غدد و اندام‌ها</h3>
+            <!-- ❤️ جراحی‌های عمده و ارگان‌ها -->
+            <h3 class="diffrent-category-titles">❤️ جراحی‌های عمده و ارگان‌ها</h3>
             <div class="checkbox-container">
                 <input type="checkbox" id="surgery-thyroid" class="real-checkbox">
                 <label for="surgery-thyroid" class="checkbox-label">
@@ -487,80 +491,13 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">جراحی لوزالمعده (پانکراس)</span>
                 </label>
             </div>
-            
-            <h3 class="diffrent-category-titles female-only">جراحی‌های زنان</h3>
-            <div class="checkbox-container female-only">
-                <input type="checkbox" id="surgery-gynecology" class="real-checkbox">
-                <label for="surgery-gynecology" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">جراحی‌های زنان (هیسترکتومی، اووفورکتومی)</span>
-                </label>
-            </div>
-
-            <h3 class="diffrent-category-titles">سرطان و جراحی‌های مرتبط</h3>
             <div class="checkbox-container">
-                <input type="checkbox" id="cancer-history" class="real-checkbox">
-                <label for="cancer-history" class="checkbox-label">
+                <input type="checkbox" id="surgery-heart" class="real-checkbox">
+                <label for="surgery-heart" class="checkbox-label">
                     <span class="check-icon"></span>
-                    <span class="label-text">سابقه سرطان دارم</span>
+                    <span class="label-text">جراحی قلب</span>
                 </label>
             </div>
-            
-            <!-- جزئیات سرطان -->
-            <div id="cancer-details" style="display: none; margin-top: 15px;">
-                
-                <!-- وضعیت درمان -->
-                <h4 style="margin: 15px 0 10px 0; color: #666;">وضعیت درمان:</h4>
-                <div class="cancer-options">
-                    <div class="cancer-option" data-value="chemo">
-                        <div class="cancer-icon">💊</div>
-                        <div class="cancer-text">شیمی درمانی</div>
-                    </div>
-                    <div class="cancer-option" data-value="radio">
-                        <div class="cancer-icon">☢️</div>
-                        <div class="cancer-text">پرتو درمانی</div>
-                    </div>
-                    <div class="cancer-option" data-value="surgery">
-                        <div class="cancer-icon">🔪</div>
-                        <div class="cancer-text">اخیراً جراحی شده‌ام</div>
-                    </div>
-                    <div class="cancer-option" data-value="finished">
-                        <div class="cancer-icon">✅</div>
-                        <div class="cancer-text">درمانم تمام شده</div>
-                    </div>
-                </div>
-            
-                <!-- نوع سرطان -->
-                <h4 style="margin: 20px 0 10px 0; color: #666;">نوع سرطان:</h4>
-                <div class="cancer-options">
-                    <div class="cancer-option" data-value="breast">
-                        <div class="cancer-icon">🎀</div>
-                        <div class="cancer-text">پستان</div>
-                    </div>
-                    <div class="cancer-option" data-value="colon">
-                        <div class="cancer-icon">🩸</div>
-                        <div class="cancer-text">روده</div>
-                    </div>
-                    <div class="cancer-option" data-value="prostate">
-                        <div class="cancer-icon">👨</div>
-                        <div class="cancer-text">پروستات</div>
-                    </div>
-                    <div class="cancer-option" data-value="lung">
-                        <div class="cancer-icon">🫁</div>
-                        <div class="cancer-text">ریه</div>
-                    </div>
-                    <div class="cancer-option" data-value="blood">
-                        <div class="cancer-icon">🩸</div>
-                        <div class="cancer-text">خون</div>
-                    </div>
-                    <div class="cancer-option" data-value="other">
-                        <div class="cancer-icon">❓</div>
-                        <div class="cancer-text">سایر</div>
-                    </div>
-                </div>
-            </div>
-            
-            <h3 class="diffrent-category-titles">جراحی‌های عمده</h3>
             <div class="checkbox-container">
                 <input type="checkbox" id="surgery-kidney" class="real-checkbox">
                 <label for="surgery-kidney" class="checkbox-label">
@@ -575,36 +512,79 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">پیوند کبد</span>
                 </label>
             </div>
+            
+            <!-- 🎗️ سرطان و جراحی‌های مرتبط -->
+            <h3 class="diffrent-category-titles">🎗️ سرطان و جراحی‌های مرتبط</h3>
             <div class="checkbox-container">
-                <input type="checkbox" id="surgery-heart" class="real-checkbox">
-                <label for="surgery-heart" class="checkbox-label">
+                <input type="checkbox" id="cancer-history" class="real-checkbox">
+                <label for="cancer-history" class="checkbox-label">
                     <span class="check-icon"></span>
-                    <span class="label-text">جراحی قلب</span>
+                    <span class="label-text">سابقه سرطان (همراه جزئیات نوع و درمان)</span>
                 </label>
             </div>
             
-            <h3 class="diffrent-category-titles">مشکلات کیسه صفرا</h3>
-            <div class="checkbox-container">
-                <input type="checkbox" id="gallbladder-stones" class="real-checkbox">
-                <label for="gallbladder-stones" class="checkbox-label">
+            <!-- جزئیات سرطان -->
+            <div id="cancer-details" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #e91e63;">
+                <!-- وضعیت درمان -->
+                <h4 style="margin: 0 0 15px 0; color: #333; font-size: 14px;">وضعیت درمان:</h4>
+                <div class="cancer-options" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="cancer-option" data-value="chemo">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">💊</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">شیمی درمانی</div>
+                    </div>
+                    <div class="cancer-option" data-value="radio">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">☢️</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">پرتو درمانی</div>
+                    </div>
+                    <div class="cancer-option" data-value="surgery">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">🔪</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">اخیراً جراحی شده‌ام</div>
+                    </div>
+                    <div class="cancer-option" data-value="finished">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">✅</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">درمانم تمام شده</div>
+                    </div>
+                </div>
+            
+                <!-- نوع سرطان -->
+                <h4 style="margin: 20px 0 10px 0; color: #333; font-size: 14px;">نوع سرطان:</h4>
+                <div class="cancer-options" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="cancer-option" data-value="breast">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">🎀</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">پستان</div>
+                    </div>
+                    <div class="cancer-option" data-value="colon">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">🩸</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">روده</div>
+                    </div>
+                    <div class="cancer-option" data-value="prostate">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">👨</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">پروستات</div>
+                    </div>
+                    <div class="cancer-option" data-value="lung">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">🫁</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">ریه</div>
+                    </div>
+                    <div class="cancer-option" data-value="blood">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">🩸</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">خون</div>
+                    </div>
+                    <div class="cancer-option" data-value="other">
+                        <div class="cancer-icon" style="display: inline-block; width: 24px; text-align: center;">❓</div>
+                        <div class="cancer-text" style="display: inline-block; margin-right: 8px;">سایر</div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- جراحی‌های زنان -->
+            <h3 class="diffrent-category-titles female-only">جراحی‌های زنان</h3>
+            <div class="checkbox-container female-only">
+                <input type="checkbox" id="surgery-gynecology" class="real-checkbox">
+                <label for="surgery-gynecology" class="checkbox-label">
                     <span class="check-icon"></span>
-                    <span class="label-text">سنگ کیسه صفرا (بدون جراحی)</span>
+                    <span class="label-text">جراحی‌های زنان</span>
                 </label>
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="gallbladder-inflammation" class="real-checkbox">
-                <label for="gallbladder-inflammation" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">التهاب کیسه صفرا</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="gallbladder-issues" class="real-checkbox">
-                <label for="gallbladder-issues" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">سایر مشکلات کیسه صفرا</span>
-                </label>
-            </div>            
         </div>
     </div>
 
@@ -738,23 +718,24 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
 
-    <!-- Step 10: Stomach Discomfort -->
+    <!-- Step 12: Stomach Discomfort - مرحله ۳: علائم و مشکلات فعلی -->
     <div id="stomach-discomfort-step" class="step checkbox-step-container">
-        <h2>اخیرا مشکلات گوارشی داشته اید؟</h2>        
+        <h2>علائم و مشکلات گوارشی فعلی</h2>
+        <p class="step-description">لطفاً مشکلات و علائم فعلی خود در سیستم گوارشی را انتخاب کنید</p>
         
         <div class="checkbox-container first-option stand-alone-none">
             <input type="checkbox" id="stomach-none" class="real-checkbox">
             <label for="stomach-none" class="checkbox-label">
                 <span class="check-icon"></span>
-                <span class="label-text">خیر</span>
+                <span class="label-text">هیچگونه مشکل گوارشی ندارم</span>
             </label>
-        </div> 
+        </div>
         
         <div class="separator"></div>
         
         <div id="stomach-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
-            <!-- مشکلات گوارشی -->
-            <h3 class="diffrent-category-titles" style="margin-top: 0px;">مشکلات گوارشی</h3>
+            <!-- 🌀 مشکلات گوارشی -->
+            <h3 class="diffrent-category-titles" style="margin-top: 0px;">🌀 مشکلات گوارشی</h3>
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-bloating" class="real-checkbox">
                 <label for="stomach-bloating" class="checkbox-label">
@@ -762,6 +743,7 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">نفخ یا گاز معده</span>
                 </label>
             </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-pain" class="real-checkbox">
                 <label for="stomach-pain" class="checkbox-label">
@@ -769,6 +751,7 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">درد یا گرفتگی معده</span>
                 </label>
             </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-heartburn" class="real-checkbox">
                 <label for="stomach-heartburn" class="checkbox-label">
@@ -776,6 +759,33 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">سوزش سر دل یا ترش کردن</span>
                 </label>
             </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-constipation" class="real-checkbox">
+                <label for="stomach-constipation" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">یبوست مزمن</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-diarrhea" class="real-checkbox">
+                <label for="stomach-diarrhea" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">اسهال مزمن</span>
+                </label>
+            </div>
+    
+            <!-- ⚡ علائم عملکردی -->
+            <h3 class="diffrent-category-titles">⚡ علائم عملکردی</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-fullness" class="real-checkbox">
+                <label for="stomach-fullness" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سیری زودرس</span>
+                </label>
+            </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-nausea" class="real-checkbox">
                 <label for="stomach-nausea" class="checkbox-label">
@@ -783,44 +793,7 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">حالت تهوع</span>
                 </label>
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-fullness" class="real-checkbox">
-                <label for="stomach-fullness" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">سیری زودرس</span>
-                </label>
-            </div>        
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-helicobacter" class="real-checkbox">
-                <label for="stomach-helicobacter" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">عفونت هلیکوباکتر پیلوری (H. Pylori)</span>
-                </label>
-            </div>            
             
-            <!-- مشکلات هضم -->
-            <h3 class="diffrent-category-titles">مشکلات هضم و جذب</h3>
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-indigestion" class="real-checkbox">
-                <label for="stomach-indigestion" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">سوء هاضمه مزمن</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-constipation" class="real-checkbox">
-                <label for="stomach-constipation" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">یبوست</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-diarrhea" class="real-checkbox">
-                <label for="stomach-diarrhea" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">اسهال</span>
-                </label>
-            </div>
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-slow-digestion" class="real-checkbox">
                 <label for="stomach-slow-digestion" class="checkbox-label">
@@ -828,8 +801,25 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">هضم کند غذا</span>
                 </label>
             </div>
-
-            <h3 class="diffrent-category-titles">بیماری‌های التهابی مزمن</h3>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-acid-reflux" class="real-checkbox">
+                <label for="stomach-acid-reflux" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">ریفلاکس اسید معده</span>
+                </label>
+            </div>
+    
+            <!-- 🦠 مشکلات خاص -->
+            <h3 class="diffrent-category-titles">🦠 مشکلات خاص</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-helicobacter" class="real-checkbox">
+                <label for="stomach-helicobacter" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">عفونت هلیکوباکتر پیلوری (H. Pylori)</span>
+                </label>
+            </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-ibd" class="real-checkbox">
                 <label for="stomach-ibd" class="checkbox-label">
@@ -838,7 +828,14 @@ $theme_assets = get_stylesheet_directory_uri();
                 </label>
             </div>
             
-            <!-- ریفلاکس معده-مروی -->
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-ibs" class="real-checkbox">
+                <label for="stomach-ibs" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سندرم روده تحریک‌پذیر (IBS)</span>
+                </label>
+            </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-gerd" class="real-checkbox">
                 <label for="stomach-gerd" class="checkbox-label">
@@ -846,9 +843,15 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">ریفلاکس معده-مروی (GERD)</span>
                 </label>
             </div>
-
-            <!-- حساسیت‌های غذایی -->
-            <h3 class="diffrent-category-titles">واکنش‌های غذایی</h3>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="stomach-indigestion" class="real-checkbox">
+                <label for="stomach-indigestion" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سوء هاضمه مزمن</span>
+                </label>
+            </div>
+            
             <div class="checkbox-container">
                 <input type="checkbox" id="stomach-food-intolerance" class="real-checkbox">
                 <label for="stomach-food-intolerance" class="checkbox-label">
@@ -856,13 +859,6 @@ $theme_assets = get_stylesheet_directory_uri();
                     <span class="label-text">عدم تحمل غذایی (لبنیات، گلوتن و...)</span>
                 </label>
             </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="stomach-acid-reflux" class="real-checkbox">
-                <label for="stomach-acid-reflux" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">رفلاکس اسید معده</span>
-                </label>
-            </div>            
         </div>
     </div>
 
@@ -1049,87 +1045,6 @@ $theme_assets = get_stylesheet_directory_uri();
                     <p>تمرین سنگین روزانه و برنامه‌ریزی شده</p>
                     <span class="exercise-examples">(ورزشکاران حرفه‌ای، بدنسازان، ورزش‌های قهرمانی)</span>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 14: Additional Info (اصلاح شده) -->
-    <div id="additional-info-step" class="step checkbox-step-container">
-        <h2>وضعیت سلامت و بیماری‌های زمینه‌ای</h2>        
-        
-        <div class="checkbox-container first-option stand-alone-none">
-            <input type="checkbox" id="info-none" class="real-checkbox">
-            <label for="info-none" class="checkbox-label">
-                <span class="check-icon"></span>
-                <span class="label-text">هیچگونه بیماری زمینه‌ای ندارم</span>
-            </label>
-        </div> 
-        
-        <div class="separator"></div>
-        
-        <div id="additional-info-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
-            <!-- بیماری‌های متابولیک -->
-            <h3 class="diffrent-category-titles" style="margin-top: 0px;">بیماری‌های متابولیک</h3>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-diabetes" class="real-checkbox">
-                <label for="info-diabetes" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">دیابت نوع 1 یا 2</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-hypertension" class="real-checkbox">
-                <label for="info-hypertension" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">فشار خون بالا</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-cholesterol" class="real-checkbox">
-                <label for="info-cholesterol" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">کلسترول یا تری گلیسیرید بالا</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-fatty-liver" class="real-checkbox">
-                <label for="info-fatty-liver" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">کبد چرب</span>
-                </label>
-            </div>            
-            <!-- بیماری‌های گوارشی -->
-            <h3 class="diffrent-category-titles">بیماری‌های گوارشی</h3>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-ibs" class="real-checkbox">
-                <label for="info-ibs" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">سندرم روده تحریک‌پذیر (IBS)</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-celiac" class="real-checkbox">
-                <label for="info-celiac" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">بیماری سلیاک (حساسیت به گلوتن)</span>
-                </label>
-            </div>
-            
-            <!-- حساسیت‌ها -->
-            <h3 class="diffrent-category-titles">حساسیت‌ها و عدم تحمل‌ها</h3>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-lactose" class="real-checkbox">
-                <label for="info-lactose" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">عدم تحمل لاکتوز</span>
-                </label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="info-food-allergy" class="real-checkbox">
-                <label for="info-food-allergy" class="checkbox-label">
-                    <span class="check-icon"></span>
-                    <span class="label-text">حساسیت غذایی (آلرژی)</span>
-                </label>
             </div>
         </div>
     </div>
