@@ -272,7 +272,7 @@
     background-color: rgba(0,0,0,0.5);
 }
 
-.consultant-modal-content {
+.consultant-modal-content { 
     background-color: #fefefe;
     margin: 5% auto;
     padding: 1rem;
@@ -280,6 +280,10 @@
     width: 85%;
     max-width: 600px;
     position: relative;
+    
+        /* این قسمت رو اضافه کن */
+    max-height: 80vh;   /* تا حداکثر 80 درصد ارتفاع صفحه */
+    overflow-y: auto;   /* اسکرول عمودی فعال بشه */
 }
 
 .consultant-close-modal {
@@ -325,7 +329,7 @@
     border-top: 1px solid #eee;
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 /* استایل‌های ادیتور داخلی */
@@ -469,7 +473,7 @@
     
     .consultant-btn {
         flex: 1;
-        min-width: 120px;
+        /*min-width: 120px;*/
         justify-content: center;
     }
 }

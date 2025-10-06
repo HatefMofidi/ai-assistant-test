@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // داده‌های تستی
+            // داده‌های تستی به‌روزرسانی شده
             const testData = {
                 firstName: "تست",
                 lastName: "کاربر",
@@ -27,59 +27,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 exercise: 'medium',
                 waterIntake: 8,
                 surgery: ['none'],
-                hormonal: ['none'],
-                stomachDiscomfort: ['none'],
+                digestiveConditions: ['none'], // به‌روزرسانی شده
                 dietStyle: ['none'],
                 foodLimitations: ['none'],
-                foodPreferences: ['none']
+                chronicConditions: ['none'] // اضافه شده
             };
 
-            // تابع جدید برای پر کردن مرحله اطلاعات شخصی
-            function fillPersonalInfoStep() {
-                if (state.currentStep === STEPS.PERSONAL_INFO) {
-                    // پر کردن نام
-                    const firstNameInput = document.getElementById('first-name-input');
-                    if (firstNameInput) {
-                        firstNameInput.value = testData.firstName;
-                        firstNameInput.dispatchEvent(new Event('input'));
+            // تابع جدید برای پر کردن مرحله مشکلات گوارشی
+            function fillDigestiveConditionsStep() {
+                if (state.currentStep === STEPS.DIGESTIVE_CONDITIONS) {
+                    const noneCheckbox = document.getElementById('digestive-none');
+                    if (noneCheckbox) {
+                        noneCheckbox.checked = true;
+                        noneCheckbox.dispatchEvent(new Event('change'));
+                        clickNextButton(500);
                     }
-                    
-                    // پر کردن نام خانوادگی
-                    const lastNameInput = document.getElementById('last-name-input');
-                    if (lastNameInput) {
-                        lastNameInput.value = testData.lastName;
-                        lastNameInput.dispatchEvent(new Event('input'));
-                    }
-                    
-                    // کلیک روی دکمه بعدی
-                    clickNextButton(500);
                 }
             }
 
-            // پر کردن مرحله جنسیت
+            // تابع جدید برای پر کردن مرحله بیماری‌های مزمن
+            function fillChronicConditionsStep() {
+                if (state.currentStep === STEPS.CHRONIC_CONDITIONS) {
+                    const noneCheckbox = document.getElementById('chronic-none');
+                    if (noneCheckbox) {
+                        noneCheckbox.checked = true;
+                        noneCheckbox.dispatchEvent(new Event('change'));
+                        clickNextButton(500);
+                    }
+                }
+            }
+            
+            // سایر توابع موجود بدون تغییر (فقط ترتیب فراخوانی به‌روز می‌شود)
             function fillGenderStep() {
                 if (state.currentStep === STEPS.GENDER) {
-                    // تیک شرایط و قوانین
                     const termsCheckbox = document.getElementById('confirm-terms');
                     if (termsCheckbox && !termsCheckbox.checked) {
                         termsCheckbox.checked = true;
                         termsCheckbox.dispatchEvent(new Event('change'));
                     }
 
-                    // انتخاب جنسیت
                     setTimeout(() => {
                         const genderOption = document.querySelector(`.gender-option[data-gender="${testData.gender}"]`);
                         if (genderOption) {
                             genderOption.click();
-                            
-                            // کلیک روی دکمه بعدی
                             clickNextButton(1000);
                         }
                     }, 300);
                 }
             }
 
-            // پر کردن مرحله هدف
+            function fillPersonalInfoStep() {
+                if (state.currentStep === STEPS.PERSONAL_INFO) {
+                    const firstNameInput = document.getElementById('first-name-input');
+                    if (firstNameInput) {
+                        firstNameInput.value = testData.firstName;
+                        firstNameInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    const lastNameInput = document.getElementById('last-name-input');
+                    if (lastNameInput) {
+                        lastNameInput.value = testData.lastName;
+                        lastNameInput.dispatchEvent(new Event('input'));
+                    }
+                    
+                    clickNextButton(500);
+                }
+            }
+
             function fillGoalStep() {
                 if (state.currentStep === STEPS.GOAL) {
                     const goalOption = document.querySelector(`.goal-option[data-goal="${testData.goal}"]`);
@@ -90,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مراحل عددی (سن، قد، وزن، وزن هدف)
             function fillNumberSteps() {
                 const fieldMap = {
                     [STEPS.AGE]: {id: 'age-input', value: testData.age, name: 'سن'},
@@ -107,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         input.value = value;
                         input.dispatchEvent(new Event('input'));
                         
-                        // اعتبارسنجی ویژه برای وزن هدف
                         if (state.currentStep === STEPS.TARGET_WEIGHT) {
                             setTimeout(() => {
                                 const errorElement = document.getElementById('targetWeight-error');
@@ -124,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مرحله فعالیت
             function fillActivityStep() {
                 if (state.currentStep === STEPS.ACTIVITY) {
                     const activityOption = document.querySelector(`.activity-option[data-activity="${testData.activity}"]`);
@@ -135,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
                         
-            // پر کردن مرحله فعالیت ورزشی هفتگی
             function fillExerciseStep() {
                 if (state.currentStep === STEPS.EXERCISE) {
                     const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${testData.exercise}"]`);
@@ -146,17 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }     
             
-            function fillChronicConditionsStep() {
-                if (state.currentStep === STEPS.CHRONIC_CONDITIONS) {
-                    const noneCheckbox = document.getElementById('chronic-none');
-                    if (noneCheckbox) {
-                        noneCheckbox.checked = true;
-                        noneCheckbox.dispatchEvent(new Event('change'));
-                        clickNextButton(500);
-                    }
-                }
-            }
-            // پر کردن مرحله مصرف آب
             function fillWaterStep() {
                 if (state.currentStep === STEPS.WATER_INTAKE) {
                     const waterCups = document.querySelectorAll('.water-cup');
@@ -167,15 +166,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مراحل چک‌باکسی
+            // به‌روزرسانی توابع چک‌باکسی برای مراحل جدید
             function fillCheckboxSteps() {
                 const stepMap = {
                     [STEPS.SURGERY]: {prefix: 'surgery', name: 'جراحی‌ها'},
-                    [STEPS.HORMONAL]: {prefix: 'hormonal', name: 'مشکلات هورمونی'},
-                    [STEPS.STOMACH]: {prefix: 'stomach', name: 'مشکلات معده'},
                     [STEPS.DIET_STYLE]: {prefix: 'diet-style', name: 'سبک رژیم'},
                     [STEPS.FOOD_LIMITATIONS]: {prefix: 'limitations', name: 'محدودیت‌های غذایی'},
-                    [STEPS.FOOD_PREFERENCES]: {prefix: 'preferences', name: 'ترجیحات غذایی'}
+                    [STEPS.CHRONIC_CONDITIONS]: {prefix: 'chronic', name: 'بیماری‌های مزمن'},
+                    [STEPS.DIGESTIVE_CONDITIONS]: {prefix: 'digestive', name: 'مشکلات گوارشی'}                    
                 };
 
                 if (stepMap[state.currentStep]) {
@@ -190,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مرحله نمایش هدف
             function fillGoalDisplayStep() {
                 if (state.currentStep === STEPS.GOAL_DISPLAY) {
                     
@@ -210,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مرحله شرایط و قوانین
             function fillTermsStep() {
                 if (state.currentStep === STEPS.TERMS_AGREEMENT) {
                     const agreeCheckbox = document.getElementById('agree-terms');
@@ -222,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // پر کردن مرحله تأیید نهایی
             function fillConfirmationStep() {
                 if (state.currentStep === STEPS.CONFIRMATION) {
                     const confirmCheckbox = document.getElementById('confirm-info');
@@ -230,18 +225,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         confirmCheckbox.checked = true;
                         confirmCheckbox.dispatchEvent(new Event('change'));
                         
-                        // اضافه کردن تاخیر قبل از ارسال فرم
                         setTimeout(() => {
-                            // پیدا کردن دکمه ارسال نهایی
                             const submitButton = document.querySelector('.final-submit');
                             if (submitButton) {
                                 
-                                // غیرفعال کردن دکمه و تغییر متن آن (مطابق با کد diet.js)
                                 submitButton.disabled = true;
                                 submitButton.textContent = aiAssistantVars.i18n.loading;
                                 
-                                // ایجاد و ارسال رویداد formSubmitted به صورت دستی
-                                const formData = state.formData; // یا هر منبع دیگری که داده‌های فرم را دارد
+                                const formData = state.formData;
                                 const formSubmittedEvent = new CustomEvent('formSubmitted', {
                                     detail: {
                                         formData: formData
@@ -265,24 +256,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, delay);
             }
 
-            // اجرای توابع پر کردن بر اساس مرحله فعلی
+            // اجرای توابع پر کردن بر اساس مرحله فعلی - ترتیب جدید
             fillGenderStep();
-            fillPersonalInfoStep()
+            fillPersonalInfoStep();
             fillGoalStep();
             fillNumberSteps();
-            fillActivityStep();
-            fillExerciseStep();
-            fillWaterStep();
-            fillCheckboxSteps();
+            fillChronicConditionsStep();      // اضافه شده - مرحله 9
+            fillDigestiveConditionsStep();    // اضافه شده - مرحله 10
+            fillCheckboxSteps();              // شامل surgery (11), diet-style (15), limitations (16)
+            fillWaterStep();                  // مرحله 12
+            fillActivityStep();               // مرحله 13
+            fillExerciseStep();               // مرحله 14
             fillGoalDisplayStep();
-            fillChronicConditionsStep();
             fillTermsStep();
             fillConfirmationStep();
         }
 
-        // ایجاد دکمه پر کردن خودکار
+        // ایجاد دکمه پر کردن خودکار (بدون تغییر)
         function createAutoFillButton() {
-            // اگر دکمه از قبل وجود دارد، خروج
             if (document.getElementById('dev-auto-fill-btn')) return;
 
             const btn = document.createElement('button');
@@ -311,21 +302,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     autoFillForm();
                     
-                    // اضافه کردن هندلر برای تغییر مراحل
                     const stateChangeHandler = function() {
                         autoFillForm();
                     };
 
-                    // حذف هندلرهای قبلی
                     window.removeEventListener('stateUpdated', stateChangeHandler);
-                    
-                    // اضافه کردن هندلر جدید
                     window.addEventListener('stateUpdated', stateChangeHandler);
                     
-                    // حذف هندلر پس از تکمیل فرم
                     setTimeout(() => {
                         window.removeEventListener('stateUpdated', stateChangeHandler);
-                    }, 5000); // حداکثر 15 ثانیه
+                    }, 5000); 
                 }, 500);
             });
 

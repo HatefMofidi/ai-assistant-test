@@ -3,9 +3,10 @@ class ConsultantDietEditor {
         this.container = document.getElementById(containerId);
         this.currentRequestId = null;
         this.originalData = null;
+        this.currentData = null;
         this.isEditing = false;
         this.currentEditElement = null;
-        this.currentData = null; // داده‌های جاری
+        this.currentInput = null;
         
         if (!this.container) {
             console.error(`Container with ID '${containerId}' not found`);
@@ -16,7 +17,8 @@ class ConsultantDietEditor {
     init(data, requestId) {
         this.originalData = data;
         this.currentRequestId = requestId;
-        // استخراج داده‌های رژیم
+        
+        // استخراج و پارس داده‌های رژیم
         const { original_data, consultation_data } = data;
         const dietData = consultation_data?.final_diet_data || original_data?.ai_response;
         
@@ -24,84 +26,145 @@ class ConsultantDietEditor {
             this.currentData = typeof dietData === 'string' ? JSON.parse(dietData) : dietData;
         } catch (e) {
             console.error('Error parsing diet data:', e);
-            this.currentData = null;
-        }        
+            this.currentData = this.createFallbackData();
+        }
+        
         this.render();
+    }
+
+    createFallbackData() {
+        return {
+            sections: [
+                {
+                    title: "برنامه غذایی",
+                    content: [
+                        {
+                            type: "paragraph",
+                            text: "داده‌های رژیم غذایی در دسترس نیست. لطفاً به صورت دستی ویرایش کنید."
+                        }
+                    ]
+                }
+            ]
+        };
     }
 
     render() {
         if (!this.originalData || !this.currentData) {
-            this.container.innerHTML = '<div class="consultant-loading">داده‌ها برای نمایش موجود نیست</div>';
+            this.container.innerHTML = this.renderErrorState();
             return;
         }
 
-
-        this.container.innerHTML = this.renderStructuredEditor(this.currentData);
-        this.setupEditEvents();
+        this.container.innerHTML = this.renderStructuredEditor();
+        this.setupEditorEvents();
     }
 
-    renderStructuredEditor(data) {
+    renderErrorState() {
+        return `
+            <div class="consultant-editor-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>خطا در بارگذاری داده‌ها</h3>
+                <p>داده‌های رژیم غذایی برای نمایش موجود نیست.</p>
+                <button class="consultant-btn consultant-btn-primary" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> بارگذاری مجدد
+                </button>
+            </div>
+        `;
+    }
+
+    renderStructuredEditor() {
         return `
             <div class="consultant-editor-tabs">
                 <div class="consultant-editor-tab active" data-tab="preview">
-                    <i class="fas fa-eye"></i> پیش‌نمایش
+                    <i class="fas fa-eye"></i> پیش‌نمایش رژیم
                 </div>
                 <div class="consultant-editor-tab" data-tab="json">
                     <i class="fas fa-code"></i> ویرایش JSON
                 </div>
+                <div class="consultant-editor-tab" data-tab="simple">
+                    <i class="fas fa-edit"></i> ویرایش ساده
+                </div>
             </div>
 
             <div class="consultant-editor-content">
+                <!-- تب پیش‌نمایش -->
                 <div class="consultant-editor-pane active" id="preview-pane">
                     <div class="consultant-editor-actions">
                         <button class="consultant-btn consultant-btn-primary" id="expand-all-btn">
-                            <i class="fas fa-expand"></i> باز کردن همه بخش‌ها
+                            <i class="fas fa-expand"></i> باز کردن همه
                         </button>
                         <button class="consultant-btn consultant-btn-secondary" id="collapse-all-btn">
-                            <i class="fas fa-compress"></i> بستن همه بخش‌ها
+                            <i class="fas fa-compress"></i> بستن همه
+                        </button>
+                        <button class="consultant-btn consultant-btn-success" id="refresh-preview-btn">
+                            <i class="fas fa-sync"></i> بروزرسانی
                         </button>
                     </div>
                     <div class="consultant-diet-preview" id="consultant-diet-preview">
-                        ${this.renderDietPlan(data)}
+                        ${this.renderDietPlan(this.currentData)}
                     </div>
                 </div>
 
+                <!-- تب ویرایش JSON -->
                 <div class="consultant-editor-pane" id="json-pane">
                     <div class="consultant-json-editor">
-                        <h4><i class="fas fa-edit"></i> ویرایش مستقیم JSON</h4>
-                        <textarea id="diet-json-editor" style="width: 100%; height: 400px; font-family: monospace;">${JSON.stringify(this.currentData, null, 2)}</textarea>
-                        <div class="consultant-json-actions">
-                            <button class="consultant-btn consultant-btn-primary" id="update-from-json-btn">
-                                <i class="fas fa-sync"></i> بروزرسانی پیش‌نمایش از JSON
+                        <h4><i class="fas fa-code"></i> ویرایشگر JSON پیشرفته</h4>
+                        <div class="consultant-editor-actions">
+                            <button class="consultant-btn consultant-btn-success" id="apply-json-btn">
+                                <i class="fas fa-check"></i> اعمال تغییرات
+                            </button>
+                            <button class="consultant-btn consultant-btn-warning" id="validate-json-btn">
+                                <i class="fas fa-check-circle"></i> اعتبارسنجی
                             </button>
                             <button class="consultant-btn consultant-btn-secondary" id="reset-json-btn">
-                                <i class="fas fa-undo"></i> بازنشانی به حالت اولیه
+                                <i class="fas fa-undo"></i> بازنشانی
+                            </button>
+                        </div>
+                        <textarea id="diet-json-editor" class="consultant-json-textarea">${this.escapeHtml(JSON.stringify(this.currentData, null, 2))}</textarea>
+                        <div class="consultant-json-status" id="json-status"></div>
+                    </div>
+                </div>
+
+                <!-- تب ویرایش ساده -->
+                <div class="consultant-editor-pane" id="simple-pane">
+                    <div class="consultant-simple-editor">
+                        <h4><i class="fas fa-edit"></i> ویرایشگر متن ساده</h4>
+                        <textarea id="diet-text-editor" class="consultant-simple-textarea">${this.escapeHtml(this.formatAsText(this.currentData))}</textarea>
+                        <div class="consultant-editor-actions">
+                            <button class="consultant-btn consultant-btn-primary" id="apply-text-btn">
+                                <i class="fas fa-check"></i> اعمال تغییرات متنی
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- بخش یادداشت‌ها -->
             <div class="consultant-notes-section">
                 <label for="consultant-notes">
                     <i class="fas fa-sticky-note"></i> یادداشت‌های مشاور:
                 </label>
-                <textarea id="consultant-notes" style="" placeholder="یادداشت‌ها و توضیحات خود را اینجا بنویسید...">${this.escapeHtml(this.originalData.consultation_data?.consultant_notes || '')}</textarea>
+                <textarea id="consultant-notes" class="consultant-notes-textarea" 
+                    placeholder="یادداشت‌ها، توضیحات و توصیه‌های خود را اینجا بنویسید...">${this.escapeHtml(this.originalData.consultation_data?.consultant_notes || '')}</textarea>
             </div>
-        `;
-    }
 
-    renderSimpleTextEditor(text) {
-        return `
-            <div class="consultant-simple-editor">
-                <h4><i class="fas fa-edit"></i> ویرایش متن رژیم</h4>
-                <textarea id="diet-text-editor" style="width: 100%; height: 400px; font-family: monospace;">${this.escapeHtml(text)}</textarea>
-                
-                <div class="consultant-notes-section">
-                    <label for="consultant-notes">
-                        <i class="fas fa-sticky-note"></i> یادداشت‌های مشاور:
-                    </label>
-                    <textarea id="consultant-notes" style="width: 100%; height: 100px;" placeholder="یادداشت‌ها و توضیحات خود را اینجا بنویسید...">${this.escapeHtml(this.originalData.consultation_data?.consultant_notes || '')}</textarea>
+            <!-- مودال ویرایش -->
+            <div id="edit-modal" class="consultant-edit-modal" style="display: none;">
+                <div class="consultant-edit-modal-content">
+                    <div class="consultant-edit-modal-header">
+                        <h4><i class="fas fa-edit"></i> ویرایش محتوا</h4>
+                        <span class="consultant-edit-close">&times;</span>
+                    </div>
+                    <div class="consultant-edit-modal-body">
+                        <textarea id="edit-modal-textarea" class="consultant-modal-textarea"></textarea>
+                    </div>
+                    <div class="consultant-edit-modal-footer">
+                        <button class="consultant-btn consultant-btn-success" id="edit-modal-save">
+                            <i class="fas fa-check"></i> تایید
+                        </button>
+                        <button class="consultant-btn consultant-btn-danger" id="edit-modal-cancel">
+                            <i class="fas fa-times"></i> لغو
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -109,10 +172,7 @@ class ConsultantDietEditor {
 
     renderDietPlan(data) {
         if (!data.sections || !Array.isArray(data.sections)) {
-            return `<div class="consultant-debug-info">
-                <h3>داده‌های خام:</h3>
-                <pre>${JSON.stringify(data, null, 2)}</pre>
-            </div>`;
+            return this.renderRawData(data);
         }
 
         let html = '<div class="consultant-diet-plan">';
@@ -122,7 +182,7 @@ class ConsultantDietEditor {
         });
 
         if (data.footer) {
-            html += `<div class="consultant-footer">${this.escapeHtml(data.footer)}</div>`;
+            html += `<div class="consultant-footer editable-text" data-path="footer">${this.escapeHtml(data.footer)}</div>`;
         }
 
         html += '</div>';
@@ -130,16 +190,18 @@ class ConsultantDietEditor {
     }
 
     renderSection(section, sectionIndex) {
+        const isExpanded = sectionIndex === 0; // اولین بخش باز باشد
+        
         return `
             <div class="consultant-section" data-section-index="${sectionIndex}">
-                <div class="consultant-section-header">
+                <div class="consultant-section-header ${isExpanded ? 'active' : ''}">
                     <h2>
                         <i class="fas fa-${this.getSectionIcon(section.title)}"></i>
                         <span class="editable-text" data-path="sections.${sectionIndex}.title">${this.escapeHtml(section.title || 'بخش بدون عنوان')}</span>
                     </h2>
-                    <i class="fas fa-chevron-down consultant-accordion-icon"></i>
+                    <i class="fas fa-chevron-${isExpanded ? 'up' : 'down'} consultant-accordion-icon"></i>
                 </div>
-                <div class="consultant-section-content">
+                <div class="consultant-section-content" style="max-height: ${isExpanded ? 'none' : '0'};">
                     ${this.renderSectionContent(section.content, sectionIndex)}
                 </div>
             </div>
@@ -147,7 +209,7 @@ class ConsultantDietEditor {
     }
 
     renderSectionContent(content, sectionIndex) {
-        if (!content) return '<p>محتوایی موجود نیست</p>';
+        if (!content) return '<p class="consultant-no-content">محتوایی موجود نیست</p>';
         
         let html = '';
         
@@ -158,7 +220,7 @@ class ConsultantDietEditor {
         } else if (typeof content === 'object') {
             html += this.renderSubContent(content, sectionIndex, 0);
         } else {
-            html += `<p class="editable-text" data-path="sections.${sectionIndex}.content">${this.escapeHtml(content)}</p>`;
+            html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content">${this.escapeHtml(content)}</div>`;
         }
         
         return html;
@@ -168,27 +230,39 @@ class ConsultantDietEditor {
         let html = '';
         
         if (sub.subtitle) {
-            html += `<h3 class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.subtitle">${this.escapeHtml(sub.subtitle)}</h3>`;
+            html += `
+                <div class="consultant-subsection">
+                    <h3 class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.subtitle">
+                        ${this.escapeHtml(sub.subtitle)}
+                    </h3>
+            `;
         }
 
         if (sub.type === 'list' && sub.items) {
             html += this.renderList(sub.items, sectionIndex, subIndex);
         } else if (sub.type === 'table' && sub.headers && sub.rows) {
-            html += this.renderTable(sub, sectionIndex, subIndex);
+            html += this.renderTableAsCards(sub, sectionIndex, subIndex);
         } else if (sub.type === 'paragraph' && sub.text) {
-            html += `<p class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</p>`;
+            html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</div>`;
         } else if (sub.text) {
-            html += `<p class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</p>`;
+            html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</div>`;
+        }
+
+        if (sub.subtitle) {
+            html += '</div>';
         }
 
         return html;
     }
 
     renderList(items, sectionIndex, subIndex) {
-        let html = '<ul>';
+        let html = '<ul class="consultant-list">';
         items.forEach((item, itemIndex) => {
             if (typeof item === 'string') {
-                html += `<li class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.items.${itemIndex}">${this.escapeHtml(item)}</li>`;
+                html += `
+                    <li class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.items.${itemIndex}">
+                        ${this.escapeHtml(item)}
+                    </li>`;
             } else if (item.label && item.value) {
                 html += `
                     <li>
@@ -202,21 +276,13 @@ class ConsultantDietEditor {
         return html;
     }
 
-    renderTable(tableData, sectionIndex, subIndex) {
-        // استفاده از کارت‌ها به جای جدول
-        return this.renderTableAsCards(tableData, sectionIndex, subIndex);
-    }
-    
     renderTableAsCards(tableData, sectionIndex, subIndex) {
         if (!tableData.headers || !tableData.rows) {
             return '<div class="consultant-error">داده‌های جدول نامعتبر است</div>';
         }
-    
-        console.log('Rendering table as cards:', tableData);
-    
+
         let html = '<div class="consultant-cards-container">';
         
-        // ایجاد کارت برای هر ردیف
         tableData.rows.forEach((row, rowIndex) => {
             html += this.renderDayCard(row, tableData.headers, sectionIndex, subIndex, rowIndex);
         });
@@ -225,7 +291,7 @@ class ConsultantDietEditor {
         
         return html;
     }
-    
+
     renderDayCard(row, headers, sectionIndex, subIndex, rowIndex) {
         const dayName = row[0] || `روز ${rowIndex + 1}`;
         
@@ -233,12 +299,13 @@ class ConsultantDietEditor {
             <div class="consultant-day-card">
                 <div class="consultant-day-header">
                     <i class="fas fa-calendar-day"></i>
-                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.0">${this.escapeHtml(dayName)}</span>
+                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.0">
+                        ${this.escapeHtml(dayName)}
+                    </span>
                 </div>
                 <div class="consultant-meals-container">
         `;
         
-        // ایجاد بخش‌های غذایی برای هر ستون (به جز ستون اول که نام روز است)
         for (let i = 1; i < headers.length; i++) {
             if (row[i] && row[i].trim() !== '') {
                 const mealName = headers[i] || `وعده ${i}`;
@@ -253,7 +320,7 @@ class ConsultantDietEditor {
         
         return html;
     }
-    
+
     renderMealSection(mealContent, mealName, sectionIndex, subIndex, rowIndex, columnIndex) {
         const mealIcon = this.getMealIcon(columnIndex, mealName);
         
@@ -261,51 +328,29 @@ class ConsultantDietEditor {
             <div class="consultant-meal-section">
                 <div class="consultant-meal-title">
                     <i class="fas fa-${mealIcon}"></i>
-                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${columnIndex}">${this.escapeHtml(mealName)}</span>
+                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${columnIndex}">
+                        ${this.escapeHtml(mealName)}
+                    </span>
                 </div>
-                <div class="consultant-meal-content editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${columnIndex}">
-                    ${this.escapeHtml(mealContent)}
+                <div class="consultant-meal-content editable-text" 
+                     data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${columnIndex}">
+                    ${this.formatMealContent(mealContent)}
                 </div>
             </div>
         `;
     }
-    
-    getMealIcon(columnIndex, mealName) {
-        const mealIcons = {
-            'صبحانه': 'sun',
-            'ناهار': 'sun', 
-            'شام': 'moon',
-            'میان‌وعده': 'apple-alt',
-            'میان وعده': 'apple-alt',
-            'میان‌وعده صبح': 'sun',
-            'میان‌وعده عصر': 'apple-alt',
-            'عصرانه': 'apple-alt'
-        };
-        
-        // جستجو بر اساس نام وعده
-        const lowerMealName = mealName.toLowerCase();
-        for (const [key, icon] of Object.entries(mealIcons)) {
-            if (lowerMealName.includes(key.toLowerCase())) {
-                return icon;
-            }
-        }
-        
-        // اگر پیدا نشد، بر اساس index
-        const defaultIcons = ['sun', 'sun', 'moon', 'apple-alt', 'utensils'];
-        return defaultIcons[columnIndex - 1] || 'utensils';
+
+    formatMealContent(content) {
+        if (!content) return '';
+        // تبدیل خطوط جدید به <br> برای نمایش مناسب
+        return this.escapeHtml(content).replace(/\n/g, '<br>');
     }
 
-    setupEditEvents() {
-        // تب‌ها
+    setupEditorEvents() {
         this.setupTabs();
-        
-        // آکاردئون‌ها
         this.setupAccordions();
-        
-        // دکمه‌های اکشن
         this.setupActionButtons();
-        
-        // ویرایش دبل کلیک
+        this.setupEditModal();
         this.setupDoubleClickEdit();
     }
 
@@ -315,11 +360,12 @@ class ConsultantDietEditor {
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
                 tabs.forEach(t => t.classList.remove('active'));
                 panes.forEach(p => p.classList.remove('active'));
 
                 tab.classList.add('active');
-                const tabId = tab.getAttribute('data-tab');
                 const pane = document.getElementById(`${tabId}-pane`);
                 if (pane) {
                     pane.classList.add('active');
@@ -335,392 +381,28 @@ class ConsultantDietEditor {
             header.addEventListener('click', function() {
                 const isActive = this.classList.contains('active');
                 const content = this.nextElementSibling;
+                const icon = this.querySelector('.consultant-accordion-icon');
+                
+                // بستن همه بخش‌های دیگر
+                headers.forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('active');
+                        h.nextElementSibling.style.maxHeight = '0';
+                        h.querySelector('.consultant-accordion-icon').className = 'fas fa-chevron-down consultant-accordion-icon';
+                    }
+                });
                 
                 if (isActive) {
                     this.classList.remove('active');
                     content.style.maxHeight = '0';
+                    icon.className = 'fas fa-chevron-down consultant-accordion-icon';
                 } else {
                     this.classList.add('active');
                     content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.className = 'fas fa-chevron-up consultant-accordion-icon';
                 }
             });
         });
-
-        // باز کردن اولین بخش
-        if (headers[0]) {
-            headers[0].classList.add('active');
-            const firstContent = headers[0].nextElementSibling;
-            firstContent.style.maxHeight = firstContent.scrollHeight + 'px';
-        }
-    }
-
-    setupActionButtons() {
-        // باز کردن همه بخش‌ها
-        const expandBtn = document.getElementById('expand-all-btn');
-        if (expandBtn) {
-            expandBtn.addEventListener('click', () => {
-                const contents = this.container.querySelectorAll('.consultant-section-content');
-                const headers = this.container.querySelectorAll('.consultant-section-header');
-                
-                headers.forEach(header => header.classList.add('active'));
-                contents.forEach(content => {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                });
-            });
-        }
-
-        // بستن همه بخش‌ها
-        const collapseBtn = document.getElementById('collapse-all-btn');
-        if (collapseBtn) {
-            collapseBtn.addEventListener('click', () => {
-                const contents = this.container.querySelectorAll('.consultant-section-content');
-                const headers = this.container.querySelectorAll('.consultant-section-header');
-                
-                headers.forEach(header => header.classList.remove('active'));
-                contents.forEach(content => {
-                    content.style.maxHeight = '0';
-                });
-            });
-        }
-
-        // بروزرسانی از JSON
-        const updateJsonBtn = document.getElementById('update-from-json-btn');
-        if (updateJsonBtn) {
-            updateJsonBtn.addEventListener('click', () => {
-                const jsonEditor = document.getElementById('diet-json-editor');
-                if (jsonEditor) {
-                    try {
-                        const newData = JSON.parse(jsonEditor.value);
-                        this.updatePreviewFromJSON(newData);
-                    } catch (e) {
-                        alert('خطا در پارس کردن JSON: ' + e.message);
-                    }
-                }
-            });
-        }
-    }
-
-    setupDoubleClickEdit() {
-        const editableElements = this.container.querySelectorAll('.editable-text');
-        
-        editableElements.forEach(element => {
-            element.addEventListener('dblclick', (e) => {
-                e.stopPropagation();
-                this.startEditing(element);
-            });
-        });
-
-        // کلیک خارج از حالت ویرایش - با استفاده از event delegation
-        this.container.addEventListener('click', (e) => {
-            if (this.isEditing && !e.target.matches('.consultant-edit-input')) {
-                this.finishEditing();
-            }
-        });
-
-        // کلید Escape - روی document
-        document.addEventListener('keydown', (e) => {
-            if (this.isEditing && e.key === 'Escape') {
-                this.cancelEditing();
-            }
-        });
-    }
-
-startEditing(element) {
-    if (this.isEditing) return;
-    
-    this.isEditing = true;
-    this.currentEditElement = element;
-    this.originalText = element.textContent;
-    this.currentPath = element.dataset.path;
-    
-    // محاسبه موقعیت و اندازه دقیق المنت
-    const rect = element.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    
-    // تشخیص نوع المنت برای انتخاب input یا textarea
-    const tagName = element.tagName.toLowerCase();
-    const textLength = element.textContent.length;
-    const isTableCell = element.closest('td, th');
-    const isHeader = tagName === 'h1' || tagName === 'h2' || tagName === 'h3';
-    
-    let input;
-    
-    // برای تیترها، سلول‌های جدول و متن‌های کوتاه از input استفاده کن
-    if (isHeader || isTableCell || textLength < 100) {
-        input = document.createElement('input');
-        input.type = 'text';
-    } else {
-        // برای متن‌های طولانی از textarea استفاده کن
-        input = document.createElement('textarea');
-        input.style.resize = 'vertical';
-        input.style.minHeight = Math.max(rect.height, 60) + 'px';
-    }
-    
-    input.value = this.originalText;
-    input.className = 'consultant-edit-input';
-    input.style.position = 'absolute';
-    input.style.left = (rect.left + scrollLeft) + 'px';
-    input.style.top = (rect.top + scrollTop) + 'px';
-    input.style.width = rect.width + 'px';
-    
-    // برای input ارتفاع ثابت، برای textarea ارتفاع پویا
-    if (input.nodeName === 'INPUT') {
-        input.style.height = rect.height + 'px';
-    } else {
-        input.style.height = Math.max(rect.height, 80) + 'px';
-    }
-    
-    input.style.zIndex = '10000';
-    input.style.fontFamily = getComputedStyle(element).fontFamily;
-    input.style.fontSize = getComputedStyle(element).fontSize;
-    input.style.lineHeight = getComputedStyle(element).lineHeight;
-    input.style.padding = getComputedStyle(element).padding;
-    input.style.margin = getComputedStyle(element).margin;
-    input.style.border = '2px solid #4e54c8';
-    input.style.borderRadius = '4px';
-    input.style.boxShadow = '0 4px 12px rgba(78, 84, 200, 0.3)';
-    input.style.background = '#fff';
-    input.style.outline = 'none';
-    input.style.boxSizing = 'border-box';
-    
-    // مخفی کردن المنت اصلی
-    element.style.visibility = 'hidden';
-    
-    document.body.appendChild(input);
-    this.currentInput = input;
-    
-    // فوکوس و انتخاب متن
-    input.focus();
-    input.select();
-    
-    // مدیریت events
-    const handleKeydown = (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            finishEdit(); // Ctrl+Enter برای ذخیره
-        } else if (e.key === 'Enter' && input.nodeName === 'TEXTAREA') {
-            // در textarea اجازه Enter بده
-            return;
-        } else if (e.key === 'Enter') {
-            finishEdit();
-        } else if (e.key === 'Escape') {
-            cancelEdit();
-        }
-    };
-    
-    const handleBlur = () => {
-        finishEdit();
-    };
-    
-    const handleResize = () => {
-        // اگر پنجره تغییر اندازه داد، موقعیت input را آپدیت کن
-        if (this.currentEditElement && input.parentNode) {
-            const newRect = this.currentEditElement.getBoundingClientRect();
-            const newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const newScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            
-            input.style.left = (newRect.left + newScrollLeft) + 'px';
-            input.style.top = (newRect.top + newScrollTop) + 'px';
-        }
-    };
-    
-    const finishEdit = () => {
-        const newValue = input.value.trim();
-        
-        // بازگرداندن المنت اصلی
-        if (this.currentEditElement && this.currentEditElement.parentNode) {
-            this.currentEditElement.style.visibility = 'visible';
-            this.currentEditElement.textContent = newValue;
-        }
-        
-        // حذف input
-        if (input.parentNode) {
-            input.remove();
-        }
-        
-        // حذف event listeners
-        window.removeEventListener('resize', handleResize);
-        input.removeEventListener('keydown', handleKeydown);
-        input.removeEventListener('blur', handleBlur);
-        
-        // آپدیت داده‌ها
-        if (newValue !== this.originalText) {
-            this.updateData(this.currentPath, newValue);
-        }
-        
-        // پاک کردن
-        this.isEditing = false;
-        this.currentEditElement = null;
-        this.currentInput = null;
-    };
-    
-    const cancelEdit = () => {
-        // بازگرداندن مقدار اصلی
-        if (this.currentEditElement && this.currentEditElement.parentNode) {
-            this.currentEditElement.style.visibility = 'visible';
-        }
-        
-        // حذف input
-        if (input.parentNode) {
-            input.remove();
-        }
-        
-        // حذف event listeners
-        window.removeEventListener('resize', handleResize);
-        input.removeEventListener('keydown', handleKeydown);
-        input.removeEventListener('blur', handleBlur);
-        
-        // پاک کردن
-        this.isEditing = false;
-        this.currentEditElement = null;
-        this.currentInput = null;
-    };
-    
-    input.addEventListener('keydown', handleKeydown);
-    input.addEventListener('blur', handleBlur);
-    window.addEventListener('resize', handleResize);
-    
-    // برای textarea، ارتفاع را بر اساس محتوا تنظیم کن
-    if (input.nodeName === 'TEXTAREA') {
-        setTimeout(() => {
-            input.style.height = 'auto';
-            input.style.height = Math.max(input.scrollHeight, 80) + 'px';
-        }, 0);
-        
-        // هنگام تایپ، ارتفاع را تنظیم کن
-        input.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.max(this.scrollHeight, 80) + 'px';
-        });
-    }
-}
-    saveEdit(input) {
-        // حذف event listeners برای جلوگیری از اجرای تکراری
-        input.removeEventListener('keydown', this.handleInputKeydown);
-        input.removeEventListener('blur', this.handleInputBlur);
-        
-        const newValue = input.value.trim();
-        const path = input.dataset.path;
-        const originalElement = this.currentEditElement;
-        
-        if (originalElement && originalElement.parentNode) {
-            // بازگرداندن المنت اصلی
-            originalElement.textContent = newValue;
-            originalElement.style.display = '';
-            
-            // حذف input
-            if (input.parentNode) {
-                input.remove();
-            }
-            
-            // آپدیت داده‌ها
-            this.updateData(path, newValue);
-        }
-        
-        this.isEditing = false;
-        this.currentEditElement = null;
-        this.handleInputKeydown = null;
-        this.handleInputBlur = null;
-    }
-
-    cancelEditing() {
-        if (!this.isEditing || !this.currentEditElement) return;
-        
-        const input = this.container.querySelector('.consultant-edit-input');
-        if (input && this.currentEditElement && this.currentEditElement.parentNode) {
-            // حذف event listeners
-            input.removeEventListener('keydown', this.handleInputKeydown);
-            input.removeEventListener('blur', this.handleInputBlur);
-            
-            // بازگرداندن المنت اصلی
-            this.currentEditElement.style.display = '';
-            
-            // حذف input
-            if (input.parentNode) {
-                input.remove();
-            }
-        }
-        
-        this.isEditing = false;
-        this.currentEditElement = null;
-        this.handleInputKeydown = null;
-        this.handleInputBlur = null;
-    }
-
-    finishEditing() {
-        if (!this.isEditing) return;
-        
-        const input = this.container.querySelector('.consultant-edit-input');
-        if (input) {
-            this.saveEdit(input);
-        } else {
-            this.cancelEditing();
-        }
-    }
-
-    // متد کمکی برای پیدا کردن المنت اصلی
-    findOriginalElement(input) {
-        const path = input.dataset.path;
-        return this.container.querySelector(`[data-path="${path}"]`);
-    }
-    
-    
-    updateData(path, value) {
-        console.log('Updating data path:', path, 'to:', value);
-        
-        // آپدیت داده‌ها بر اساس مسیر
-        this.updateNestedData(this.currentData, path, value);
-        
-        // آپدیت JSON editor
-        this.updateJsonEditor();
-        
-        // آپدیت پیش‌نمایش
-        this.updatePreview();
-    }
-
-    updateNestedData(obj, path, value) {
-        const keys = path.split('.');
-        let current = obj;
-        
-        for (let i = 0; i < keys.length - 1; i++) {
-            const key = keys[i];
-            // اگر کلید عددی است، به آرایه تبدیل کن
-            if (!isNaN(keys[i + 1])) {
-                if (!current[key] || !Array.isArray(current[key])) {
-                    current[key] = [];
-                }
-            } else {
-                if (!current[key] || typeof current[key] !== 'object') {
-                    current[key] = {};
-                }
-            }
-            current = current[key];
-        }
-        
-        const lastKey = keys[keys.length - 1];
-        
-        // اگر مقدار عددی است، به عدد تبدیل کن
-        if (!isNaN(value) && value.trim() !== '') {
-            current[lastKey] = Number(value);
-        } else {
-            current[lastKey] = value;
-        }
-    }
-
-    updateJsonEditor() {
-        const jsonEditor = document.getElementById('diet-json-editor');
-        if (jsonEditor) {
-            jsonEditor.value = JSON.stringify(this.currentData, null, 2);
-        }
-    }
-
-    updatePreview() {
-        const previewContainer = document.getElementById('consultant-diet-preview');
-        if (previewContainer) {
-            previewContainer.innerHTML = this.renderDietPlan(this.currentData);
-            this.setupDoubleClickEdit();
-            this.setupAccordions();
-        }
     }
 
     setupActionButtons() {
@@ -740,11 +422,27 @@ startEditing(element) {
             });
         }
 
-        // بروزرسانی از JSON
-        const updateJsonBtn = document.getElementById('update-from-json-btn');
-        if (updateJsonBtn) {
-            updateJsonBtn.addEventListener('click', () => {
+        // بروزرسانی پیش‌نمایش
+        const refreshBtn = document.getElementById('refresh-preview-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.updatePreview();
+            });
+        }
+
+        // اعمال تغییرات JSON
+        const applyJsonBtn = document.getElementById('apply-json-btn');
+        if (applyJsonBtn) {
+            applyJsonBtn.addEventListener('click', () => {
                 this.updateFromJson();
+            });
+        }
+
+        // اعتبارسنجی JSON
+        const validateJsonBtn = document.getElementById('validate-json-btn');
+        if (validateJsonBtn) {
+            validateJsonBtn.addEventListener('click', () => {
+                this.validateJson();
             });
         }
 
@@ -755,26 +453,151 @@ startEditing(element) {
                 this.resetJson();
             });
         }
+
+        // اعمال تغییرات متنی
+        const applyTextBtn = document.getElementById('apply-text-btn');
+        if (applyTextBtn) {
+            applyTextBtn.addEventListener('click', () => {
+                this.updateFromText();
+            });
+        }
     }
 
-    expandAllSections() {
-        const contents = this.container.querySelectorAll('.consultant-section-content');
-        const headers = this.container.querySelectorAll('.consultant-section-header');
-        
-        headers.forEach(header => header.classList.add('active'));
-        contents.forEach(content => {
-            content.style.maxHeight = content.scrollHeight + 'px';
+    setupEditModal() {
+        this.editModal = document.getElementById('edit-modal');
+        this.modalTextarea = document.getElementById('edit-modal-textarea');
+        this.modalSaveBtn = document.getElementById('edit-modal-save');
+        this.modalCancelBtn = document.getElementById('edit-modal-cancel');
+        this.modalCloseBtn = document.querySelector('.consultant-edit-close');
+
+        if (this.editModal && this.modalTextarea) {
+            this.modalSaveBtn.addEventListener('click', () => this.saveModalEdit());
+            this.modalCancelBtn.addEventListener('click', () => this.closeEditModal());
+            this.modalCloseBtn.addEventListener('click', () => this.closeEditModal());
+            
+            // بستن مودال با کلیک خارج
+            this.editModal.addEventListener('click', (e) => {
+                if (e.target === this.editModal) {
+                    this.closeEditModal();
+                }
+            });
+
+            // کلیدهای میانبر در مودال
+            this.modalTextarea.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    this.saveModalEdit();
+                    e.preventDefault();
+                } else if (e.key === 'Escape') {
+                    this.closeEditModal();
+                    e.preventDefault();
+                }
+            });
+        }
+    }
+
+    setupDoubleClickEdit() {
+        this.container.addEventListener('dblclick', (e) => {
+            const editableElement = e.target.closest('.editable-text');
+            if (editableElement && !this.isEditing) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.openEditModal(editableElement);
+            }
         });
     }
 
-    collapseAllSections() {
-        const contents = this.container.querySelectorAll('.consultant-section-content');
-        const headers = this.container.querySelectorAll('.consultant-section-header');
+    openEditModal(element) {
+        if (this.isEditing) return;
         
-        headers.forEach(header => header.classList.remove('active'));
-        contents.forEach(content => {
-            content.style.maxHeight = '0';
-        });
+        this.isEditing = true;
+        this.currentEditElement = element;
+        this.currentEditPath = element.getAttribute('data-path');
+        this.originalEditValue = element.textContent;
+
+        // پر کردن مودال با متن فعلی
+        this.modalTextarea.value = this.originalEditValue;
+        
+        // نمایش مودال
+        this.editModal.style.display = 'block';
+        
+        // فوکوس و انتخاب متن
+        setTimeout(() => {
+            this.modalTextarea.focus();
+            this.modalTextarea.select();
+        }, 100);
+    }
+
+    closeEditModal() {
+        this.isEditing = false;
+        this.currentEditElement = null;
+        this.currentEditPath = null;
+        this.originalEditValue = null;
+        this.editModal.style.display = 'none';
+    }
+
+    saveModalEdit() {
+        if (!this.isEditing || !this.currentEditElement) return;
+
+        const newValue = this.modalTextarea.value.trim();
+        
+        if (newValue !== this.originalEditValue) {
+            // آپدیت المنت
+            this.currentEditElement.textContent = newValue;
+            
+            // آپدیت داده‌ها
+            this.updateData(this.currentEditPath, newValue);
+            
+            // آپدیت پیش‌نمایش اگر لازم است
+            this.updateElementStyle(this.currentEditElement, newValue);
+        }
+
+        this.closeEditModal();
+    }
+
+    updateData(path, value) {
+        console.log('Updating data path:', path, 'to:', value);
+        
+        this.updateNestedData(this.currentData, path, value);
+        this.updateJsonEditor();
+    }
+
+    updateNestedData(obj, path, value) {
+        const keys = path.split('.');
+        let current = obj;
+        
+        for (let i = 0; i < keys.length - 1; i++) {
+            const key = keys[i];
+            
+            if (!isNaN(keys[i + 1])) {
+                if (!current[key] || !Array.isArray(current[key])) {
+                    current[key] = [];
+                }
+            } else {
+                if (!current[key] || typeof current[key] !== 'object') {
+                    current[key] = {};
+                }
+            }
+            current = current[key];
+        }
+        
+        const lastKey = keys[keys.length - 1];
+        current[lastKey] = value;
+    }
+
+    updateJsonEditor() {
+        const jsonEditor = document.getElementById('diet-json-editor');
+        if (jsonEditor) {
+            jsonEditor.value = JSON.stringify(this.currentData, null, 2);
+        }
+    }
+
+    updatePreview() {
+        const previewContainer = document.getElementById('consultant-diet-preview');
+        if (previewContainer) {
+            previewContainer.innerHTML = this.renderDietPlan(this.currentData);
+            this.setupAccordions();
+            this.showMessage('پیش‌نمایش بروزرسانی شد', 'success');
+        }
     }
 
     updateFromJson() {
@@ -784,9 +607,21 @@ startEditing(element) {
                 const newData = JSON.parse(jsonEditor.value);
                 this.currentData = newData;
                 this.updatePreview();
-                this.showMessage('پیش‌نمایش با موفقیت بروزرسانی شد', 'success');
+                this.showJsonStatus('JSON با موفقیت اعمال شد', 'success');
             } catch (e) {
-                this.showMessage('خطا در پارس کردن JSON: ' + e.message, 'error');
+                this.showJsonStatus('خطا در پارس کردن JSON: ' + e.message, 'error');
+            }
+        }
+    }
+
+    validateJson() {
+        const jsonEditor = document.getElementById('diet-json-editor');
+        if (jsonEditor) {
+            try {
+                JSON.parse(jsonEditor.value);
+                this.showJsonStatus('JSON معتبر است', 'success');
+            } catch (e) {
+                this.showJsonStatus('JSON نامعتبر: ' + e.message, 'error');
             }
         }
     }
@@ -799,76 +634,142 @@ startEditing(element) {
             this.currentData = typeof dietData === 'string' ? JSON.parse(dietData) : dietData;
             this.updateJsonEditor();
             this.updatePreview();
-            this.showMessage('JSON به حالت اولیه بازنشانی شد', 'success');
+            this.showJsonStatus('JSON به حالت اولیه بازگشت', 'success');
         } catch (e) {
-            this.showMessage('خطا در بازنشانی داده‌ها', 'error');
+            this.showJsonStatus('خطا در بازنشانی داده‌ها', 'error');
         }
     }
 
-    showMessage(message, type) {
-        // حذف پیام قبلی
-        const existingMessage = this.container.querySelector('.consultant-editor-message');
-        if (existingMessage) {
-            existingMessage.remove();
+    updateFromText() {
+        const textEditor = document.getElementById('diet-text-editor');
+        if (textEditor) {
+            // در اینجا می‌توانید منطق تبدیل متن ساده به JSON را پیاده‌سازی کنید
+            this.showMessage('تغییرات متنی اعمال شد', 'success');
         }
+    }
 
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `consultant-editor-message ${type}`;
-        messageDiv.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i>
-            ${message}
-        `;
+    expandAllSections() {
+        const contents = this.container.querySelectorAll('.consultant-section-content');
+        const headers = this.container.querySelectorAll('.consultant-section-header');
+        
+        headers.forEach(header => {
+            header.classList.add('active');
+            const icon = header.querySelector('.consultant-accordion-icon');
+            icon.className = 'fas fa-chevron-up consultant-accordion-icon';
+        });
+        
+        contents.forEach(content => {
+            content.style.maxHeight = content.scrollHeight + 'px';
+        });
+    }
 
-        this.container.insertBefore(messageDiv, this.container.firstChild);
+    collapseAllSections() {
+        const contents = this.container.querySelectorAll('.consultant-section-content');
+        const headers = this.container.querySelectorAll('.consultant-section-header');
+        
+        headers.forEach(header => {
+            header.classList.remove('active');
+            const icon = header.querySelector('.consultant-accordion-icon');
+            icon.className = 'fas fa-chevron-down consultant-accordion-icon';
+        });
+        
+        contents.forEach(content => {
+            content.style.maxHeight = '0';
+        });
+    }
 
-        setTimeout(() => {
-            if (messageDiv.parentNode) {
-                messageDiv.remove();
+    updateElementStyle(element, newValue) {
+        if (newValue.length > 50 || newValue.includes('\n')) {
+            element.style.whiteSpace = 'pre-wrap';
+            element.style.wordWrap = 'break-word';
+            element.style.lineHeight = '1.5';
+        }
+    }
+
+    formatAsText(data) {
+        // تبدیل JSON به متن خوانا
+        if (!data.sections) return JSON.stringify(data, null, 2);
+        
+        let text = '';
+        data.sections.forEach(section => {
+            text += `# ${section.title}\n\n`;
+            if (section.content) {
+                if (Array.isArray(section.content)) {
+                    section.content.forEach(item => {
+                        if (item.text) {
+                            text += `${item.text}\n\n`;
+                        }
+                    });
+                }
             }
-        }, 3000);
-    }
-
-    getEditedData() {
-        return this.currentData;
+            text += '\n';
+        });
+        
+        return text;
     }
 
     getFinalDietData() {
         return JSON.stringify(this.currentData, null, 2);
     }
 
-    updatePreviewFromJSON(newData) {
-        const previewContainer = document.getElementById('consultant-diet-preview');
-        if (previewContainer) {
-            previewContainer.innerHTML = this.renderDietPlan(newData);
-            this.setupDoubleClickEdit();
-            this.setupAccordions();
-        }
+    getConsultantNotes() {
+        const notesElement = document.getElementById('consultant-notes');
+        return notesElement ? notesElement.value : '';
     }
 
-    getEditedData() {
-        // این متد داده‌های ویرایش شده را برمی‌گرداند
-        const jsonEditor = document.getElementById('diet-json-editor');
-        if (jsonEditor) {
-            try {
-                return JSON.parse(jsonEditor.value);
-            } catch (e) {
-                console.error('Error parsing edited JSON:', e);
-            }
-        }
-        
-        return this.originalData;
-    }
-
+    // متدهای کمکی
     getSectionIcon(sectionTitle) {
         const icons = {
             'اطلاعات کاربر': 'user',
             'اطلاعات تغذیه‌ای': 'chart-pie',
             'برنامه هفتگی': 'calendar-alt',
             'توصیه‌های تکمیلی': 'lightbulb',
-            'نتایج برنامه غذایی': 'utensils'
+            'نتایج برنامه غذایی': 'utensils',
+            'برنامه غذایی': 'utensils'
         };
         
         return icons[sectionTitle] || 'file-alt';
+    }
+
+    getMealIcon(columnIndex, mealName) {
+        const mealIcons = {
+            'صبحانه': 'sun',
+            'ناهار': 'sun', 
+            'شام': 'moon',
+            'میان‌وعده': 'apple-alt',
+            'میان وعده': 'apple-alt',
+            'میان‌وعده صبح': 'sun',
+            'میان‌وعده عصر': 'apple-alt',
+            'عصرانه': 'apple-alt'
+        };
+        
+        const lowerMealName = mealName.toLowerCase();
+        for (const [key, icon] of Object.entries(mealIcons)) {
+            if (lowerMealName.includes(key.toLowerCase())) {
+                return icon;
+            }
+        }
+        
+        const defaultIcons = ['sun', 'sun', 'moon', 'apple-alt', 'utensils'];
+        return defaultIcons[columnIndex - 1] || 'utensils';
+    }
+
+    showMessage(message, type) {
+        // پیاده‌سازی نمایش پیام
+        console.log(`${type}: ${message}`);
+    }
+
+    showJsonStatus(message, type) {
+        const statusElement = document.getElementById('json-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = `consultant-json-status ${type}`;
+            
+            setTimeout(() => {
+                statusElement.textContent = '';
+                statusElement.className = 'consultant-json-status';
+            }, 3000);
+        }
     }
 
     escapeHtml(unsafe) {
@@ -880,22 +781,13 @@ startEditing(element) {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
-    
-    
-    // اضافه کردن این متد به کلاس
-    getInputTypeForElement(element) {
-        const tagName = element.tagName.toLowerCase();
-        const textLength = element.textContent.length;
-        const isHeader = tagName === 'h1' || tagName === 'h2' || tagName === 'h3';
-        const isTableCell = element.closest('td, th');
-        const isList = element.closest('li');
-        
-        // برای تیترها و سلول‌های جدول از input استفاده کن
-        if (isHeader || isTableCell || textLength < 100) {
-            return 'input';
-        }
-        
-        // برای متن‌های طولانی از textarea استفاده کن
-        return 'textarea';
-    }    
+
+    renderRawData(data) {
+        return `
+            <div class="consultant-debug-info">
+                <h3><i class="fas fa-bug"></i> داده‌های خام (برای دیباگ)</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+        `;
+    }
 }

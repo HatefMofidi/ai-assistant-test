@@ -150,14 +150,31 @@ window.setupChronicConditionsSelection = function(currentStep) {
             { key: 'menopause', id: 'chronic-menopause' },
             { key: 'cortisol', id: 'chronic-cortisol' },
             { key: 'growth', id: 'chronic-growth' },
-            { key: 'celiac', id: 'chronic-celiac' },
-            { key: 'lactose', id: 'chronic-lactose' },
-            { key: 'foodAllergy', id: 'chronic-food-allergy' },
             { key: 'ibs', id: 'chronic-ibs' },
             { key: 'kidney', id: 'chronic-kidney' },
             { key: 'heart', id: 'chronic-heart' },
-            { key: 'autoimmune', id: 'chronic-autoimmune' }
+            { key: 'autoimmune', id: 'chronic-autoimmune' },
+            { key: 'gallbladderStones', id: 'chronic-gallbladder-stones' },
+            { key: 'gallbladderInflammation', id: 'chronic-gallbladder-inflammation' },
+            { key: 'gallbladderIssues', id: 'chronic-gallbladder-issues' }            
         ]
+    });
+    
+    // اضافه کردن event listener برای کنترل تناقض‌ها
+    const conflictCheckboxes = [
+        'chronic-hyperthyroidism', 'chronic-hypothyroidism', 'chronic-hashimoto',
+        'chronic-gallbladder-stones', 'chronic-gallbladder-inflammation', 'chronic-gallbladder-issues'
+    ];
+    
+    conflictCheckboxes.forEach(checkboxId => {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    handleConflictingConditions(checkboxId);
+                }
+            });
+        }
     });
     
     setupChronicDiabetesDetails();
@@ -257,64 +274,29 @@ window.setupCancerDetails = function() {
     validateNextButton();
 };
 
-window.setupHormonalSelection = function(currentStep) {
+window.setupDigestiveConditionsSelection = function(currentStep) {
     setupComplexCheckboxSelection(currentStep, {
-        noneCheckboxId: 'hormonal-none',
-        dataKey: 'hormonal',
-        genderDependent: true,
+        noneCheckboxId: 'digestive-none',
+        dataKey: 'digestiveConditions',
         options: [
-            { key: 'hypothyroidism', id: 'hormonal-hypothyroidism' },
-            { key: 'hyperthyroidism', id: 'hormonal-hyperthyroidism' },
-            { key: 'diabetes', id: 'hormonal-diabetes' },
-            { key: 'insulin-resistance', id: 'hormonal-insulin-resistance' },
-            { key: 'pcos', id: 'hormonal-pcos' },
-            { key: 'menopause', id: 'hormonal-menopause' },
-            { key: 'cortisol', id: 'hormonal-cortisol' },
-            { key: 'growth', id: 'hormonal-growth' },
-            { key: 'hashimoto', id: 'hormonal-hashimoto' }
-        ]
-    });
-    
-    setupDiabetesDetails();
-};
-
-window.setupStomachDiscomfortSelection = function(currentStep) {
-    setupComplexCheckboxSelection(currentStep, {
-        noneCheckboxId: 'stomach-none',
-        dataKey: 'stomachDiscomfort',
-        options: [
-            { key: 'bloating', id: 'stomach-bloating' },
-            { key: 'pain', id: 'stomach-pain' },
-            { key: 'heartburn', id: 'stomach-heartburn' },
-            { key: 'constipation', id: 'stomach-constipation' },
-            { key: 'diarrhea', id: 'stomach-diarrhea' },
-            { key: 'fullness', id: 'stomach-fullness' },
-            { key: 'nausea', id: 'stomach-nausea' },
-            { key: 'slow-digestion', id: 'stomach-slow-digestion' },
-            { key: 'acid-reflux', id: 'stomach-acid-reflux' },
-            { key: 'helicobacter', id: 'stomach-helicobacter' },
-            { key: 'ibd', id: 'stomach-ibd' },
-            { key: 'ibs', id: 'stomach-ibs' },
-            { key: 'gerd', id: 'stomach-gerd' },
-            { key: 'indigestion', id: 'stomach-indigestion' },
-            { key: 'food-intolerance', id: 'stomach-food-intolerance' }
-        ]
-    });
-};
-
-window.setupAdditionalInfoSelection = function(currentStep) {
-    setupComplexCheckboxSelection(currentStep, {
-        noneCheckboxId: 'info-none',
-        dataKey: 'additionalInfo',
-        options: [
-            { key: 'diabetes', id: 'info-diabetes' },
-            { key: 'hypertension', id: 'info-hypertension' },
-            { key: 'cholesterol', id: 'info-cholesterol' },
-            { key: 'ibs', id: 'info-ibs' },
-            { key: 'celiac', id: 'info-celiac' },
-            { key: 'lactose', id: 'info-lactose' },
-            { key: 'food-allergy', id: 'info-food-allergy' },
-            { key: 'fatty-liver', id: 'info-fatty-liver' }
+            // بیماری‌های ساختاری
+            { key: 'ibs', id: 'digestive-ibs' },
+            { key: 'ibd', id: 'digestive-ibd' },
+            { key: 'gerd', id: 'digestive-gerd' },
+            
+            // علائم عملکردی
+            { key: 'bloating', id: 'digestive-bloating' },
+            { key: 'pain', id: 'digestive-pain' },
+            { key: 'heartburn', id: 'digestive-heartburn' },
+            { key: 'constipation', id: 'digestive-constipation' },
+            { key: 'diarrhea', id: 'digestive-diarrhea' },
+            { key: 'fullness', id: 'digestive-fullness' },
+            { key: 'nausea', id: 'digestive-nausea' },
+            { key: 'slow-digestion', id: 'digestive-slow-digestion' },
+            { key: 'indigestion', id: 'digestive-indigestion' },
+            
+            // عفونت‌ها و مشکلات خاص
+            { key: 'helicobacter', id: 'digestive-helicobacter' },
         ]
     });
 };
@@ -325,8 +307,7 @@ window.setupDietStyleSelection = function(currentStep) {
         dataKey: 'dietStyle',
         options: [
             { key: 'vegetarian', id: 'diet-style-vegetarian' },
-            { key: 'vegan', id: 'diet-style-vegan' },
-            { key: 'halal', id: 'diet-style-halal' }
+            { key: 'vegan', id: 'diet-style-vegan' }
         ]
     });
 };
@@ -336,26 +317,17 @@ window.setupFoodLimitationsSelection = function(currentStep) {
         noneCheckboxId: 'limitations-none',
         dataKey: 'foodLimitations',
         options: [
+            // محدودیت‌های پزشکی
+            { key: 'celiac', id: 'limitation-celiac' },
+            { key: 'lactose', id: 'limitation-lactose' },
+            { key: 'seafood-allergy', id: 'limitation-seafood-allergy' },
+            { key: 'eggs-allergy', id: 'limitation-eggs-allergy' },
+            { key: 'nuts-allergy', id: 'limitation-nuts-allergy' },
+            
+            // ترجیحات شخصی
             { key: 'no-seafood', id: 'limitation-no-seafood' },
             { key: 'no-redmeat', id: 'limitation-no-redmeat' },
-            { key: 'no-pork', id: 'limitation-no-pork' },
-            { key: 'no-gluten', id: 'limitation-no-gluten' },
-            { key: 'no-dairy', id: 'limitation-no-dairy' },
-            { key: 'no-eggs', id: 'limitation-no-eggs' },
-            { key: 'no-nuts', id: 'limitation-no-nuts' }
-        ]
-    });
-};
-
-window.setupFoodPreferencesSelection = function(currentStep) {
-    setupComplexCheckboxSelection(currentStep, {
-        noneCheckboxId: 'preferences-none',
-        dataKey: 'foodPreferences',
-        options: [
-            { key: 'low-carb', id: 'preference-lowcarb' },
-            { key: 'low-fat', id: 'preference-lowfat' },
-            { key: 'high-protein', id: 'preference-highprotein' },
-            { key: 'organic', id: 'preference-organic' }
+            { key: 'no-dairy', id: 'limitation-no-dairy' }
         ]
     });
 };
@@ -560,18 +532,16 @@ window.showStep = function(step) {
         "weight-input-step",            // 6
         "target-weight-step",           // 7
         "goal-weight-display",          // 8
-        "chronic-conditions-step",      // 9 - مرحله جدید اضافه شده
-        "surgery-step",                 // 10
-        "stomach-discomfort-step",      // 12
-        "hormonal-disorders-step",      // 11
-        "water-intake-step",            // 13
-        "activity-selection-step",      // 14
-        "exercise-activity-step",       // 15
-        "diet-style-step",              // 16
-        "food-limitations-step",        // 17
-        "food-preferences-step",        // 18
-        "terms-agreement-step",         // 19
-        "confirm-submit-step"           // 20
+        "chronic-conditions-step",      // 9 - بیماری‌های مزمن اصلی
+        "digestive-conditions-step",    // 10 - مرحله جدید
+        "surgery-step",                 // 11 - جابجایی
+        "water-intake-step",            // 12 - جابجایی
+        "activity-selection-step",      // 13 - جابجایی
+        "exercise-activity-step",       // 14 - جابجایی
+        "diet-style-step",              // 15 - جابجایی
+        "food-limitations-step",        // 16 - جابجایی
+        "terms-agreement-step",         // 17
+        "confirm-submit-step"           // 18
     ];
     
     document.querySelectorAll(".step").forEach(el => {
@@ -663,12 +633,9 @@ window.showStep = function(step) {
         setupWaterIntakeSelection(step);
         document.getElementById("next-button-container").style.display = "block";
     } 
-    else if (step === STEPS.STOMACH) {
-        setupStomachDiscomfortSelection(step);
-    } 
-    else if (step === STEPS.HORMONAL) {
-        setupHormonalSelection(step);
-    } 
+    if (step === STEPS.DIGESTIVE_CONDITIONS) {
+        setupDigestiveConditionsSelection(step);
+    }
     else if (step === STEPS.SURGERY) {
         setupSurgerySelection(step);
     } 
@@ -684,10 +651,6 @@ window.showStep = function(step) {
     }
     else if (step === STEPS.FOOD_LIMITATIONS) {
         setupFoodLimitationsSelection(step);
-        document.getElementById("next-button-container").style.display = "block";
-    } 
-    else if (step === STEPS.FOOD_PREFERENCES) {
-        setupFoodPreferencesSelection(step);
         document.getElementById("next-button-container").style.display = "block";
     } 
     else if (step === STEPS.TERMS_AGREEMENT) {
