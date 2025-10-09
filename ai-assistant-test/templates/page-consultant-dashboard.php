@@ -16,6 +16,17 @@ if (
     exit;
 }
 
+
+// غیرفعال کردن کش قبل از هر خروجی
+if (!defined('DONOTCACHEPAGE')) {
+    define('DONOTCACHEPAGE', true);
+}
+
+// غیرفعال کردن کش برای این صفحه
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 // تابع نمایش درخواست‌ها - قبل از get_header()
 function render_consultant_requests_table($requests, $status) {
     if (empty($requests)) {
@@ -165,17 +176,6 @@ wp_enqueue_script('consultant-diet-editor',
             </span>
         </button>
         
-        <div class="consultant-stats-summary">
-            <span class="consultant-stat-item">
-                <strong id="pending-count"><?php echo $request_counts['pending']; ?></strong> در انتظار
-            </span>
-            <span class="consultant-stat-item">
-                <strong id="under-review-count"><?php echo $request_counts['under_review']; ?></strong> در حال بررسی
-            </span>
-            <span class="consultant-stat-item">
-                <strong id="approved-count"><?php echo $request_counts['approved']; ?></strong> تایید شده
-            </span>
-        </div>
     </div>
 
     <div class="consultant-tab-content">
@@ -212,12 +212,15 @@ wp_enqueue_script('consultant-diet-editor',
             <button class="consultant-btn consultant-btn-success" id="approve-btn">
                 <i class="fas fa-check"></i> تایید نهایی
             </button>
-            <button class="consultant-btn consultant-btn-danger" id="reject-btn">
-                <i class="fas fa-times"></i> رد درخواست
-            </button>
+            <!--<button class="consultant-btn consultant-btn-danger" id="reject-btn">-->
+            <!--    <i class="fas fa-times"></i> رد درخواست-->
+            <!--</button>-->
         </div>
     </div>
 </div>
+
+
+
 
 <?php
 get_footer();

@@ -97,21 +97,27 @@
 }
 
 .consultant-list-container {
-    background: #fff;
+    /*background: #fff;*/
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
     overflow: hidden;
 }
 
 .consultant-list {
     max-height: 600px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .consultant-item {
     padding: 1.5rem;
-    border-bottom: 1px solid #e2e8f0;
+    /*border-bottom: 1px solid #e2e8f0;*/
     transition: all 0.3s ease;
+    
+    background: #fff;
+    border-radius: 12px;
 }
 
 .consultant-item:hover {
@@ -274,27 +280,31 @@
 
 .consultant-modal-content { 
     background-color: #fefefe;
-    margin: 5% auto;
-    padding: 1rem;
-    border-radius: 12px;
-    width: 85%;
+    margin: 0 auto;
+    padding: 0.3rem;
+    /*border-radius: 12px;*/
+    /*width: 100%;*/
     max-width: 600px;
     position: relative;
     
         /* این قسمت رو اضافه کن */
-    max-height: 80vh;   /* تا حداکثر 80 درصد ارتفاع صفحه */
+    max-height: 100%;   /* تا حداکثر 80 درصد ارتفاع صفحه */
     overflow-y: auto;   /* اسکرول عمودی فعال بشه */
 }
 
 .consultant-close-modal {
     color: #aaa;
+    background: #fefefe; /* پس‌زمینه برای پوشش متن زیرش */
     float: left;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
-    position: absolute;
-    left: 1rem;
-    top: 1rem;
+    position: sticky;
+    z-index: 10;
+    left: 0.5rem;
+    top: 0.5rem; 
+    
+    
 }
 
 .consultant-close-modal:hover {

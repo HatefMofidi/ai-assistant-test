@@ -2364,3 +2364,106 @@ body.dark-mode .floating-document {
     border-color: #4CAF50;
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
+
+
+
+
+/* استایل پایه Tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    border-bottom: 1px dotted #666;
+    margin: 0 2px;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: var(--primary-color);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: fixed;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color:  var(--primary-color) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* حالت تاریک */
+.dark-mode .tooltip .tooltiptext {
+    background-color: #fff;
+    color: #333;
+}
+
+.dark-mode .tooltip .tooltiptext::after {
+    border-color: #fff transparent transparent transparent;
+}
+
+/* استایل برای چیدمان دو ستونی در مرحله غذاهای مورد علاقه */
+#favorite-foods-selection.two-column-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 15px;
+}
+
+#favorite-foods-selection.two-column-layout .checkbox-container {
+    margin-bottom: 8px;
+    display: grid
+}
+
+#favorite-foods-selection.two-column-layout .diffrent-category-titles {
+    grid-column: 1 / span 2;
+    margin: 15px 0 10px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+    color: #555;
+}
+
+/* برای حالت تاریک */
+.dark-mode #favorite-foods-selection.two-column-layout .diffrent-category-titles {
+    border-bottom-color: #444;
+    color: #ccc;
+}
+
+/* ریسپانسیو برای موبایل */
+@media (max-width: 768px) {
+    /*#favorite-foods-selection.two-column-layout {*/
+    /*    grid-template-columns: 1fr;*/
+    /*}*/
+    
+    /*#favorite-foods-selection.two-column-layout .diffrent-category-titles {*/
+    /*    grid-column: 1;*/
+    /*}*/
+    
+    #favorite-foods-selection.checkbox-list-container {
+        max-height: 40vh;
+    }
+}
+
+.checkbox-container .checkbox-label .label-text {
+    font-size: small;
+}

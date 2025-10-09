@@ -72,6 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollIndicator('exercise-selection'); // اضافه کردن این خط
     setupScrollIndicator('diet-style-selection');
     setupScrollIndicator('food-limitations-selection');
+    setupScrollIndicator('favorite-foods-selection');
+    setupScrollIndicator('medications-selection');
 });
 
 window.handleNextStep = function() {
@@ -161,24 +163,6 @@ window.showPaymentConfirmation = function(formData) {
             
             // دریافت موجودی کاربر
             fetchUserBalance(servicePrice, formData);
-            
-            // مدیریت رویدادهای دکمه‌ها
-/*            document.getElementById('confirm-payment').addEventListener('click', function() {
-                const btn = this;
-                const btnText = btn.querySelector('.btn-text');
-                const btnLoading = btn.querySelector('.btn-loading');
-                
-                btn.disabled = true;
-                btnText.style.display = 'none';
-                btnLoading.style.display = 'inline-block';
-                
-                // ارسال فرم پس از تأیید
-                setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('formSubmitted', {
-                        detail: { formData }
-                    }));
-                }, 500);
-            });*/
             
             document.getElementById('cancel-payment').addEventListener('click', function() {
                 document.body.removeChild(popup);
@@ -417,24 +401,29 @@ window.handleFormSubmit = function(event) {
         exercise: state.formData.exercise,
         waterIntake: state.formData.waterIntake,
         surgery: state.formData.surgery || [],
-        chronicConditions: state.formData.chronicConditions || [], // اضافه شده
+        chronicConditions: state.formData.chronicConditions || [],
         digestiveConditions: state.formData.digestiveConditions || [],
         dietStyle: state.formData.dietStyle || [],
         foodLimitations: state.formData.foodLimitations || [],
         chronicDiabetesType: state.formData.chronicDiabetesType || '',
         chronicFastingBloodSugar: state.formData.chronicFastingBloodSugar || '',
-        chronicHba1c: state.formData.chronicHba1c || ''
+        chronicHba1c: state.formData.chronicHba1c || '',
+        favoriteFoods: state.formData.favoriteFoods || [],
+        medications: state.formData.medications || []
     };
 
+    const persianFormData = window.convertToPersianData(formData);
+    
     if (aiAssistantVars.environment && aiAssistantVars.environment !== 'production') {
-        console.log('Form submitted:', formData);
+        console.log('Form submitted (English):', formData);
+        console.log('Form submitted (Persian):', persianFormData);
     }
     
     // غیرفعال کردن دکمه سابمیت
     document.getElementById('SubmitBtn').disabled = true;
     
     // نمایش پاپ‌آپ تأیید پرداخت
-    window.showPaymentConfirmation(formData);
+    window.showPaymentConfirmation(persianFormData);
 };
 
 window.showSummary = function() {
@@ -451,7 +440,7 @@ window.showSummary = function() {
         activity, exercise, waterIntake, surgery = [],
         digestiveConditions = [], dietStyle = [],
         foodLimitations = [],
-        chronicConditions = [] 
+        chronicConditions, favoriteFoods, medications = [] 
     } = state.formData;
 
     const personalInfoText = [];
@@ -507,6 +496,19 @@ window.showSummary = function() {
     if (chronicConditions.includes('none')) chronicConditionsText.push('ندارم');
 
     
+    const medicationsText = [];
+    if (medications.includes('diabetes')) medicationsText.push('داروهای دیابت');
+    if (medications.includes('thyroid')) medicationsText.push('داروهای تیروئید');
+    if (medications.includes('corticosteroids')) medicationsText.push('کورتون‌ها');
+    if (medications.includes('anticoagulants')) medicationsText.push('داروهای ضد انعقاد');
+    if (medications.includes('hypertension')) medicationsText.push('داروهای فشار خون');
+    if (medications.includes('psychiatric')) medicationsText.push('داروهای اعصاب و روان');
+    if (medications.includes('hormonal')) medicationsText.push('داروهای هورمونی');
+    if (medications.includes('cardiac')) medicationsText.push('داروهای قلبی و عروقی');
+    if (medications.includes('gastrointestinal')) medicationsText.push('داروهای گوارشی');
+    if (medications.includes('supplements')) medicationsText.push('مکمل‌ها و ویتامین‌ها');
+    if (medications.includes('none')) medicationsText.push('هیچ داروی خاصی مصرف نمی‌کنم');
+
     // اضافه کردن به تابع showSummary
     const exerciseText = { 
         "none": "هیچ ورزشی نمی‌کنم",
@@ -578,9 +580,47 @@ window.showSummary = function() {
     if (dietStyle.includes('vegan')) dietStyleText.push('وگان');
     if (dietStyle.includes('none')) dietStyleText.push('سبک غذایی خاصی ندارم');
 
-    // محدودیت‌های غذایی
+
+    // غذاهای مورد علاقه
+    const favoriteFoodsText = [];
+    if (favoriteFoods.includes('ghormeh')) favoriteFoodsText.push('قرمه سبزی');
+    if (favoriteFoods.includes('gheymeh')) favoriteFoodsText.push('قیمه');
+    if (favoriteFoods.includes('kabab-koobideh')) favoriteFoodsText.push('کباب کوبیده');
+    if (favoriteFoods.includes('joojeh-kabab')) favoriteFoodsText.push('جوجه کباب');
+    if (favoriteFoods.includes('kabab-barg')) favoriteFoodsText.push('کباب برگ');
+    if (favoriteFoods.includes('fesenjan')) favoriteFoodsText.push('فسنجان');
+    if (favoriteFoods.includes('bademjan')) favoriteFoodsText.push('خورشت بادمجان');
+    if (favoriteFoods.includes('karafs')) favoriteFoodsText.push('خورشت کرفس');
+    if (favoriteFoods.includes('aloo-esfenaj')) favoriteFoodsText.push('خورشت آلواسفناج');
+    if (favoriteFoods.includes('abgoosht')) favoriteFoodsText.push('آبگوشت');
+    if (favoriteFoods.includes('chelo')) favoriteFoodsText.push('چلوی ساده');
+    if (favoriteFoods.includes('sabzi-polo')) favoriteFoodsText.push('سبزی پلو');
+    if (favoriteFoods.includes('adas-polo')) favoriteFoodsText.push('عدس پلو');
+    if (favoriteFoods.includes('lobya-polo')) favoriteFoodsText.push('لوبیا پلو');
+    if (favoriteFoods.includes('shevid-polo')) favoriteFoodsText.push('شوید پلو');
+    if (favoriteFoods.includes('salad-shirazi')) favoriteFoodsText.push('سالاد شیرازی');
+    if (favoriteFoods.includes('mast-o-khiar')) favoriteFoodsText.push('ماست و خیار');
+    if (favoriteFoods.includes('borani-esfenaj')) favoriteFoodsText.push('بورانی اسفناج');
+    if (favoriteFoods.includes('borani-bademjan')) favoriteFoodsText.push('بورانی بادمجان');
+    if (favoriteFoods.includes('nokhod-kishmesh')) favoriteFoodsText.push('نخود و کشمش');
+    if (favoriteFoods.includes('ash-reshteh')) favoriteFoodsText.push('آش رشته');
+    if (favoriteFoods.includes('ash-jow')) favoriteFoodsText.push('آش جو');
+    if (favoriteFoods.includes('halim')) favoriteFoodsText.push('حلیم');
+    if (favoriteFoods.includes('adas')) favoriteFoodsText.push('عدسی');
+    if (favoriteFoods.includes('lobya')) favoriteFoodsText.push('خوراک لوبیا');
+    if (favoriteFoods.includes('omelet')) favoriteFoodsText.push('املت');
+    if (favoriteFoods.includes('nimroo')) favoriteFoodsText.push('نیمرو');
+    if (favoriteFoods.includes('egg-tomato')) favoriteFoodsText.push('خوراک تخم مرغ');
+    if (favoriteFoods.includes('kookoo-sabzi')) favoriteFoodsText.push('کوکو سبزی');
+    if (favoriteFoods.includes('kookoo-sibzamini')) favoriteFoodsText.push('کوکو سیب زمینی');
+    if (favoriteFoods.includes('none')) favoriteFoodsText.push('برنامه بر اساس نیازهای غذایی');
+    if (favoriteFoods.includes('pizza')) favoriteFoodsText.push('پیتزا (سالم)');
+    if (favoriteFoods.includes('burger')) favoriteFoodsText.push('همبرگر (سالم)');
+    if (favoriteFoods.includes('pasta')) favoriteFoodsText.push('پاستا (سالم)');
+    if (favoriteFoods.includes('sandwich')) favoriteFoodsText.push('ساندویچ مرغ');
+    if (favoriteFoods.includes('salad')) favoriteFoodsText.push('سالاد سزار');
+    
     const foodLimitationsText = [];
-    // محدودیت‌های پزشکی
     if (foodLimitations.includes('celiac')) foodLimitationsText.push('بیماری سلیاک');
     if (foodLimitations.includes('lactose')) foodLimitationsText.push('عدم تحمل لاکتوز');
     if (foodLimitations.includes('seafood-allergy')) foodLimitationsText.push('حساسیت به غذای دریایی');
@@ -634,6 +674,10 @@ window.showSummary = function() {
             <span class="summary-value">${chronicConditionsText.join('، ') || 'ثبت نشده'}</span>
         </div>        
         <div class="summary-item">
+            <span class="summary-label">داروهای مصرفی:</span>
+            <span class="summary-value">${medicationsText.join('، ') || 'ثبت نشده'}</span>
+        </div>        
+        <div class="summary-item">
             <span class="summary-label">مشکلات گوارشی:</span>
             <span class="summary-value">${digestiveConditionsText.join('، ') || 'ثبت نشده'}</span>
         </div>         
@@ -661,6 +705,10 @@ window.showSummary = function() {
             <span class="summary-label">محدودیت‌های غذایی:</span>
             <span class="summary-value">${foodLimitationsText.join('، ') || 'ثبت نشده'}</span>
         </div>
+        <div class="summary-item">
+            <span class="summary-label">غذاهای مورد علاقه:</span>
+            <span class="summary-value">${favoriteFoodsText.join('، ') || 'ثبت نشده'}</span>
+        </div>        
         `;
 }
 

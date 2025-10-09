@@ -132,6 +132,25 @@ window.setupSurgerySelection = function(currentStep) {
     setupCancerDetails();
 };
 
+window.setupMedicationsSelection = function(currentStep) {
+    setupComplexCheckboxSelection(currentStep, {
+        noneCheckboxId: 'medications-none',
+        dataKey: 'medications',
+        options: [
+            { key: 'diabetes', id: 'medication-diabetes' },
+            { key: 'thyroid', id: 'medication-thyroid' },
+            { key: 'corticosteroids', id: 'medication-corticosteroids' },
+            { key: 'anticoagulants', id: 'medication-anticoagulants' },
+            { key: 'hypertension', id: 'medication-hypertension' },
+            { key: 'psychiatric', id: 'medication-psychiatric' },
+            { key: 'hormonal', id: 'medication-hormonal' },
+            { key: 'cardiac', id: 'medication-cardiac' },
+            { key: 'gastrointestinal', id: 'medication-gastrointestinal' },
+            { key: 'supplements', id: 'medication-supplements' }
+        ]
+    });
+};
+
 window.setupChronicConditionsSelection = function(currentStep) {
     setupComplexCheckboxSelection(currentStep, {
         noneCheckboxId: 'chronic-none',
@@ -514,9 +533,6 @@ window.setupExerciseSelection = function(currentStep) {
                 // ذخیره داده
                 state.updateFormData('exercise', this.dataset.exercise);
                 
-                setTimeout(() => {
-                    navigateToStep(STEPS.DIET_STYLE); 
-                }, 250);
             }, 150);
         });
     });
@@ -532,16 +548,18 @@ window.showStep = function(step) {
         "weight-input-step",            // 6
         "target-weight-step",           // 7
         "goal-weight-display",          // 8
-        "chronic-conditions-step",      // 9 - بیماری‌های مزمن اصلی
-        "digestive-conditions-step",    // 10 - مرحله جدید
-        "surgery-step",                 // 11 - جابجایی
-        "water-intake-step",            // 12 - جابجایی
-        "activity-selection-step",      // 13 - جابجایی
-        "exercise-activity-step",       // 14 - جابجایی
-        "diet-style-step",              // 15 - جابجایی
-        "food-limitations-step",        // 16 - جابجایی
-        "terms-agreement-step",         // 17
-        "confirm-submit-step"           // 18
+        "chronic-conditions-step",      // 9
+        "medications-step",             // 10 - مرحله جدید
+        "digestive-conditions-step",    // 11
+        "surgery-step",                 // 12
+        "water-intake-step",            // 13
+        "activity-selection-step",      // 14
+        "exercise-activity-step",       // 15
+        "diet-style-step",              // 16
+        "food-limitations-step",        // 17
+        "favorite-foods-step",          // 18
+        "terms-agreement-step",         // 19
+        "confirm-submit-step"           // 20
     ];
     
     document.querySelectorAll(".step").forEach(el => {
@@ -607,17 +625,33 @@ window.showStep = function(step) {
         `;
     }
     
+    // مدیریت نمایش دکمه بعدی
     const nextButtonContainer = document.getElementById("next-button-container");
     if (nextButtonContainer) {
-        nextButtonContainer.style.display = [
+        // مخفی کردن دکمه "گام بعد" در مراحل خاص
+        const hideNextButtonSteps = [
             STEPS.GENDER, 
             STEPS.GOAL,
-            STEPS.WATER_INTAKE, // اضافه شده
+            STEPS.WATER_INTAKE,
             STEPS.ACTIVITY, 
             STEPS.EXERCISE
-        ].includes(step) ? "none" : "block";
+        ];
+        
+        nextButtonContainer.style.display = hideNextButtonSteps.includes(step) ? "none" : "block";
+        
+        // مخفی کردن دکمه در مرحله آخر اصلی
+        if (step === totalSteps) { 
+            nextButtonContainer.style.display = "none";
+        }
     }
 
+    // مدیریت نمایش دکمه ارسال
+    const submitButtonContainer = document.getElementById("submit-button-container");
+    if (submitButtonContainer) {
+        // نمایش دکمه ارسال فقط در مرحله تأیید نهایی
+        submitButtonContainer.style.display = (step === STEPS.CONFIRMATION) ? "block" : "none";
+    }
+    
     if ([STEPS.PERSONAL_INFO, STEPS.AGE, STEPS.HEIGHT, STEPS.WEIGHT, STEPS.TARGET_WEIGHT].includes(step)) {
         const inputId = `${["first-name", "last-name", "age", "height", "weight", "target-weight"][step - 2]}-input`;
         const inputElement = document.getElementById(inputId);
@@ -638,7 +672,7 @@ window.showStep = function(step) {
     }
     else if (step === STEPS.SURGERY) {
         setupSurgerySelection(step);
-    } 
+    }
     else if (step === STEPS.EXERCISE) {
         setupExerciseSelection(step);
     }
@@ -648,11 +682,18 @@ window.showStep = function(step) {
     } 
     else if (step === STEPS.CHRONIC_CONDITIONS) {
         setupChronicConditionsSelection(step);
-    }
+    } 
+    else if (step === STEPS.MEDICATIONS) {
+        setupMedicationsSelection(step);
+    }    
     else if (step === STEPS.FOOD_LIMITATIONS) {
         setupFoodLimitationsSelection(step);
         document.getElementById("next-button-container").style.display = "block";
     } 
+    else if (step === STEPS.FAVORITE_FOODS) {
+        setupFavoriteFoodsSelection(step);
+        document.getElementById("next-button-container").style.display = "block";
+    }    
     else if (step === STEPS.TERMS_AGREEMENT) {
         setupTermsAgreement(step);
         document.getElementById("next-button-container").style.display = "block";
@@ -671,25 +712,112 @@ window.showStep = function(step) {
     }
 }
 
+window.setupFavoriteFoodsSelection = function(currentStep) {
+    setupComplexCheckboxSelection(currentStep, {
+        noneCheckboxId: 'foods-none',
+        dataKey: 'favoriteFoods',
+        options: [
+            // غذاهای اصلی ایرانی
+            { key: 'gheymeh', id: 'food-gheymeh' },
+            { key: 'ghormeh', id: 'food-ghormeh' },
+            { key: 'kabab-koobideh', id: 'food-kabab-koobideh' },
+            { key: 'joojeh-kabab', id: 'food-joojeh-kabab' },
+            { key: 'kabab-barg', id: 'food-kabab-barg' },
+            { key: 'fesenjan', id: 'food-fesenjan' },
+            { key: 'bademjan', id: 'food-bademjan' },
+            { key: 'karafs', id: 'food-karafs' },
+            { key: 'aloo-esfenaj', id: 'food-aloo-esfenaj' },
+            { key: 'abgoosht', id: 'food-abgoosht' },
+            
+            // غذاهای بین‌المللی جدید
+            { key: 'pizza', id: 'food-pizza' },
+            { key: 'burger', id: 'food-burger' },
+            { key: 'pasta', id: 'food-pasta' },
+            { key: 'sandwich', id: 'food-sandwich' },
+            { key: 'salad', id: 'food-salad' },      
+            
+            // برنج‌های سالم
+            { key: 'chelo', id: 'food-chelo' },
+            { key: 'sabzi-polo', id: 'food-sabzi-polo' },
+            { key: 'adas-polo', id: 'food-adas-polo' },
+            { key: 'lobya-polo', id: 'food-lobya-polo' },
+            { key: 'shevid-polo', id: 'food-shevid-polo' },
+            
+            // پیش‌غذاها و مخلفات
+            { key: 'salad-shirazi', id: 'food-salad-shirazi' },
+            { key: 'mast-o-khiar', id: 'food-mast-o-khiar' },
+            { key: 'borani-esfenaj', id: 'food-borani-esfenaj' },
+            { key: 'borani-bademjan', id: 'food-borani-bademjan' },
+            { key: 'nokhod-kishmesh', id: 'food-nokhod-kishmesh' },
+            
+            // غذاهای سنتی
+            { key: 'ash-reshteh', id: 'food-ash-reshteh' },
+            { key: 'ash-jow', id: 'food-ash-jow' },
+            { key: 'halim', id: 'food-halim' },
+            { key: 'adas', id: 'food-adas' },
+            { key: 'lobya', id: 'food-lobya' },
+            
+            // غذاهای ساده
+            { key: 'omelet', id: 'food-omelet' },
+            { key: 'nimroo', id: 'food-nimroo' },
+            { key: 'egg-tomato', id: 'food-egg-tomato' },
+            { key: 'kookoo-sabzi', id: 'food-kookoo-sabzi' },
+            { key: 'kookoo-sibzamini', id: 'food-kookoo-sibzamini' }
+        ]
+    });
+}
+
 window.updateStepCounter = function(step) {
-    document.getElementById("current-step").textContent = step;
-    document.getElementById("total-steps").textContent = totalSteps;
+    if (step <= totalSteps) {
+        document.getElementById("current-step").textContent = step;
+        document.getElementById("total-steps").textContent = totalSteps;
+    }
+    else {
+        document.getElementById("current-step").textContent = totalSteps;
+        document.getElementById("total-steps").textContent = totalSteps;
+    }
 }
 
 window.updateProgressBar = function(step) {
-    const progress = ((step - 1) / (totalSteps - 1)) * 100;
+    let progress;
+    
+    if (step <= totalSteps) {
+        progress = ((step - 1) / (totalSteps - 1)) * 100;
+    }
+    else {
+        progress = 100;
+    }
+    
     document.getElementById("progress-bar").style.width = `${progress}%`;
 }
 
 window.navigateToStep = function(step) {
-    if (step >= 1 && step <= totalSteps) {
+
+    const maxMainStep = totalSteps;
+    
+    if (step >= 1 && step <= maxMainStep) {
+        state.updateStep(step);
+        history.pushState({ step: state.currentStep }, "", `#step-${state.currentStep}`);
+    }
+    
+    else if (step > maxMainStep && step <= Object.keys(STEPS).length) {
         state.updateStep(step);
         history.pushState({ step: state.currentStep }, "", `#step-${state.currentStep}`);
     }
 }
 
 window.handleNextStep = function() {
-    if (state.currentStep < totalSteps) navigateToStep(state.currentStep + 1);
+    if (state.currentStep === totalSteps) { 
+        navigateToStep(STEPS.TERMS_AGREEMENT); 
+    }
+    // اگر در مرحله توافق‌نامه هستیم، به مرحله تأیید نهایی برو
+    else if (state.currentStep === STEPS.TERMS_AGREEMENT) {
+        navigateToStep(STEPS.CONFIRMATION); 
+    }
+    // در غیر این صورت به مرحله بعدی اصلی برو
+    else if (state.currentStep < totalSteps) {
+        navigateToStep(state.currentStep + 1);
+    }
 }
 
 window.handleBackStep = function() {

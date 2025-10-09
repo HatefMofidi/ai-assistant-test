@@ -1,60 +1,51 @@
 // /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/assets/js/auto-fill.js
 
 document.addEventListener('DOMContentLoaded', function() {
+    // تعریف متغیر سراسری برای delay
+    const MUL_VALUE = 2;
+    const NEXT_BUTTON_DELAY = MUL_VALUE;
+    const LONG_DELAY = 1000 * MUL_VALUE;
+    const SHORT_DELAY = 300 * MUL_VALUE;
+    
     // فقط در محیط تست اجرا شود
     if ((window.location.pathname.includes('service/diet')) && (window.location.hostname.includes('test.') || 
         (typeof aiAssistantVars !== 'undefined' && aiAssistantVars.env === 'sandbox'))) {
         
         // تابع اصلی برای پر کردن خودکار فرم
         function autoFillForm() {
+            console.log('Current Step:', state.currentStep);
             // بررسی وجود فرم
             if (!document.getElementById('multi-step-form')) {
                 console.log('⚠️ فرم مورد نظر یافت نشد');
                 return;
             }
             
+            window.removeEventListener('stateUpdated', handleStateChange);
+            
             // داده‌های تستی به‌روزرسانی شده
             const testData = {
-                firstName: "تست",
-                lastName: "کاربر",
-                gender: 'female',
+                firstName: "هادی",
+                lastName: "بهداد",
+                gender: 'male',
                 goal: 'weight-loss',
-                age: 30,
-                height: 175,
-                weight: 85,
-                targetWeight: 75,
+                age: 40,
+                height: 174,
+                weight: 73,
+                targetWeight: 71,
                 activity: 'medium',
                 exercise: 'medium',
-                waterIntake: 8,
+                waterIntake: 14,
                 surgery: ['none'],
                 digestiveConditions: ['none'], // به‌روزرسانی شده
                 dietStyle: ['none'],
                 foodLimitations: ['none'],
-                chronicConditions: ['none'] // اضافه شده
+                chronicConditions: ['none'],
+                medications: ['none']
             };
-
-            // تابع جدید برای پر کردن مرحله مشکلات گوارشی
-            function fillDigestiveConditionsStep() {
-                if (state.currentStep === STEPS.DIGESTIVE_CONDITIONS) {
-                    const noneCheckbox = document.getElementById('digestive-none');
-                    if (noneCheckbox) {
-                        noneCheckbox.checked = true;
-                        noneCheckbox.dispatchEvent(new Event('change'));
-                        clickNextButton(500);
-                    }
-                }
-            }
-
-            // تابع جدید برای پر کردن مرحله بیماری‌های مزمن
-            function fillChronicConditionsStep() {
-                if (state.currentStep === STEPS.CHRONIC_CONDITIONS) {
-                    const noneCheckbox = document.getElementById('chronic-none');
-                    if (noneCheckbox) {
-                        noneCheckbox.checked = true;
-                        noneCheckbox.dispatchEvent(new Event('change'));
-                        clickNextButton(500);
-                    }
-                }
+            
+            function handleStateChange() {
+                console.log('State Changed - New Step:', state.currentStep);
+                fillStepBasedOnCurrentState();
             }
             
             // سایر توابع موجود بدون تغییر (فقط ترتیب فراخوانی به‌روز می‌شود)
@@ -70,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         const genderOption = document.querySelector(`.gender-option[data-gender="${testData.gender}"]`);
                         if (genderOption) {
                             genderOption.click();
-                            clickNextButton(1000);
+                            clickNextButton(LONG_DELAY);
                         }
-                    }, 300);
+                    }, SHORT_DELAY);
                 }
             }
 
@@ -90,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         lastNameInput.dispatchEvent(new Event('input'));
                     }
                     
-                    clickNextButton(500);
+                    clickNextButton(NEXT_BUTTON_DELAY);
                 }
             }
 
@@ -99,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const goalOption = document.querySelector(`.goal-option[data-goal="${testData.goal}"]`);
                     if (goalOption) {
                         goalOption.click();
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }
@@ -124,13 +115,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             setTimeout(() => {
                                 const errorElement = document.getElementById('targetWeight-error');
                                 if (!errorElement || errorElement.classList.contains('valid')) {
-                                    clickNextButton(300);
+                                    clickNextButton(SHORT_DELAY);
                                 } else {
                                     console.log('⚠️ خطا در اعتبارسنجی وزن هدف');
                                 }
-                            }, 500);
+                            }, NEXT_BUTTON_DELAY);
                         } else {
-                            clickNextButton(500);
+                            clickNextButton(NEXT_BUTTON_DELAY);
                         }
                     }
                 }
@@ -141,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const activityOption = document.querySelector(`.activity-option[data-activity="${testData.activity}"]`);
                     if (activityOption) {
                         activityOption.click();
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }
@@ -151,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${testData.exercise}"]`);
                     if (exerciseOption) {
                         exerciseOption.click();
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }     
@@ -161,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const waterCups = document.querySelectorAll('.water-cup');
                     if (waterCups.length >= testData.waterIntake) {
                         waterCups[testData.waterIntake - 1].click();
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }
@@ -173,7 +164,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     [STEPS.DIET_STYLE]: {prefix: 'diet-style', name: 'سبک رژیم'},
                     [STEPS.FOOD_LIMITATIONS]: {prefix: 'limitations', name: 'محدودیت‌های غذایی'},
                     [STEPS.CHRONIC_CONDITIONS]: {prefix: 'chronic', name: 'بیماری‌های مزمن'},
-                    [STEPS.DIGESTIVE_CONDITIONS]: {prefix: 'digestive', name: 'مشکلات گوارشی'}                    
+                    [STEPS.MEDICATIONS]: {prefix: 'medications', name: 'داروهای مصرفی'},
+                    [STEPS.DIGESTIVE_CONDITIONS]: {prefix: 'digestive', name: 'مشکلات گوارشی'},
+                    [STEPS.FAVORITE_FOODS]: {prefix: 'foods', name: 'غذاهای مورد علاقه'} // اضافه شده
                 };
 
                 if (stepMap[state.currentStep]) {
@@ -183,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (noneCheckbox) {
                         noneCheckbox.checked = true;
                         noneCheckbox.dispatchEvent(new Event('change'));
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }
@@ -195,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const svgElement = document.querySelector('#goal-weight-display object');
                         if (svgElement && svgElement.contentDocument) {
                             clearInterval(checkSVGLoaded);
-                            clickNextButton(1000);
+                            clickNextButton(LONG_DELAY);
                         }
                     }, 200);
 
@@ -213,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (agreeCheckbox) {
                         agreeCheckbox.checked = true;
                         agreeCheckbox.dispatchEvent(new Event('change'));
-                        clickNextButton(500);
+                        clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }
             }
@@ -241,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 window.dispatchEvent(formSubmittedEvent);
                                 
                             }
-                        }, 1000);
+                        }, LONG_DELAY);
                     }
                 }
             }
@@ -256,20 +249,75 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, delay);
             }
 
-            // اجرای توابع پر کردن بر اساس مرحله فعلی - ترتیب جدید
-            fillGenderStep();
-            fillPersonalInfoStep();
-            fillGoalStep();
-            fillNumberSteps();
-            fillChronicConditionsStep();      // اضافه شده - مرحله 9
-            fillDigestiveConditionsStep();    // اضافه شده - مرحله 10
-            fillCheckboxSteps();              // شامل surgery (11), diet-style (15), limitations (16)
-            fillWaterStep();                  // مرحله 12
-            fillActivityStep();               // مرحله 13
-            fillExerciseStep();               // مرحله 14
-            fillGoalDisplayStep();
-            fillTermsStep();
-            fillConfirmationStep();
+            // تابع اصلی برای پر کردن بر اساس مرحله فعلی
+            function fillStepBasedOnCurrentState() {
+                switch(state.currentStep) {
+                    case STEPS.GENDER:
+                        fillGenderStep();
+                        break;
+                    case STEPS.PERSONAL_INFO:
+                        fillPersonalInfoStep();
+                        break;
+                    case STEPS.GOAL:
+                        fillGoalStep();
+                        break;
+                    case STEPS.AGE:
+                        fillNumberSteps();
+                        break;
+                    case STEPS.HEIGHT:
+                        fillNumberSteps();
+                        break;
+                    case STEPS.WEIGHT:
+                        fillNumberSteps();
+                        break;
+                    case STEPS.TARGET_WEIGHT:
+                        fillNumberSteps();
+                        break;
+                    case STEPS.ACTIVITY:
+                        fillActivityStep();
+                        break;
+                    case STEPS.EXERCISE:
+                        fillExerciseStep();
+                        break;
+                    case STEPS.WATER_INTAKE:
+                        fillWaterStep();
+                        break;
+                    case STEPS.SURGERY:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.DIGESTIVE_CONDITIONS:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.DIET_STYLE:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.FOOD_LIMITATIONS:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.CHRONIC_CONDITIONS:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.MEDICATIONS:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.GOAL_DISPLAY:
+                        fillGoalDisplayStep();
+                        break;
+                    case STEPS.FAVORITE_FOODS:
+                        fillCheckboxSteps();
+                        break;
+                    case STEPS.TERMS_AGREEMENT:
+                        fillTermsStep();
+                        break;
+                    case STEPS.CONFIRMATION:
+                        fillConfirmationStep();
+                        break;
+                    default:
+                        console.log('مرحله ناشناخته:', state.currentStep);
+                }
+            }
+            
+            fillStepBasedOnCurrentState();
         }
 
         // ایجاد دکمه پر کردن خودکار (بدون تغییر)
@@ -312,13 +360,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         window.removeEventListener('stateUpdated', stateChangeHandler);
                     }, 5000); 
-                }, 500);
+                }, NEXT_BUTTON_DELAY);
             });
 
             document.body.appendChild(btn);
         }
 
         // ایجاد دکمه پس از لود کامل صفحه
-        setTimeout(createAutoFillButton, 1000);
+        setTimeout(createAutoFillButton, LONG_DELAY);
     }
 });

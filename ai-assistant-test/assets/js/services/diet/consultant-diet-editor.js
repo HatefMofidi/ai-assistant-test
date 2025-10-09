@@ -74,31 +74,28 @@ class ConsultantDietEditor {
     renderStructuredEditor() {
         return `
             <div class="consultant-editor-tabs">
-                <div class="consultant-editor-tab active" data-tab="preview">
-                    <i class="fas fa-eye"></i> پیش‌نمایش رژیم
-                </div>
-                <div class="consultant-editor-tab" data-tab="json">
-                    <i class="fas fa-code"></i> ویرایش JSON
-                </div>
-                <div class="consultant-editor-tab" data-tab="simple">
-                    <i class="fas fa-edit"></i> ویرایش ساده
-                </div>
+                <!--<div class="consultant-editor-tab active" data-tab="preview"> -->
+                <!--    <i class="fas fa-eye"></i> پیش‌نمایش رژیم  -->
+                <!--</div>-->
+                <!--<div class="consultant-editor-tab" data-tab="json">-->
+                <!--    <i class="fas fa-code"></i> ویرایش JSON-->
+                <!--</div>-->
             </div>
 
             <div class="consultant-editor-content">
                 <!-- تب پیش‌نمایش -->
                 <div class="consultant-editor-pane active" id="preview-pane">
-                    <div class="consultant-editor-actions">
-                        <button class="consultant-btn consultant-btn-primary" id="expand-all-btn">
-                            <i class="fas fa-expand"></i> باز کردن همه
-                        </button>
-                        <button class="consultant-btn consultant-btn-secondary" id="collapse-all-btn">
-                            <i class="fas fa-compress"></i> بستن همه
-                        </button>
-                        <button class="consultant-btn consultant-btn-success" id="refresh-preview-btn">
-                            <i class="fas fa-sync"></i> بروزرسانی
-                        </button>
-                    </div>
+                        <!--<div class="consultant-editor-actions">-->
+                        <!--    <button class="consultant-btn consultant-btn-primary" id="expand-all-btn">-->
+                        <!--        <i class="fas fa-expand"></i> باز کردن همه-->
+                        <!--    </button>-->
+                        <!--    <button class="consultant-btn consultant-btn-secondary" id="collapse-all-btn">-->
+                        <!--        <i class="fas fa-compress"></i> بستن همه-->
+                        <!--    </button>-->
+                        <!--    <button class="consultant-btn consultant-btn-success" id="refresh-preview-btn">-->
+                        <!--        <i class="fas fa-sync"></i> بروزرسانی-->
+                        <!--    </button>-->
+                        <!--</div>-->
                     <div class="consultant-diet-preview" id="consultant-diet-preview">
                         ${this.renderDietPlan(this.currentData)}
                     </div>
@@ -124,18 +121,6 @@ class ConsultantDietEditor {
                     </div>
                 </div>
 
-                <!-- تب ویرایش ساده -->
-                <div class="consultant-editor-pane" id="simple-pane">
-                    <div class="consultant-simple-editor">
-                        <h4><i class="fas fa-edit"></i> ویرایشگر متن ساده</h4>
-                        <textarea id="diet-text-editor" class="consultant-simple-textarea">${this.escapeHtml(this.formatAsText(this.currentData))}</textarea>
-                        <div class="consultant-editor-actions">
-                            <button class="consultant-btn consultant-btn-primary" id="apply-text-btn">
-                                <i class="fas fa-check"></i> اعمال تغییرات متنی
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- بخش یادداشت‌ها -->
@@ -182,7 +167,7 @@ class ConsultantDietEditor {
         });
 
         if (data.footer) {
-            html += `<div class="consultant-footer editable-text" data-path="footer">${this.escapeHtml(data.footer)}</div>`;
+            html += `<div class="consultant-footer not-editable-text" data-path="footer">${this.escapeHtml(data.footer)}</div>`;
         }
 
         html += '</div>';
@@ -197,7 +182,7 @@ class ConsultantDietEditor {
                 <div class="consultant-section-header ${isExpanded ? 'active' : ''}">
                     <h2>
                         <i class="fas fa-${this.getSectionIcon(section.title)}"></i>
-                        <span class="editable-text" data-path="sections.${sectionIndex}.title">${this.escapeHtml(section.title || 'بخش بدون عنوان')}</span>
+                        <span class="not-editable-text" data-path="sections.${sectionIndex}.title">${this.escapeHtml(section.title || 'بخش بدون عنوان')}</span>
                     </h2>
                     <i class="fas fa-chevron-${isExpanded ? 'up' : 'down'} consultant-accordion-icon"></i>
                 </div>
@@ -218,7 +203,8 @@ class ConsultantDietEditor {
                 html += this.renderSubContent(sub, sectionIndex, subIndex);
             });
         } else if (typeof content === 'object') {
-            html += this.renderSubContent(content, sectionIndex, 0);
+            // برای وقتی که content یک آبجکت است، از مسیر مستقیم استفاده کن
+            html += this.renderSubContent(content, sectionIndex, null);
         } else {
             html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content">${this.escapeHtml(content)}</div>`;
         }
@@ -228,117 +214,152 @@ class ConsultantDietEditor {
 
     renderSubContent(sub, sectionIndex, subIndex) {
         let html = '';
+        const basePath = subIndex !== null ? `sections.${sectionIndex}.content.${subIndex}` : `sections.${sectionIndex}.content`;
         
         if (sub.subtitle) {
             html += `
                 <div class="consultant-subsection">
-                    <h3 class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.subtitle">
+                    <h3 class="not-editable-text" data-path="${basePath}.subtitle">
                         ${this.escapeHtml(sub.subtitle)}
                     </h3>
             `;
         }
-
+    
         if (sub.type === 'list' && sub.items) {
-            html += this.renderList(sub.items, sectionIndex, subIndex);
+            html += this.renderList(sub.items, sectionIndex, subIndex, basePath);
         } else if (sub.type === 'table' && sub.headers && sub.rows) {
-            html += this.renderTableAsCards(sub, sectionIndex, subIndex);
+            html += this.renderTableAsCards(sub, sectionIndex, subIndex, basePath);
         } else if (sub.type === 'paragraph' && sub.text) {
-            html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</div>`;
+            html += `<div class="consultant-paragraph editable-text" data-path="${basePath}.text">${this.escapeHtml(sub.text)}</div>`;
         } else if (sub.text) {
-            html += `<div class="consultant-paragraph editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.text">${this.escapeHtml(sub.text)}</div>`;
+            html += `<div class="consultant-paragraph editable-text" data-path="${basePath}.text">${this.escapeHtml(sub.text)}</div>`;
         }
-
+    
         if (sub.subtitle) {
             html += '</div>';
         }
-
+    
         return html;
     }
 
-    renderList(items, sectionIndex, subIndex) {
+    renderList(items, sectionIndex, subIndex, basePath) {
+        // اگر basePath ارائه نشده، آن را ایجاد کن
+        if (!basePath) {
+            basePath = subIndex !== null ? `sections.${sectionIndex}.content.${subIndex}` : `sections.${sectionIndex}.content`;
+        }
+    
         let html = '<ul class="consultant-list">';
+        
         items.forEach((item, itemIndex) => {
+            // اگر آیتم تهی یا فضای خالی است، رد شو
+            if (!item) return;
+            if (typeof item === 'string' && item.trim() === '') return;
+            if (typeof item === 'object' && (!item.label || !item.value || item.label.trim() === '' || item.value.trim() === '')) return;
+    
             if (typeof item === 'string') {
-                html += `
-                    <li class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.items.${itemIndex}">
-                        ${this.escapeHtml(item)}
-                    </li>`;
-            } else if (item.label && item.value) {
-                html += `
-                    <li>
-                        <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.items.${itemIndex}.label">${this.escapeHtml(item.label)}</span>: 
-                        <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.items.${itemIndex}.value">${this.escapeHtml(item.value)}</span>
-                    </li>
-                `;
+                const trimmed = item.trim();
+                if (trimmed !== '') {
+                    html += `<li class="editable-text" data-path="${basePath}.items.${itemIndex}">${this.escapeHtml(trimmed)}</li>`;
+                }
+            }
+            else if (item.label && item.value) {
+                const label = this.escapeHtml(item.label.trim());
+                const value = this.escapeHtml(item.value.trim());
+                
+                if (sectionIndex === 1) {  // برای غیرقابل ویرایش کردن بخش مشخصات کاربر
+                    html += `
+                        <li>
+                            <span class="not-editable-text" data-path="${basePath}.items.${itemIndex}.label">${label}</span>: 
+                            <span class="not-editable-text" data-path="${basePath}.items.${itemIndex}.value">${value}</span>
+                        </li>
+                    `;
+                } else {
+                    html += `
+                        <li>
+                            <span class="not-editable-text" data-path="${basePath}.items.${itemIndex}.label">${label}</span>: 
+                            <span class="editable-text" data-path="${basePath}.items.${itemIndex}.value">${value}</span>
+                        </li>
+                    `;
+                }
             }
         });
+    
         html += '</ul>';
         return html;
     }
 
+    
     renderTableAsCards(tableData, sectionIndex, subIndex) {
         if (!tableData.headers || !tableData.rows) {
             return '<div class="consultant-error">داده‌های جدول نامعتبر است</div>';
         }
-
-        let html = '<div class="consultant-cards-container">';
-        
+    
+        const container = document.createElement("div");
+        container.className = "consultant-cards-container";
+    
         tableData.rows.forEach((row, rowIndex) => {
-            html += this.renderDayCard(row, tableData.headers, sectionIndex, subIndex, rowIndex);
+            const dayCard = this.createDayCard(row, tableData.headers, sectionIndex, subIndex, rowIndex);
+            container.appendChild(dayCard);
         });
-        
-        html += '</div>';
-        
-        return html;
+    
+        return container.outerHTML;
     }
-
-    renderDayCard(row, headers, sectionIndex, subIndex, rowIndex) {
-        const dayName = row[0] || `روز ${rowIndex + 1}`;
-        
-        let html = `
-            <div class="consultant-day-card">
-                <div class="consultant-day-header">
-                    <i class="fas fa-calendar-day"></i>
-                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.0">
-                        ${this.escapeHtml(dayName)}
-                    </span>
-                </div>
-                <div class="consultant-meals-container">
+    
+    createDayCard(row, headers, sectionIndex, subIndex, rowIndex) {
+        const dayCard = document.createElement("div");
+        dayCard.className = "consultant-day-card";
+    
+        // هدر روز
+        const header = document.createElement("div");
+        header.className = "consultant-day-header";
+        header.innerHTML = `
+            <i class="fas fa-calendar-day"></i>
+            <span class="not-editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.0">
+                ${this.escapeHtml(row[0] || `روز ${rowIndex + 1}`)}
+            </span>
         `;
-        
+        dayCard.appendChild(header);
+    
+        // کانتینر وعده‌ها
+        const mealsContainer = document.createElement("div");
+        mealsContainer.className = "consultant-meals-container";
+    
         for (let i = 1; i < headers.length; i++) {
-            if (row[i] && row[i].trim() !== '') {
-                const mealName = headers[i] || `وعده ${i}`;
-                html += this.renderMealSection(row[i], mealName, sectionIndex, subIndex, rowIndex, i);
+            const content = (row[i] || '').trim();
+            if (content) {
+                const mealSection = this.createMealSection(content, headers[i], sectionIndex, subIndex, rowIndex, i);
+                mealsContainer.appendChild(mealSection);
             }
         }
-        
-        html += `
-                </div>
-            </div>
+    
+        dayCard.appendChild(mealsContainer);
+        return dayCard;
+    }
+    
+    createMealSection(mealContent, mealName, sectionIndex, subIndex, rowIndex, columnIndex) {
+        const mealSection = document.createElement("div");
+        mealSection.className = "consultant-meal-section";
+    
+        const mealTitle = document.createElement("div");
+        mealTitle.className = "consultant-meal-title";
+        mealTitle.innerHTML = `
+            <i class="fas fa-${this.getMealIcon(columnIndex, mealName)}"></i>
+            <span class="not-editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${columnIndex}">
+                ${this.escapeHtml(mealName)}
+            </span>
         `;
-        
-        return html;
+    
+        const mealContentDiv = document.createElement("div");
+        mealContentDiv.className = "consultant-meal-content editable-text";
+        mealContentDiv.dataset.path = `sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${columnIndex}`;
+        mealContentDiv.innerHTML = this.formatMealContent(mealContent);
+    
+        mealSection.appendChild(mealTitle);
+        mealSection.appendChild(mealContentDiv);
+    
+        return mealSection;
     }
 
-    renderMealSection(mealContent, mealName, sectionIndex, subIndex, rowIndex, columnIndex) {
-        const mealIcon = this.getMealIcon(columnIndex, mealName);
-        
-        return `
-            <div class="consultant-meal-section">
-                <div class="consultant-meal-title">
-                    <i class="fas fa-${mealIcon}"></i>
-                    <span class="editable-text" data-path="sections.${sectionIndex}.content.${subIndex}.headers.${columnIndex}">
-                        ${this.escapeHtml(mealName)}
-                    </span>
-                </div>
-                <div class="consultant-meal-content editable-text" 
-                     data-path="sections.${sectionIndex}.content.${subIndex}.rows.${rowIndex}.${columnIndex}">
-                    ${this.formatMealContent(mealContent)}
-                </div>
-            </div>
-        `;
-    }
 
     formatMealContent(content) {
         if (!content) return '';
@@ -496,14 +517,41 @@ class ConsultantDietEditor {
     }
 
     setupDoubleClickEdit() {
-        this.container.addEventListener('dblclick', (e) => {
-            const editableElement = e.target.closest('.editable-text');
-            if (editableElement && !this.isEditing) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.openEditModal(editableElement);
-            }
-        });
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isTouchDevice) {
+            // موبایل - نگه داشتن
+            let pressTimer;
+            
+            this.container.addEventListener('touchstart', (e) => {
+                const editableElement = e.target.closest('.editable-text');
+                if (editableElement && !this.isEditing) {
+                    pressTimer = setTimeout(() => {
+                        e.preventDefault();
+                        this.openEditModal(editableElement);
+                    }, 600);
+                }
+            });
+    
+            this.container.addEventListener('touchend', () => {
+                clearTimeout(pressTimer);
+            });
+    
+            this.container.addEventListener('touchmove', () => {
+                clearTimeout(pressTimer);
+            });
+            
+        } else {
+            // دسکتاپ - دابل کلیک
+            this.container.addEventListener('dblclick', (e) => {
+                const editableElement = e.target.closest('.editable-text');
+                if (editableElement && !this.isEditing) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.openEditModal(editableElement);
+                }
+            });
+        }
     }
 
     openEditModal(element) {
@@ -523,7 +571,7 @@ class ConsultantDietEditor {
         // فوکوس و انتخاب متن
         setTimeout(() => {
             this.modalTextarea.focus();
-            this.modalTextarea.select();
+            // this.modalTextarea.select();
         }, 100);
     }
 

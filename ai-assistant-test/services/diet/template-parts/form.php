@@ -338,7 +338,14 @@ $theme_assets = get_stylesheet_directory_uri();
                 <input type="checkbox" id="chronic-hashimoto" class="real-checkbox">
                 <label for="chronic-hashimoto" class="checkbox-label">
                     <span class="check-icon"></span>
-                    <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)</span>
+                    <span class="label-text">هاشیموتو (التهاب خودایمنی تیروئید)
+                        <span class="tooltip">توضیح بیماری
+                            <span class="tooltiptext">
+                                یک بیماری خودایمنی که در آن سیستم ایمنی بدن به غده تیروئید حمله می‌کند. 
+                                این بیماری معمولاً منجر به کم‌کاری تیروئید می‌شود.
+                            </span>
+                        </span>                    
+                    </span>
                 </label>
             </div>
             
@@ -402,6 +409,104 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
     
+    <!-- Step 10: Medications Selection -->
+    <div id="medications-step" class="step checkbox-step-container">
+        <h2>داروهای مصرفی</h2>
+        <p class="step-description">لطفاً داروهایی که به طور منظم مصرف می‌کنید را انتخاب کنید</p>
+        
+        <div class="checkbox-container first-option stand-alone-none">
+            <input type="checkbox" id="medications-none" class="real-checkbox">
+            <label for="medications-none" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">هیچ داروی خاصی مصرف نمی‌کنم</span>
+            </label>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <div id="medications-selection" class="checkbox-selection-container checkbox-list-container scrollable-container">
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-diabetes" class="real-checkbox">
+                <label for="medication-diabetes" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای دیابت (متفورمین، انسولین و...)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-thyroid" class="real-checkbox">
+                <label for="medication-thyroid" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای تیروئید (لووتیروکسین و...)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-corticosteroids" class="real-checkbox">
+                <label for="medication-corticosteroids" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کورتون‌ها (پردنیزولون و...)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-anticoagulants" class="real-checkbox">
+                <label for="medication-anticoagulants" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای ضد انعقاد (وارفارین و ...)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-hypertension" class="real-checkbox">
+                <label for="medication-hypertension" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای فشار خون</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-psychiatric" class="real-checkbox">
+                <label for="medication-psychiatric" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای اعصاب و روان</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-hormonal" class="real-checkbox">
+                <label for="medication-hormonal" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای هورمونی (قرص ضد بارداری، هورمون درمانی)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-cardiac" class="real-checkbox">
+                <label for="medication-cardiac" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای قلبی و عروقی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-gastrointestinal" class="real-checkbox">
+                <label for="medication-gastrointestinal" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">داروهای گوارشی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="medication-supplements" class="real-checkbox">
+                <label for="medication-supplements" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">مکمل‌ها، ویتامین‌ها و محصولات ورزشی</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
     <!-- Step 10: Digestive Conditions (مرحله جدید - ادغام مشکلات گوارشی و عدم تحمل‌ها) -->
     <div id="digestive-conditions-step" class="step checkbox-step-container">
         <h2>مشکلات گوارشی و عدم تحمل‌های غذایی</h2>
@@ -986,7 +1091,317 @@ $theme_assets = get_stylesheet_directory_uri();
             </div>
         </div>
     </div>
+        
+    <!-- Step 17: Favorite Foods Selection -->
+    <div id="favorite-foods-step" class="step checkbox-step-container">
+        <h2>غذاهای مورد علاقه خود را انتخاب کنید</h2>
+        <p class="step-description">لطفاً غذاهایی که بیشتر دوست دارید و مایلید در برنامه غذایی شما گنجانده شوند را انتخاب کنید</p>
+        
+        <div class="checkbox-container first-option stand-alone-none">
+            <input type="checkbox" id="foods-none" class="real-checkbox">
+            <label for="foods-none" class="checkbox-label">
+                <span class="check-icon"></span>
+                <span class="label-text">ترجیح می‌دهم برنامه بر اساس نیازهای غذایی من تنظیم شود</span>
+            </label>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <div id="favorite-foods-selection" class="checkbox-selection-container checkbox-list-container scrollable-container two-column-layout">
+            <!-- 🥘 غذاهای اصلی ایرانی -->
+            <h3 class="diffrent-category-titles" style="margin-top: 0px; grid-column: 1 / span 2;">🥘 غذاهای اصلی ایرانی</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-gheymeh" class="real-checkbox">
+                <label for="food-gheymeh" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">قیمه (کم‌روغن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-ghormeh" class="real-checkbox">
+                <label for="food-ghormeh" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">قرمه سبزی (کم‌چرب)</span>                
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-kabab-koobideh" class="real-checkbox">
+                <label for="food-kabab-koobideh" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کباب کوبیده (کم‌چرب)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-joojeh-kabab" class="real-checkbox">
+                <label for="food-joojeh-kabab" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">جوجه کباب</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-kabab-barg" class="real-checkbox">
+                <label for="food-kabab-barg" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کباب برگ</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-fesenjan" class="real-checkbox">
+                <label for="food-fesenjan" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">فسنجان (کم‌شیرینی)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-bademjan" class="real-checkbox">
+                <label for="food-bademjan" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">خورشت بادمجان (کم‌روغن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-karafs" class="real-checkbox">
+                <label for="food-karafs" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">خورشت کرفس</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-aloo-esfenaj" class="real-checkbox">
+                <label for="food-aloo-esfenaj" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">خورشت آلواسفناج</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-abgoosht" class="real-checkbox">
+                <label for="food-abgoosht" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">آبگوشت (کم‌چربی)</span>
+                </label>
+            </div>
+            
+            <!-- 🍕 غذاهای بین‌المللی -->
+            <h3 class="diffrent-category-titles" style="grid-column: 1 / span 2;">🍕 غذاهای بین‌المللی</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-pizza" class="real-checkbox">
+                <label for="food-pizza" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">پیتزا (نسخه سالم)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-burger" class="real-checkbox">
+                <label for="food-burger" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">همبرگر (نسخه سالم)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-pasta" class="real-checkbox">
+                <label for="food-pasta" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">پاستا (غلات کامل)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-sandwich" class="real-checkbox">
+                <label for="food-sandwich" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">ساندویچ مرغ گریل</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-salad" class="real-checkbox">
+                <label for="food-salad" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سالاد سزار سالم</span>
+                </label>
+            </div>
     
+            <!-- 🍚 برنج‌های سالم -->
+            <h3 class="diffrent-category-titles" style="grid-column: 1 / span 2;">🍚 برنج‌های سالم</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-chelo" class="real-checkbox">
+                <label for="food-chelo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">چلوی ساده</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-sabzi-polo" class="real-checkbox">
+                <label for="food-sabzi-polo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سبزی پلو</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-adas-polo" class="real-checkbox">
+                <label for="food-adas-polo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">عدس پلو</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-lobya-polo" class="real-checkbox">
+                <label for="food-lobya-polo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">لوبیا پلو</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-shevid-polo" class="real-checkbox">
+                <label for="food-shevid-polo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">شوید پلو</span>
+                </label>
+            </div>
+    
+            <!-- 🥗 پیش‌غذاها و مخلفات -->
+            <h3 class="diffrent-category-titles" style="grid-column: 1 / span 2;">🥗 پیش‌غذاها و مخلفات</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-salad-shirazi" class="real-checkbox">
+                <label for="food-salad-shirazi" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">سالاد شیرازی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-mast-o-khiar" class="real-checkbox">
+                <label for="food-mast-o-khiar" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">ماست و خیار</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-borani-esfenaj" class="real-checkbox">
+                <label for="food-borani-esfenaj" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بورانی اسفناج</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-borani-bademjan" class="real-checkbox">
+                <label for="food-borani-bademjan" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">بورانی بادمجان</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-nokhod-kishmesh" class="real-checkbox">
+                <label for="food-nokhod-kishmesh" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">نخود و کشمش (متعادل)</span>
+                </label>
+            </div>
+    
+            <!-- 🍲 غذاهای سنتی -->
+            <h3 class="diffrent-category-titles" style="grid-column: 1 / span 2;">🍲 غذاهای سنتی</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-ash-reshteh" class="real-checkbox">
+                <label for="food-ash-reshteh" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">آش رشته (کم‌روغن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-ash-jow" class="real-checkbox">
+                <label for="food-ash-jow" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">آش جو</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-halim" class="real-checkbox">
+                <label for="food-halim" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">حلیم گندم (کم‌شیرینی)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-adas" class="real-checkbox">
+                <label for="food-adas" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">عدسی</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-lobya" class="real-checkbox">
+                <label for="food-lobya" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">خوراک لوبیا (کم‌روغن)</span>
+                </label>
+            </div>
+    
+            <!-- 🥮 غذاهای ساده -->
+            <h3 class="diffrent-category-titles" style="grid-column: 1 / span 2;">🥮 غذاهای ساده</h3>
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-omelet" class="real-checkbox">
+                <label for="food-omelet" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">املت (کم‌روغن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-nimroo" class="real-checkbox">
+                <label for="food-nimroo" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">نیمرو (کم‌روغن)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-egg-tomato" class="real-checkbox">
+                <label for="food-egg-tomato" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">خوراک تخم مرغ و گوجه</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-kookoo-sabzi" class="real-checkbox">
+                <label for="food-kookoo-sabzi" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کوکو سبزی (فر یا گریل)</span>
+                </label>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="food-kookoo-sibzamini" class="real-checkbox">
+                <label for="food-kookoo-sibzamini" class="checkbox-label">
+                    <span class="check-icon"></span>
+                    <span class="label-text">کوکو سیب زمینی (فر یا گریل)</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
     <!-- Step 18: Terms Agreement -->
     <div id="terms-agreement-step" class="step">
         <h2>توافق‌نامه استفاده از خدمات Aidastyar</h2>
