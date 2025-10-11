@@ -1402,6 +1402,124 @@ $theme_assets = get_stylesheet_directory_uri();
         </div>
     </div>
 
+<!-- Step 19: Diet Type Selection - نسخه اصلاح شده -->
+<div id="diet-type-selection-step" class="step">
+    <h2>نوع رژیم مورد نظر خود را انتخاب کنید</h2>
+    <p class="step-description">لطفاً نوع رژیم غذایی که مایل به دریافت آن هستید را انتخاب نمایید</p>
+    
+    <div class="step-content-container">
+        <div id="diet-type-selection" class="diet-type-grid">
+            <!-- کارت رژیم هوش مصنوعی -->
+            <div class="diet-type-card" data-diet-type="ai-only">
+                <div class="card-header">
+                    <div class="card-icon ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div class="card-badge">پیشنهادی</div>
+                </div>
+                
+                <div class="card-content">
+                    <h3 class="card-title">رژیم هوش مصنوعی</h3>
+                    <p class="card-description">طراحی شده توسط پیشرفته‌ترین الگوریتم‌های هوش مصنوعی با توجه به مشخصات فردی شما</p>
+                    
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>شخصی‌سازی کامل</span>
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>براساس آخرین تحقیقات علمی</span>
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>پشتیبانی آنلاین</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="price-section">
+                        <div class="price-amount">50,000</div>
+                        <div class="price-currency">تومان</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- کارت رژیم با تأیید متخصص -->
+            <div class="diet-type-card premium" data-diet-type="with-specialist">
+                <div class="card-header">
+                    <div class="card-icon specialist-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div class="card-badge premium-badge">حرفه‌ای</div>
+                </div>
+                
+                <div class="card-content">
+                    <h3 class="card-title">رژیم با تأیید متخصص</h3>
+                    <p class="card-description">طراحی توسط هوش مصنوعی + بررسی و تأیید نهایی توسط متخصص تغذیه منتخب شما</p>
+                    
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>همه امکانات نسخه هوش مصنوعی</span>
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-icon">⭐</span>
+                            <span>تأیید نهایی توسط متخصص</span>
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-icon">⭐</span>
+                            <span>مشاوره تخصصی اختصاصی</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="price-section">
+                        <div class="price-amount">75,000</div>
+                        <div class="price-currency">تومان</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- پاپ‌آپ انتخاب مشاور -->
+<div id="specialist-popup" class="popup-overlay" style="display: none;">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>انتخاب متخصص تغذیه</h3>
+            <button type="button" class="popup-close" onclick="closeSpecialistPopup()">×</button>
+        </div>
+        <div class="popup-body">
+            <p class="popup-description">لطفاً متخصص تغذیه مورد نظر خود را انتخاب کنید</p>
+            
+            <div id="specialist-selection-popup" class="specialist-selection-popup">
+                <!-- لیست مشاورین از طریق AJAX پر می‌شود -->
+                <div class="loading-specialists">
+                    <div class="loading-spinner"></div>
+                    <p>در حال بارگذاری لیست متخصصین...</p>
+                </div>
+            </div>
+            
+            <div id="selected-specialist-info" class="selected-specialist-info" style="display: none;">
+                <h4>متخصص انتخاب شده:</h4>
+                <div id="specialist-details"></div>
+            </div>
+        </div>
+        <div class="popup-footer">
+            <button type="button" class="popup-confirm-btn" onclick="confirmSpecialistSelection()" disabled>تأیید و ادامه</button>
+            <button type="button" class="popup-cancel-btn" onclick="closeSpecialistPopup()">انصراف</button>
+        </div>
+    </div>
+</div>
+
     <!-- Step 18: Terms Agreement -->
     <div id="terms-agreement-step" class="step">
         <h2>توافق‌نامه استفاده از خدمات Aidastyar</h2>

@@ -106,6 +106,45 @@ window.setupComplexCheckboxSelection = function(step, config) {
     validateForm();
 };
 
+window.setupActivitySelection = function(currentStep) {
+    if (currentStep !== STEPS.ACTIVITY) return;
+
+    const activityOptions = document.querySelectorAll('.activity-option');
+    
+    activityOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // حذف انتخاب از همه گزینه‌ها
+            activityOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.style.transform = "";
+                opt.style.boxShadow = "";
+            });
+            
+            // انتخاب گزینه کلیک شده
+            this.classList.add('selected');
+            this.style.transform = "translateY(-3px)";
+            this.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
+            
+            // ذخیره داده در state
+            state.updateFormData('activity', this.dataset.activity);
+            
+            // فعال کردن دکمه بعدی
+            const nextButton = document.querySelector(".next-step");
+            if (nextButton) nextButton.disabled = false;
+        });
+    });
+    
+    // اگر قبلاً activity انتخاب شده بود، آن را highlight کن
+    if (state.formData.activity) {
+        const selectedOption = document.querySelector(`.activity-option[data-activity="${state.formData.activity}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+            selectedOption.style.transform = "translateY(-3px)";
+            selectedOption.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
+        }
+    }
+};
+
 window.setupSurgerySelection = function(currentStep) {
     if (state.currentStep !== currentStep) return;
 
@@ -523,7 +562,7 @@ window.setupExerciseSelection = function(currentStep) {
             // انتخاب گزینه کلیک شده
             this.classList.add('selected');
             this.classList.add('selected-with-effect');
-            
+            state.updateFormData('exercise', this.dataset.exercise);
             // افکت بصری
             setTimeout(() => {
                 this.classList.remove('selected-with-effect');
@@ -531,7 +570,7 @@ window.setupExerciseSelection = function(currentStep) {
                 this.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
                 
                 // ذخیره داده
-                state.updateFormData('exercise', this.dataset.exercise);
+                // state.updateFormData('exercise', this.dataset.exercise);
                 
             }, 150);
         });
@@ -549,7 +588,7 @@ window.showStep = function(step) {
         "target-weight-step",           // 7
         "goal-weight-display",          // 8
         "chronic-conditions-step",      // 9
-        "medications-step",             // 10 - مرحله جدید
+        "medications-step",             // 10
         "digestive-conditions-step",    // 11
         "surgery-step",                 // 12
         "water-intake-step",            // 13
@@ -558,8 +597,9 @@ window.showStep = function(step) {
         "diet-style-step",              // 16
         "food-limitations-step",        // 17
         "favorite-foods-step",          // 18
-        "terms-agreement-step",         // 19
-        "confirm-submit-step"           // 20
+        "diet-type-selection-step",     // 19
+        "terms-agreement-step",         // 20
+        "confirm-submit-step"           // 21
     ];
     
     document.querySelectorAll(".step").forEach(el => {
@@ -685,6 +725,10 @@ window.showStep = function(step) {
     } 
     else if (step === STEPS.MEDICATIONS) {
         setupMedicationsSelection(step);
+    } 
+    else if (step === STEPS.ACTIVITY) {
+        setupActivitySelection(step);
+        document.getElementById("next-button-container").style.display = "none";
     }    
     else if (step === STEPS.FOOD_LIMITATIONS) {
         setupFoodLimitationsSelection(step);
@@ -693,7 +737,11 @@ window.showStep = function(step) {
     else if (step === STEPS.FAVORITE_FOODS) {
         setupFavoriteFoodsSelection(step);
         document.getElementById("next-button-container").style.display = "block";
-    }    
+    }  
+    else if (step === STEPS.DIET_TYPE_SELECTION) {
+        setupDietTypeSelection(step);
+        document.getElementById("next-button-container").style.display = "block";
+    } 
     else if (step === STEPS.TERMS_AGREEMENT) {
         setupTermsAgreement(step);
         document.getElementById("next-button-container").style.display = "block";
@@ -808,9 +856,11 @@ window.navigateToStep = function(step) {
 
 window.handleNextStep = function() {
     if (state.currentStep === totalSteps) { 
+        navigateToStep(STEPS.DIET_TYPE_SELECTION); 
+    }
+    else if (state.currentStep === STEPS.DIET_TYPE_SELECTION) {
         navigateToStep(STEPS.TERMS_AGREEMENT); 
     }
-    // اگر در مرحله توافق‌نامه هستیم، به مرحله تأیید نهایی برو
     else if (state.currentStep === STEPS.TERMS_AGREEMENT) {
         navigateToStep(STEPS.CONFIRMATION); 
     }
@@ -858,3 +908,179 @@ window.handleEnterKey = function(event) {
         event.preventDefault();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.setupDietTypeSelection = function(currentStep) {
+    if (currentStep !== STEPS.DIET_TYPE_SELECTION) return;
+
+    const dietTypeCards = document.querySelectorAll('.diet-type-card');
+    const nextButton = document.querySelector(".next-step");
+    
+    nextButton.disabled = true;
+
+    dietTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // حذف انتخاب از همه کارت‌ها
+            dietTypeCards.forEach(c => {
+                c.classList.remove('selected');
+                c.style.transform = "";
+            });
+            
+            // انتخاب کارت کلیک شده
+            this.classList.add('selected');
+            this.style.transform = "translateY(-5px)";
+            
+            const dietType = this.dataset.dietType;
+            state.updateFormData('dietType', dietType);
+            
+            if (dietType === 'ai-only') {
+                // رفتن مستقیم به مرحله بعد
+                nextButton.disabled = false;
+                // به صورت خودکار به مرحله بعد برود یا کاربر دکمه بعدی را بزند
+            } else if (dietType === 'with-specialist') {
+                // نمایش پاپ‌آپ انتخاب مشاور
+                openSpecialistPopup();
+            }
+        });
+    });
+    
+    // اگر قبلاً نوع رژیم انتخاب شده بود، آن را highlight کن
+    if (state.formData.dietType) {
+        const selectedCard = document.querySelector(`.diet-type-card[data-diet-type="${state.formData.dietType}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+            selectedCard.style.transform = "translateY(-5px)";
+        }
+    }
+};
+
+// توابع جدید برای مدیریت پاپ‌آپ مشاور
+window.openSpecialistPopup = function() {
+    const popup = document.getElementById('specialist-popup');
+    popup.style.display = 'flex';
+    loadNutritionConsultantsPopup();
+};
+
+window.closeSpecialistPopup = function() {
+    const popup = document.getElementById('specialist-popup');
+    popup.style.display = 'none';
+    // حذف انتخاب مشاور در صورت انصراف
+    state.updateFormData('selectedSpecialist', null);
+    
+    // غیرفعال کردن دکمه مرحله بعد
+    const nextButton = document.querySelector(".next-step");
+    nextButton.disabled = true;
+};
+
+window.confirmSpecialistSelection = function() {
+    if (state.formData.selectedSpecialist) {
+        closeSpecialistPopup();
+        // فعال کردن دکمه مرحله بعد
+        const nextButton = document.querySelector(".next-step");
+        nextButton.disabled = false;
+    }
+};
+
+// بارگذاری مشاورین در پاپ‌آپ
+function loadNutritionConsultantsPopup() {
+    const specialistSelection = document.getElementById('specialist-selection-popup');
+    specialistSelection.innerHTML = `
+        <div class="loading-specialists">
+            <div class="loading-spinner"></div>
+            <p>در حال بارگذاری لیست متخصصین...</p>
+        </div>
+    `;
+    
+    fetch(aiAssistantVars.ajaxurl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'action': 'get_nutrition_consultants',
+            'security': aiAssistantVars.nonce
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            specialistSelection.innerHTML = '';
+            
+            if (data.data.consultants && data.data.consultants.length > 0) {
+                data.data.consultants.forEach(consultant => {
+                    const specialistCard = document.createElement('div');
+                    specialistCard.className = 'specialist-card-popup';
+                    specialistCard.dataset.specialistId = consultant.id;
+                    specialistCard.innerHTML = `
+                        <div class="specialist-info-popup">
+                            <div class="specialist-name-popup">${consultant.name}</div>
+                            <div class="specialist-specialty-popup">${consultant.specialty}</div>
+                            <div class="specialist-price-popup">+25,000 تومان</div>
+                        </div>
+                        <button type="button" class="select-specialist-btn-popup" onclick="selectSpecialistInPopup(${consultant.id}, '${consultant.name.replace(/'/g, "\\'")}', '${consultant.specialty.replace(/'/g, "\\'")}')">
+                            انتخاب
+                        </button>
+                    `;
+                    specialistSelection.appendChild(specialistCard);
+                });
+            } else {
+                specialistSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">هیچ متخصص فعالی یافت نشد</div>';
+            }
+        } else {
+            specialistSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #f44336;">خطا در بارگذاری لیست متخصصین</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error loading consultants:', error);
+        specialistSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #f44336;">خطا در ارتباط با سرور</div>';
+    });
+}
+
+// انتخاب مشاور در پاپ‌آپ
+window.selectSpecialistInPopup = function(specialistId, specialistName, specialty) {
+    // حذف انتخاب از همه کارت‌ها
+    document.querySelectorAll('.specialist-card-popup').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // انتخاب کارت فعلی
+    const selectedCard = document.querySelector(`.specialist-card-popup[data-specialist-id="${specialistId}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+    
+    // ذخیره در state
+    state.updateFormData('selectedSpecialist', {
+        id: specialistId,
+        name: specialistName,
+        specialty: specialty
+    });
+    
+    // نمایش اطلاعات مشاور انتخاب شده
+    const specialistInfo = document.getElementById('selected-specialist-info');
+    const specialistDetails = document.getElementById('specialist-details');
+    
+    specialistDetails.innerHTML = `
+        <div><strong>${specialistName}</strong></div>
+        <div style="color: #666; font-size: 0.9em; margin: 5px 0;">${specialty}</div>
+        <div style="color: #4CAF50; font-weight: bold; font-size: 0.9em;">
+            +25,000 تومان هزینه تأیید متخصص
+        </div>
+    `;
+    specialistInfo.style.display = 'block';
+    
+    // فعال کردن دکمه تأیید در پاپ‌آپ
+    const confirmBtn = document.querySelector('.popup-confirm-btn');
+    confirmBtn.disabled = false;
+};

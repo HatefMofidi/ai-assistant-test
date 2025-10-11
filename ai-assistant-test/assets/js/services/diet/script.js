@@ -238,7 +238,7 @@ window.STEPS = {
     TARGET_WEIGHT: 7,
     GOAL_DISPLAY: 8,
     CHRONIC_CONDITIONS: 9,
-    MEDICATIONS: 10,  // مرحله جدید
+    MEDICATIONS: 10,
     DIGESTIVE_CONDITIONS: 11,
     SURGERY: 12,
     WATER_INTAKE: 13,
@@ -247,12 +247,14 @@ window.STEPS = {
     DIET_STYLE: 16,
     FOOD_LIMITATIONS: 17,
     FAVORITE_FOODS: 18,
-    TERMS_AGREEMENT: 19,
-    CONFIRMATION: 20
+    // مرحله جدید اضافه شده
+    DIET_TYPE_SELECTION: 19,
+    TERMS_AGREEMENT: 20,
+    CONFIRMATION: 21
 };
 
 // تعداد مراحل اصلی (بدون احتساب دو مرحله آخر)
-window.totalSteps = Object.keys(STEPS).length - 2; 
+window.totalSteps = Object.keys(STEPS).length - 3; 
 
 window.VALUE_MAPPING = {
     // جنسیت
@@ -263,26 +265,26 @@ window.VALUE_MAPPING = {
     
     // هدف
     goal: {
-        'weight-loss': 'کاهش وزن',
-        'weight-gain': 'افزایش وزن سالم',
-        'fitness': 'حفظ سلامت و تناسب'
+        'weight-loss': 'کاهش وزن - برنامه‌ای برای رسیدن به وزن ایده‌آل و سالم',
+        'weight-gain': 'افزایش وزن سالم - برنامه‌ای برای افزایش وزن اصولی و عضله‌سازی', 
+        'fitness': 'حفظ سلامت و تناسب - برنامه‌ای برای حفظ وزن فعلی و بهبود سلامت عمومی'
     },
     
     // فعالیت روزانه
     activity: {
-        'very-low': 'خیلی کم (بی‌تحرک)',
-        'low': 'کم (فعالیت سبک)',
-        'medium': 'متوسط (فعالیت متوسط)',
-        'high': 'زیاد (فعالیت شدید)'
+        'very-low': 'خیلی کم (بی‌تحرک) - بیشتر وقت پشت میز یا در خانه، تحرک بسیار کم',
+        'low': 'کم (فعالیت سبک) - کارهای سبک خانه، پیاده‌روی کوتاه، ایستادن متوسط',
+        'medium': 'متوسط (فعالیت متوسط) - کارهایی که نیاز به راه رفتن و حرکت مداوم دارد',
+        'high': 'زیاد (فعالیت شدید) - کار فیزیکی سخت که بیشتر روز نیاز به فعالیت بدنی دارد'
     },
     
     // فعالیت ورزشی
     exercise: {
         'none': 'هیچ ورزشی نمی‌کنم',
-        'light': 'سبک',
-        'medium': 'متوسط',
-        'high': 'زیاد',
-        'professional': 'ورزشکار حرفه‌ای'
+        'light': 'سبک (۱-۲ روز در هفته، کمتر از ۳۰ دقیقه)',
+        'medium': 'متوسط (۳-۴ روز در هفته، ۳۰-۶۰ دقیقه)',
+        'high': 'زیاد (۵-۶ روز در هفته یا بیشتر، ۶۰+ دقیقه)',
+        'professional': 'ورزشکار حرفه‌ای (تمرین سنگین روزانه و برنامه‌ریزی شده)'
     },
     
     // بیماری‌های مزمن
@@ -436,7 +438,58 @@ window.VALUE_MAPPING = {
         'kookoo-sabzi': 'کوکو سبزی (فر یا گریل)',
         'kookoo-sibzamini': 'کوکو سیب زمینی (فر یا گریل)',
         'none': 'ترجیح می‌دهم برنامه بر اساس نیازهای غذایی من تنظیم شود'
+    },
+    // نوع رژیم
+    dietType: {
+        'ai-only': 'رژیم هوش مصنوعی (بدون تأیید دکتر)',
+        'with-specialist': 'رژیم با تأیید متخصص تغذیه'
     }    
+};
+
+// اضافه کردن این بخش به script.js بعد از VALUE_MAPPING
+window.KEY_MAPPING = {
+    // اطلاعات شخصی
+    'firstName': 'نام',
+    'lastName': 'نام خانوادگی',
+    'gender': 'جنسیت',
+    'age': 'سن',
+    'height': 'قد',
+    'weight': 'وزن فعلی',
+    'targetWeight': 'وزن هدف',
+    
+    // اطلاعات هدف و فعالیت
+    'goal': 'هدف از دریافت رژیم',
+    'activity': 'سطح فعالیت روزانه',
+    'exercise': 'فعالیت ورزشی هفتگی',
+    'waterIntake': 'مصرف آب روزانه',
+    
+    // اطلاعات پزشکی
+    'chronicConditions': 'بیماری‌های مزمن و زمینه‌ای',
+    'chronicDiabetesType': 'نوع دیابت',
+    'chronicFastingBloodSugar': 'قند خون ناشتا',
+    'chronicHba1c': 'سطح HbA1c',
+    'medications': 'داروهای مصرفی',
+    'digestiveConditions': 'مشکلات گوارشی',
+    'surgery': 'سابقه جراحی',
+    'cancerTreatment': 'نوع درمان سرطان',
+    'cancerType': 'نوع سرطان',
+    
+    // اطلاعات غذایی
+    'dietStyle': 'سبک غذایی',
+    'foodLimitations': 'محدودیت‌های غذایی',
+    'favoriteFoods': 'غذاهای مورد علاقه'
+};
+
+// تابع برای تبدیل کلیدهای آبجکت به فارسی
+window.convertKeysToPersian = function(obj) {
+    const persianObj = {};
+    
+    for (const [key, value] of Object.entries(obj)) {
+        const persianKey = KEY_MAPPING[key] || key;
+        persianObj[persianKey] = value;
+    }
+    
+    return persianObj;
 };
 
 // تابع برای تبدیل داده‌ها به فارسی
@@ -472,6 +525,14 @@ window.convertToPersianData = function(formData) {
         persianData.cancerType = VALUE_MAPPING.cancerType[persianData.cancerType];
     }
     
+    if (persianData.waterIntake !== null && persianData.waterIntake !== undefined) {
+        persianData.waterIntake = `${persianData.waterIntake} لیوان (≈${(persianData.waterIntake * 0.25).toFixed(1)} لیتر)`;
+    }
+
+    if (persianData.waterIntake === null) {
+        persianData.waterIntake = 'مشخص نیست';
+    }    
+    
     // تبدیل آرایه‌ها
     const arrayFields = [
         'chronicConditions', 'medications', 'digestiveConditions', 
@@ -489,4 +550,15 @@ window.convertToPersianData = function(formData) {
     });
     
     return persianData;
+};
+
+
+// تابع کامل برای تبدیل تمام داده‌ها به فارسی
+window.convertToCompletePersianData = function(formData) {
+    // اول مقادیر را به فارسی تبدیل کنیم
+    const persianValues = window.convertToPersianData(formData);
+    // سپس کلیدها را به فارسی تبدیل کنیم
+    const completePersianData = window.convertKeysToPersian(persianValues);
+    
+    return completePersianData;
 };

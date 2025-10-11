@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // تعریف متغیر سراسری برای delay
     const MUL_VALUE = 2;
-    const NEXT_BUTTON_DELAY = MUL_VALUE;
+    const NEXT_BUTTON_DELAY = 200;
     const LONG_DELAY = 1000 * MUL_VALUE;
     const SHORT_DELAY = 300 * MUL_VALUE;
     
@@ -199,7 +199,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 3000);
                 }
             }
-
+            
+            function fillDietTypeStep() {
+                if (state.currentStep === STEPS.DIET_TYPE_SELECTION) {
+                    const aiOnlyOption = document.querySelector('.diet-type-card[data-diet-type="ai-only"]');
+                    if (aiOnlyOption) {
+                        aiOnlyOption.click();
+                        // فعال کردن دکمه بعدی
+                        const nextButton = document.querySelector('.next-step');
+                        if (nextButton) {
+                            nextButton.disabled = false;
+                        }
+                    }
+                }
+            }
+            
             function fillTermsStep() {
                 if (state.currentStep === STEPS.TERMS_AGREEMENT) {
                     const agreeCheckbox = document.getElementById('agree-terms');
@@ -306,6 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     case STEPS.FAVORITE_FOODS:
                         fillCheckboxSteps();
                         break;
+                    case STEPS.DIET_TYPE_SELECTION:
+                        fillDietTypeStep();
+                        break;                        
                     case STEPS.TERMS_AGREEMENT:
                         fillTermsStep();
                         break;

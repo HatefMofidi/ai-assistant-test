@@ -644,6 +644,8 @@ require_once get_template_directory() . '/functions/discounts-functions.php';
 
 require_once get_template_directory() . '/templates/consultant-dashboard-functions.php';
 
+require_once get_template_directory() . '/functions/consultant-users-functions.php';
+
 
 
 // ثبت کرون جاب برای مدیریت تخفیف‌های مناسبتی
