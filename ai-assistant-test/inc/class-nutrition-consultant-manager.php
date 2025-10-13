@@ -6,6 +6,7 @@ class AI_Assistant_Nutrition_Consultant_Manager {
     private $consultation_db;
     private $history_manager;
     private $notification_manager;
+    private $logger;
 
     public static function get_instance() {
         if (!self::$instance) {
@@ -18,6 +19,7 @@ class AI_Assistant_Nutrition_Consultant_Manager {
         $this->consultation_db = AI_Assistant_Diet_Consultation_DB::get_instance();
         $this->history_manager = AI_Assistant_History_Manager::get_instance();
         $this->notification_manager = AI_Assistant_Notification_Manager::get_instance();
+        $this->logger = AI_Assistant_Logger::get_instance();
         
         // ثبت هوک‌های مدیریت درخواست‌ها
         add_action('wp_ajax_submit_consultation_review', [$this, 'handle_consultation_review']);
@@ -35,15 +37,25 @@ class AI_Assistant_Nutrition_Consultant_Manager {
         }
 
         // بررسی آیا سرویس مربوط به رژیم غذایی است
-        if (!$this->is_diet_service($history_item->service_id)) {
-            return new WP_Error('not_diet_service', 'این سرویس مربوط به رژیم غذایی نیست.');
-        }
+        // if (!$this->is_diet_service($history_item->service_id)) {
+        //     return new WP_Error('not_diet_service', 'این سرویس مربوط به رژیم غذایی نیست.');
+        // }
 
         // دریافت مشاور (فعلاً اولین مشاور)
         $consultant_id = $this->get_available_consultant();
         if (!$consultant_id) {
             return new WP_Error('no_consultant', 'هیچ مشاور فعالی یافت نشد.');
         }
+        
+        
+        
+         $this->logger->log('consultation_request_data', [
+               'user_id' => $history_item->user_id,
+                'consultant_id' => $consultant_id,
+                'service_history_id' => $service_history_id,
+                'consultation_price' => $consultation_price,
+                'deadline' => date('Y-m-d H:i:s', strtotime('+3 days'))
+            ]);
 
         // ثبت درخواست
         $request_data = [

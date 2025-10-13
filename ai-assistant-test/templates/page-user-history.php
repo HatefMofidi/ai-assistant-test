@@ -9,6 +9,11 @@ if (!is_user_logged_in()) {
 }
 
 
+// غیرفعال کردن کش قبل از هر خروجی
+if (!defined('DONOTCACHEPAGE')) {
+    define('DONOTCACHEPAGE', true);
+}
+
 // غیرفعال کردن کش برای این صفحه
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
@@ -21,6 +26,17 @@ $history_manager = AI_Assistant_History_Manager::get_instance();
 $logger = AI_Assistant_Logger::get_instance();
 $history = $history_manager->get_user_history($current_user_id, 10);
 
+
+// بعد از خط 15 (قبل از نمایش تاریخچه) این کد را اضافه کنید:
+
+$consultation_db = AI_Assistant_Diet_Consultation_DB::get_instance();
+$user_consultations = $consultation_db->get_user_consultation_requests($current_user_id);
+
+// ایجاد آرایه برای نمایش وضعیت بازبینی
+$consultation_statuses = [];
+foreach ($user_consultations as $consultation) {
+    $consultation_statuses[$consultation->service_history_id] = $consultation;
+}
 
 
 // محاسبه تعداد کل آیتم‌ها برای صفحه‌بندی
@@ -81,7 +97,37 @@ $total_items = $wpdb->get_var(
                                     <?php echo esc_html(date_i18n('j F Y - H:i', strtotime($item->created_at))); ?>
                                 </td>
                                 <td>
-                                    <span class="ai-status-badge ai-status-completed">تکمیل شده</span>
+                                    <?php 
+                                    $history_id = $item->ID;
+                                    if (isset($consultation_statuses[$history_id])) {
+                                        $consultation = $consultation_statuses[$history_id];
+                                        $status_badges = [
+                                            'pending' => 'ai-status-pending',
+                                            'under_review' => 'ai-status-review', 
+                                            'approved' => 'ai-status-approved',
+                                            'rejected' => 'ai-status-rejected'
+                                        ];
+                                        $status_texts = [
+                                            'pending' => 'در انتظار بازبینی',
+                                            'under_review' => 'در حال بازبینی',
+                                            'approved' => 'تایید شده',
+                                            'rejected' => 'نیاز به اصلاح'
+                                        ];
+                                        $badge_class = $status_badges[$consultation->status] ?? 'ai-status-pending';
+                                        $status_text = $status_texts[$consultation->status] ?? 'در انتظار بازبینی';
+                                    ?>
+                                        <span class="ai-status-badge <?php echo $badge_class; ?>">
+                                            <?php echo $status_text; ?>
+                                        </span>
+                                        <?php if ($consultation->status === 'approved') : ?>
+                                            <br>
+                                            <small class="ai-consultation-date">
+                                                <?php echo esc_html(date_i18n('j F Y', strtotime($consultation->reviewed_at))); ?>
+                                            </small>
+                                        <?php endif; ?>
+                                    <?php } else { ?>
+                                        <span class="ai-status-badge ai-status-completed">تکمیل شده</span>
+                                    <?php } ?>
                                 </td>
                                 <td >
                                     <div class="ai-history-actions">

@@ -96,91 +96,21 @@ window.preloadImages = function() {
     });
 }
 
-// تغییر تابع window.showPaymentConfirmation
 window.showPaymentConfirmation = function(formData) {
-    // دریافت قیمت سرویس از طریق AJAX
-    fetch(aiAssistantVars.ajaxurl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+    const paymentPopup = new PaymentPopup({
+        serviceType: 'رژیم غذایی',
+        ajaxAction: 'get_diet_service_price', // مشخص کردن action
+        onConfirm: (price) => {
+            window.dispatchEvent(new CustomEvent('formSubmitted', {
+                detail: { formData, price }
+            }));
         },
-        body: new URLSearchParams({
-            'action': 'get_diet_service_price',
-            'security': aiAssistantVars.nonce
-        })
-    })
-    .then(response => response.json())
-    .then(priceData => {
-        if (priceData.success) {
-            const servicePrice = priceData.data.price;
-            const formattedPrice = new Intl.NumberFormat('fa-IR').format(servicePrice);
-            
-            // ایجاد المان پاپ‌آپ با قیمت داینامیک
-            const popup = document.createElement('div');
-            popup.className = 'payment-confirmation-popup';
-            popup.innerHTML = `
-                <div class="payment-confirmation-content">
-                    <div class="payment-header">
-                        <h3>تایید پرداخت</h3>
-                    </div>
-                    <div class="payment-details">
-                        <div class="wallet-balance-popup">
-                            <span>موجودی فعلی کیف پول شما:</span>
-                            <span class="balance-amount-popup" id="current-balance">در حال بارگذاری...</span>
-                        </div>
-                        <div class="payment-cost">
-                            <span>هزینه دریافت رژیم غذایی اختصاصی:</span>
-                            <span class="cost-amount">${formattedPrice} تومان</span>
-                        </div>
-                        <p class="payment-warning">در صورت تأیید، این مبلغ از حساب شما کسر خواهد شد.</p>
-                    </div>
-                    <div class="payment-buttons">
-                        <button id="confirm-payment" class="confirm-btn" data-price="${servicePrice}" disabled>
-                            <span class="btn-text">تأیید و پرداخت (${formattedPrice} تومان)</span>
-                            <span class="btn-loading" style="display:none">در حال پردازش...</span>
-                        </button>
-                        <button id="cancel-payment" class="cancel-btn">انصراف</button>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(popup);
-            
-            // غیرفعال کردن کلیک خارج از پاپ‌آپ و دکمه ESC
-            popup.addEventListener('click', function(e) {
-                if (e.target === popup) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            
-            // دریافت موجودی کاربر
-            fetchUserBalance(servicePrice, formData);
-            
-            document.getElementById('cancel-payment').addEventListener('click', function() {
-                document.body.removeChild(popup);
-                // فعال کردن مجدد دکمه سابمیت
-                document.getElementById('SubmitBtn').disabled = false;
-                document.getElementById('SubmitBtn').innerHTML = 'ثبت نهایی';
-            });
-        } else {
-            // خطا در دریافت قیمت
-            alert('خطا در دریافت اطلاعات قیمت. لطفاً مجدداً تلاش کنید.');
+        onCancel: () => {
             document.getElementById('SubmitBtn').disabled = false;
         }
-    })
-    .catch(error => {
-        console.error('Error fetching service price:', error);
-        alert('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
-        document.getElementById('SubmitBtn').disabled = false;
     });
+    
+    paymentPopup.show();
 };
 
 function setupChronicDiabetesDetails() {
@@ -194,9 +124,9 @@ function setupChronicDiabetesDetails() {
         diabetesDetails.style.display = this.checked ? 'block' : 'none';
         
         if (!this.checked) {
-            state.updateFormData('chronicDiabetesType', '');
-            state.updateFormData('chronicFastingBloodSugar', '');
-            state.updateFormData('chronicHba1c', '');
+            state.updateFormData('userInfo.chronicDiabetesType', '');
+            state.updateFormData('userInfo.chronicFastingBloodSugar', '');
+            state.updateFormData('userInfo.chronicHba1c', '');
             resetChronicDiabetesSelections();
             diabetesAdditional.style.display = 'none';
         }
@@ -217,7 +147,7 @@ function setupChronicDiabetesDetails() {
             this.style.padding = '8px';
 
             const diabetesType = this.dataset.value;
-            state.updateFormData('chronicDiabetesType', diabetesType);
+            state.updateFormData('userInfo.chronicDiabetesType', diabetesType);
             
             if (diabetesType !== 'prediabetes') {
                 diabetesAdditional.style.display = 'block';
@@ -234,13 +164,13 @@ function setupChronicDiabetesDetails() {
     
     if (fastingInput) {
         fastingInput.addEventListener('input', function() {
-            state.updateFormData('chronicFastingBloodSugar', this.value);
+            state.updateFormData('userInfo.chronicFastingBloodSugar', this.value);
         });
     }
     
     if (hba1cInput) {
         hba1cInput.addEventListener('input', function() {
-            state.updateFormData('chronicHba1c', this.value);
+            state.updateFormData('userInfo.chronicHba1c', this.value);
         });
     }
 }
@@ -389,29 +319,8 @@ window.handleFormSubmit = function(event) {
     
     // 1. جمع‌آوری ساختارمند تمام داده‌ها
     const formData = {
-        ...state.formData,
-        // اطلاعات پایه
-        firstName: state.formData.firstName,
-        lastName: state.formData.lastName,
-        gender: state.formData.gender,
-        age: state.formData.age,
-        height: state.formData.height,
-        weight: state.formData.weight,
-        targetWeight: state.formData.targetWeight,
-        goal: state.formData.goal,
-        activity: state.formData.activity,
-        exercise: state.formData.exercise,
-        waterIntake: state.formData.waterIntake,
-        surgery: state.formData.surgery || [],
-        chronicConditions: state.formData.chronicConditions || [],
-        digestiveConditions: state.formData.digestiveConditions || [],
-        dietStyle: state.formData.dietStyle || [],
-        foodLimitations: state.formData.foodLimitations || [],
-        chronicDiabetesType: state.formData.chronicDiabetesType || '',
-        chronicFastingBloodSugar: state.formData.chronicFastingBloodSugar || '',
-        chronicHba1c: state.formData.chronicHba1c || '',
-        favoriteFoods: state.formData.favoriteFoods || [],
-        medications: state.formData.medications || []        
+        userInfo: { ...state.formData.userInfo },
+        serviceSelection: { ...state.formData.serviceSelection }
     };
 
     const completePersianData = window.convertToCompletePersianData(formData);
@@ -436,14 +345,20 @@ window.showSummary = function() {
     nextButton.disabled = true;
     
     const { 
-        firstName,
-        lastName,
-        gender, age, height, weight, targetWeight, goal, 
+        userInfo,
+        serviceSelection
+    } = state.formData;
+
+    const {
+        firstName, lastName, gender, age, height, weight, targetWeight, goal,
         activity, exercise, waterIntake, surgery = [],
         digestiveConditions = [], dietStyle = [],
-        foodLimitations = [],
-        chronicConditions, favoriteFoods, medications, dietType = [] 
-    } = state.formData;
+        foodLimitations = [], chronicConditions, favoriteFoods, medications,
+        chronicDiabetesType, chronicFastingBloodSugar, chronicHba1c,
+        cancerTreatment, cancerType
+    } = userInfo;
+
+    const { dietType, selectedSpecialist } = serviceSelection;
 
     const personalInfoText = [];
     if (firstName) personalInfoText.push(`نام: ${firstName}`);
@@ -640,6 +555,8 @@ window.showSummary = function() {
         dietTypeText = 'رژیم هوش مصنوعی (50,000 تومان)';
     } else if (dietType === 'with-specialist' && selectedSpecialist) {
         dietTypeText = `رژیم با تأیید متخصص (75,000 تومان) - ${selectedSpecialist.name}`;
+    } else if (dietType === 'with-specialist') {
+        dietTypeText = 'رژیم با تأیید متخصص (75,000 تومان) - متخصص انتخاب نشده';
     }
     
     summaryContainer.innerHTML = `

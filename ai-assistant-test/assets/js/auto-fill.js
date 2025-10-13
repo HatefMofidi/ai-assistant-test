@@ -22,25 +22,31 @@ document.addEventListener('DOMContentLoaded', function() {
             
             window.removeEventListener('stateUpdated', handleStateChange);
             
-            // داده‌های تستی به‌روزرسانی شده
             const testData = {
-                firstName: "هادی",
-                lastName: "بهداد",
-                gender: 'male',
-                goal: 'weight-loss',
-                age: 40,
-                height: 174,
-                weight: 73,
-                targetWeight: 71,
-                activity: 'medium',
-                exercise: 'medium',
-                waterIntake: 14,
-                surgery: ['none'],
-                digestiveConditions: ['none'], // به‌روزرسانی شده
-                dietStyle: ['none'],
-                foodLimitations: ['none'],
-                chronicConditions: ['none'],
-                medications: ['none']
+                userInfo: {
+                    firstName: "هادی",
+                    lastName: "بهداد", 
+                    gender: 'male',
+                    goal: 'weight-loss',
+                    age: 40,
+                    height: 174,
+                    weight: 73,
+                    targetWeight: 71,
+                    activity: 'medium',
+                    exercise: 'medium',
+                    waterIntake: 14,
+                    surgery: ['none'],
+                    digestiveConditions: ['none'],
+                    dietStyle: ['none'],
+                    foodLimitations: ['none'],
+                    chronicConditions: ['none'],
+                    medications: ['none'],
+                    favoriteFoods: ['none']
+                },
+                serviceSelection: {
+                    dietType: "ai-only",
+                    selectedSpecialist: null
+                }
             };
             
             function handleStateChange() {
@@ -58,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     setTimeout(() => {
-                        const genderOption = document.querySelector(`.gender-option[data-gender="${testData.gender}"]`);
+                        const genderOption = document.querySelector(`.gender-option[data-gender="${testData.userInfo.gender}"]`);
                         if (genderOption) {
                             genderOption.click();
                             clickNextButton(LONG_DELAY);
@@ -71,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (state.currentStep === STEPS.PERSONAL_INFO) {
                     const firstNameInput = document.getElementById('first-name-input');
                     if (firstNameInput) {
-                        firstNameInput.value = testData.firstName;
+                        firstNameInput.value = testData.userInfo.firstName;
                         firstNameInput.dispatchEvent(new Event('input'));
                     }
                     
                     const lastNameInput = document.getElementById('last-name-input');
                     if (lastNameInput) {
-                        lastNameInput.value = testData.lastName;
+                        lastNameInput.value = testData.userInfo.lastName;
                         lastNameInput.dispatchEvent(new Event('input'));
                     }
                     
@@ -87,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function fillGoalStep() {
                 if (state.currentStep === STEPS.GOAL) {
-                    const goalOption = document.querySelector(`.goal-option[data-goal="${testData.goal}"]`);
+                    const goalOption = document.querySelector(`.goal-option[data-goal="${testData.userInfo.goal}"]`);
                     if (goalOption) {
                         goalOption.click();
                         clickNextButton(NEXT_BUTTON_DELAY);
@@ -97,10 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function fillNumberSteps() {
                 const fieldMap = {
-                    [STEPS.AGE]: {id: 'age-input', value: testData.age, name: 'سن'},
-                    [STEPS.HEIGHT]: {id: 'height-input', value: testData.height, name: 'قد'},
-                    [STEPS.WEIGHT]: {id: 'weight-input', value: testData.weight, name: 'وزن'},
-                    [STEPS.TARGET_WEIGHT]: {id: 'target-weight-input', value: testData.targetWeight, name: 'وزن هدف'}
+                    [STEPS.AGE]: {id: 'age-input', value: testData.userInfo.age, name: 'سن'},
+                    [STEPS.HEIGHT]: {id: 'height-input', value: testData.userInfo.height, name: 'قد'},
+                    [STEPS.WEIGHT]: {id: 'weight-input', value: testData.userInfo.weight, name: 'وزن'},
+                    [STEPS.TARGET_WEIGHT]: {id: 'target-weight-input', value: testData.userInfo.targetWeight, name: 'وزن هدف'}
                 };
 
                 if (fieldMap[state.currentStep]) {
@@ -129,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function fillActivityStep() {
                 if (state.currentStep === STEPS.ACTIVITY) {
-                    const activityOption = document.querySelector(`.activity-option[data-activity="${testData.activity}"]`);
+                    const activityOption = document.querySelector(`.activity-option[data-activity="${testData.userInfo.activity}"]`);
                     if (activityOption) {
                         activityOption.click();
                         clickNextButton(NEXT_BUTTON_DELAY);
@@ -139,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
             function fillExerciseStep() {
                 if (state.currentStep === STEPS.EXERCISE) {
-                    const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${testData.exercise}"]`);
+                    const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${testData.userInfo.exercise}"]`);
                     if (exerciseOption) {
                         exerciseOption.click();
                         clickNextButton(NEXT_BUTTON_DELAY);
@@ -150,8 +156,8 @@ document.addEventListener('DOMContentLoaded', function() {
             function fillWaterStep() {
                 if (state.currentStep === STEPS.WATER_INTAKE) {
                     const waterCups = document.querySelectorAll('.water-cup');
-                    if (waterCups.length >= testData.waterIntake) {
-                        waterCups[testData.waterIntake - 1].click();
+                    if (waterCups.length >= testData.userInfo.waterIntake) {
+                        waterCups[testData.userInfo.waterIntake - 1].click();
                         clickNextButton(NEXT_BUTTON_DELAY);
                     }
                 }

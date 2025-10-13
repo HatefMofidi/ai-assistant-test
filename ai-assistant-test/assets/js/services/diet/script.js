@@ -2,7 +2,37 @@
 
 window.state = {
     currentStep: 1,
-    formData: {},
+    formData: {
+        userInfo: {
+            firstName: "",
+            lastName: "",
+            gender: "",
+            age: "",
+            height: "",
+            weight: "",
+            targetWeight: "",
+            goal: "",
+            activity: "",
+            exercise: "",
+            waterIntake: "",
+            surgery: [],
+            chronicConditions: [],
+            digestiveConditions: [],
+            medications: [],
+            dietStyle: [],
+            foodLimitations: [],
+            favoriteFoods: [],
+            chronicDiabetesType: "",
+            chronicFastingBloodSugar: "",
+            chronicHba1c: "",
+            cancerTreatment: "",
+            cancerType: ""
+        },
+        serviceSelection: {
+            dietType: "",
+            selectedSpecialist: null
+        }
+    },
     
     updateStep(step) {
         this.currentStep = step;
@@ -14,38 +44,50 @@ window.state = {
     },
     
     updateFormData(key, value) {
-        this.formData[key] = value;
+        // پشتیبانی از ساختار جدید
+        if (key.startsWith('userInfo.')) {
+            const userInfoKey = key.replace('userInfo.', '');
+            this.formData.userInfo[userInfoKey] = value;
+        } else if (key.startsWith('serviceSelection.')) {
+            const serviceKey = key.replace('serviceSelection.', '');
+            this.formData.serviceSelection[serviceKey] = value;
+        } else {
+            // برای سازگاری با کدهای قدیمی - ذخیره در userInfo
+            this.formData.userInfo[key] = value;
+        }
         window.validateStep(this.currentStep);
     },
     
     updateFormElementsFromState() {
         // تاخیر برای اطمینان از لود کامل DOM
         setTimeout(() => {
+            const { userInfo, serviceSelection } = this.formData;
+            
             // به روزرسانی جنسیت
-            if (this.formData.gender) {
-                const genderOption = document.querySelector(`.gender-option[data-gender="${this.formData.gender}"]`);
+            if (userInfo.gender) {
+                const genderOption = document.querySelector(`.gender-option[data-gender="${userInfo.gender}"]`);
                 if (genderOption) genderOption.classList.add('selected');
             }
         
-            if (this.formData.firstName) {
+            if (userInfo.firstName) {
                 const firstNameInput = document.getElementById('first-name-input');
                 if (firstNameInput) {
-                    firstNameInput.value = this.formData.firstName;
+                    firstNameInput.value = userInfo.firstName;
                     firstNameInput.dispatchEvent(new Event('input'));
                 }
             }
             
-            if (this.formData.lastName) {
+            if (userInfo.lastName) {
                 const lastNameInput = document.getElementById('last-name-input');
                 if (lastNameInput) {
-                    lastNameInput.value = this.formData.lastName;
+                    lastNameInput.value = userInfo.lastName;
                     lastNameInput.dispatchEvent(new Event('input'));
                 }
             }    
             
             // به روزرسانی هدف
-            if (this.formData.goal) {
-                const goalOption = document.querySelector(`.goal-option[data-goal="${this.formData.goal}"]`);
+            if (userInfo.goal) {
+                const goalOption = document.querySelector(`.goal-option[data-goal="${userInfo.goal}"]`);
                 if (goalOption) goalOption.classList.add('selected');
             }
     
@@ -58,10 +100,10 @@ window.state = {
             };
             
             Object.entries(numberFields).forEach(([id, key]) => {
-                if (this.formData[key]) {
+                if (userInfo[key]) {
                     const input = document.getElementById(id);
                     if (input) {
-                        input.value = this.formData[key];
+                        input.value = userInfo[key];
                         // تریگر رویداد input برای به روزرسانی نمایش
                         input.dispatchEvent(new Event('input'));
                     }
@@ -70,11 +112,13 @@ window.state = {
     
             // به روزرسانی چک‌باکس‌ها
             const checkboxGroups = {
-                'surgery': { prefix: 'surgery', items: this.formData.surgery || [] },
-                'dietStyle': { prefix: 'diet-style', items: this.formData.dietStyle || [] },
-                'foodLimitations': { prefix: 'limitation', items: this.formData.foodLimitations || [] },
-                'digestiveConditions': { prefix: 'digestive', items: this.formData.digestiveConditions || [] },
-                'chronicConditions': { prefix: 'chronic', items: this.formData.chronicConditions || [] }
+                'surgery': { prefix: 'surgery', items: userInfo.surgery || [] },
+                'dietStyle': { prefix: 'diet-style', items: userInfo.dietStyle || [] },
+                'foodLimitations': { prefix: 'limitation', items: userInfo.foodLimitations || [] },
+                'digestiveConditions': { prefix: 'digestive', items: userInfo.digestiveConditions || [] },
+                'chronicConditions': { prefix: 'chronic', items: userInfo.chronicConditions || [] },
+                'medications': { prefix: 'medication', items: userInfo.medications || [] },
+                'favoriteFoods': { prefix: 'food', items: userInfo.favoriteFoods || [] }
             };
     
             Object.entries(checkboxGroups).forEach(([groupKey, groupData]) => {
@@ -93,7 +137,7 @@ window.state = {
                     }
                     // مدیریت مورد خاص برای 'none'
                     else if (item === 'none') {
-                        const noneCheckboxId = `${prefix}s-none`; // مثل limitations-none
+                        const noneCheckboxId = `${prefix}-none`; // مثل surgery-none, diet-style-none
                         const noneCheckbox = document.getElementById(noneCheckboxId);
                         if (noneCheckbox) {
                             noneCheckbox.checked = true;
@@ -105,20 +149,20 @@ window.state = {
             });
             
             // به روزرسانی فعالیت
-            if (this.formData.activity) {
-                const activityOption = document.querySelector(`.activity-option[data-activity="${this.formData.activity}"]`);
+            if (userInfo.activity) {
+                const activityOption = document.querySelector(`.activity-option[data-activity="${userInfo.activity}"]`);
                 if (activityOption) activityOption.classList.add('selected');
             }
                 
-            if (this.formData.exercise) {
-                const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${this.formData.exercise}"]`);
+            if (userInfo.exercise) {
+                const exerciseOption = document.querySelector(`.exercise-option[data-exercise="${userInfo.exercise}"]`);
                 if (exerciseOption) exerciseOption.classList.add('selected');
             }            
             
             // به روزرسانی مصرف آب
-            if (this.formData.waterIntake !== undefined && this.formData.waterIntake !== null) {
+            if (userInfo.waterIntake !== undefined && userInfo.waterIntake !== null) {
                 const waterCups = document.querySelectorAll('.water-cup');
-                const waterAmount = this.formData.waterIntake;
+                const waterAmount = userInfo.waterIntake;
                 
                 // انتخاب لیوان‌ها
                 waterCups.forEach((cup, index) => {
@@ -158,6 +202,18 @@ window.state = {
                     option.style.filter = "none";
                 });
             }
+            
+            // به روزرسانی نوع رژیم
+            if (serviceSelection.dietType) {
+                const dietTypeCard = document.querySelector(`.diet-type-card[data-diet-type="${serviceSelection.dietType}"]`);
+                if (dietTypeCard) {
+                    dietTypeCard.classList.add('selected');
+                    dietTypeCard.style.transform = "translateY(-5px)";
+                    dietTypeCard.style.opacity = "1";
+                    dietTypeCard.style.filter = "grayscale(0)";
+                }
+            }
+            
         }, 300);
     }
 };
@@ -446,7 +502,6 @@ window.VALUE_MAPPING = {
     }    
 };
 
-// اضافه کردن این بخش به script.js بعد از VALUE_MAPPING
 window.KEY_MAPPING = {
     // اطلاعات شخصی
     'firstName': 'نام',
@@ -478,6 +533,9 @@ window.KEY_MAPPING = {
     'dietStyle': 'سبک غذایی',
     'foodLimitations': 'محدودیت‌های غذایی',
     'favoriteFoods': 'غذاهای مورد علاقه'
+    
+    // نیازی به اضافه کردن serviceSelection اینجا نیست
+    // چون به صورت جداگانه مدیریت می‌شود
 };
 
 // تابع برای تبدیل کلیدهای آبجکت به فارسی
@@ -553,12 +611,40 @@ window.convertToPersianData = function(formData) {
 };
 
 
-// تابع کامل برای تبدیل تمام داده‌ها به فارسی
+// تابع کامل برای تبدیل تمام داده‌ها به فارسی با ساختار جدید
 window.convertToCompletePersianData = function(formData) {
-    // اول مقادیر را به فارسی تبدیل کنیم
-    const persianValues = window.convertToPersianData(formData);
-    // سپس کلیدها را به فارسی تبدیل کنیم
-    const completePersianData = window.convertKeysToPersian(persianValues);
+    // ایجاد یک کپی از داده‌ها
+    const convertedData = {
+        userInfo: {},
+        serviceSelection: {}
+    };
     
-    return completePersianData;
+    // تبدیل userInfo
+    if (formData.userInfo) {
+        const persianValues = window.convertToPersianData(formData.userInfo);
+        convertedData.userInfo = window.convertKeysToPersian(persianValues);
+    }
+    
+    // تبدیل serviceSelection
+    if (formData.serviceSelection) {
+        // تبدیل مقادیر serviceSelection به فارسی
+        const serviceData = {...formData.serviceSelection};
+        
+        if (serviceData.dietType && VALUE_MAPPING.dietType[serviceData.dietType]) {
+            serviceData.dietType = VALUE_MAPPING.dietType[serviceData.dietType];
+        }
+        
+        // تبدیل کلیدهای serviceSelection به فارسی
+        const serviceKeyMapping = {
+            'dietType': 'نوع رژیم',
+            'selectedSpecialist': 'متخصص انتخاب شده'
+        };
+        
+        for (const [key, value] of Object.entries(serviceData)) {
+            const persianKey = serviceKeyMapping[key] || key;
+            convertedData.serviceSelection[persianKey] = value;
+        }
+    }
+    
+    return convertedData;
 };

@@ -34,8 +34,8 @@ window.validateStep = function(step) {
             label: "وزن هدف", 
             errorId: "targetWeight-error",
             customValidation: (value) => {
-                const currentWeight = state.formData.weight;
-                const goal = state.formData.goal;
+                const currentWeight = state.formData.userInfo.weight;
+                const goal = state.formData.userInfo.goal;
                 
                 if (!currentWeight) return true;
                 
@@ -57,15 +57,15 @@ window.validateStep = function(step) {
     };
     
     if (step === STEPS.PERSONAL_INFO) {
-        const firstName = state.formData.firstName;
-        const lastName = state.formData.lastName;
+        const firstName = state.formData.userInfo.firstName;
+        const lastName = state.formData.userInfo.lastName;
         nextButton.disabled = !(firstName && lastName);
         return;
     }    
     
     if (errorMessages[step]) {
         const { field, min, max, unit, label, errorId, customValidation } = errorMessages[step];
-        const value = state.formData[field];
+        const value = state.formData.userInfo[field];
         const errorElement = document.getElementById(errorId);
         
         if (!errorElement) return;

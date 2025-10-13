@@ -2142,59 +2142,6 @@ body.dark-mode .floating-document {
   51%, 100% { opacity: 0; }
 }
 
-/* پاپ‌آپ تأیید پرداخت */
-.payment-confirmation-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(5px);
-}
-
-.payment-confirmation-content {
-    background: white;
-    border-radius: 16px;
-    padding: 30px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    margin: 0 10px;
-}
-
-.payment-details > div > span:nth-child(1) {
-    text-align: right;
-}
-
-.payment-details > div > span:nth-child(2) {
-    text-align: left;
-}
-
-.payment-header h3 {
-    color: #00857a;
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-}
-
-.payment-details {
-    margin-bottom: 25px;
-}
-
-.wallet-balance-popup, .payment-cost {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
 .balance-amount-popup, .cost-amount {
     font-weight: bold;
     color: #00857a;
@@ -2202,18 +2149,6 @@ body.dark-mode .floating-document {
 
 .balance-amount-popup[style*="color: #e53935"] {
     color: #e53935 !important;
-}
-
-.payment-warning {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-top: 15px;
-}
-
-.payment-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .confirm-btn {
@@ -2273,18 +2208,6 @@ body.dark-mode .floating-document {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-.payment-confirmation-popup {
-    font-family: Vazir, Tahoma, Arial, sans-serif !important;
-}
-
-.payment-confirmation-content h3,
-.payment-confirmation-content span,
-.payment-confirmation-content p,
-.payment-confirmation-content button {
-    font-family: Vazir, Tahoma, Arial, sans-serif !important;
-}
-
 
 .cancer-options {
     display: grid;
@@ -2486,7 +2409,7 @@ body.dark-mode .floating-document {
 .diet-type-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
+    gap: 10px;
     margin: 30px 0;
 }
 
@@ -2654,11 +2577,139 @@ body.dark-mode .floating-document {
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
 }
 
-/* استایل برای حالت انتخاب شده */
+/* استایل کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) {
+    opacity: 0.7;
+    filter: grayscale(0.3);
+    border: 2px solid #e0e0e0;
+    background-color: #f8f9fa;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+}
+
+/* استایل کارت‌های انتخاب شده */
 .diet-type-card.selected {
-    border-color: #007bff;
-    background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
-    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+    opacity: 1;
+    filter: grayscale(0);
+    border: 2px solid #4CAF50;
+    background-color: #ffffff;
+    transform: translateY(-5px) scale(1);
+    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+}
+
+/* استایل کارت‌های انتخاب نشده در حالت تاریک */
+body.dark-mode .diet-type-card:not(.selected) {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+}
+
+/* هاور بر روی کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected):hover {
+    opacity: 0.9;
+    filter: grayscale(0.1);
+    transform: scale(0.98);
+    border-color: #bdbdbd;
+}
+
+/* استایل کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) {
+    opacity: 0.7;
+    filter: grayscale(0.3);
+    border: 2px solid #e0e0e0;
+    background-color: #f8f9fa;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+}
+
+/* استایل کارت‌های انتخاب شده */
+.diet-type-card.selected {
+    opacity: 1;
+    filter: grayscale(0);
+    border: 2px solid #4CAF50;
+    background-color: #ffffff;
+    transform: translateY(-5px) scale(1);
+    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+}
+
+/* استایل کارت‌های انتخاب نشده در حالت تاریک */
+body.dark-mode .diet-type-card:not(.selected) {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+}
+
+/* هاور بر روی کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected):hover {
+    opacity: 0.9;
+    filter: grayscale(0.1);
+    transform: scale(0.98);
+    border-color: #bdbdbd;
+}
+
+/* استایل ویژه برای کارت پریمیوم انتخاب نشده */
+.diet-type-card.premium:not(.selected) {
+    border: 2px solid #ff9800;
+    background: linear-gradient(135deg, #fff3e0, #f8f9fa);
+}
+
+body.dark-mode .diet-type-card.premium:not(.selected) {
+    background: linear-gradient(135deg, #422006, #2d3748);
+    border-color: #ed8936;
+}
+
+/* استایل آیکون‌ها در کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) .card-icon {
+    opacity: 0.6;
+}
+
+.diet-type-card:not(.selected) .card-icon svg {
+    stroke: #9e9e9e;
+}
+
+/* استایل متن‌ها در کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) .card-title {
+    color: #757575;
+}
+
+.diet-type-card:not(.selected) .card-description {
+    color: #9e9e9e;
+}
+
+.diet-type-card:not(.selected) .feature-item {
+    color: #9e9e9e;
+}
+
+/* استایل قیمت در کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) .price-amount {
+    color: #9e9e9e;
+}
+
+.diet-type-card:not(.selected) .price-currency {
+    color: #9e9e9e;
+}
+
+/* استایل بدج در کارت‌های انتخاب نشده */
+.diet-type-card:not(.selected) .card-badge {
+    opacity: 0.7;
+    background-color: #e0e0e0;
+    color: #757575;
+}
+
+.diet-type-card.premium:not(.selected) .premium-badge {
+    background-color: #ffb74d;
+    color: #7b4a00;
+}
+
+/* استایل ویژه برای کارت پریمیوم انتخاب نشده */
+.diet-type-card.premium:not(.selected) {
+    border: 2px solid #ff9800;
+    background: linear-gradient(135deg, #fff3e0, #f8f9fa);
+}
+
+body.dark-mode .diet-type-card.premium:not(.selected) {
+    background: linear-gradient(135deg, #422006, #2d3748);
+    border-color: #ed8936;
 }
 
 .diet-type-card.premium.selected {
@@ -2781,7 +2832,7 @@ body.dark-mode .floating-document {
 @media (max-width: 768px) {
     .diet-type-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 5px;
     }
     
     .card-footer {

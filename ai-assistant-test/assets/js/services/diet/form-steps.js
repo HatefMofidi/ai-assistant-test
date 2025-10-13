@@ -16,7 +16,7 @@ window.setupComplexCheckboxSelection = function(step, config) {
     // مدیریت نمایش گزینه‌های زنانه
     if (config.genderDependent) {
         const femaleOnlyOptions = document.querySelectorAll('.female-only');
-        if (state.formData.gender === 'female') {
+        if (state.formData.userInfo.gender === 'female') {
             femaleOnlyOptions.forEach(el => el.style.display = 'block');
         } else {
             femaleOnlyOptions.forEach(el => {
@@ -126,7 +126,7 @@ window.setupActivitySelection = function(currentStep) {
             this.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
             
             // ذخیره داده در state
-            state.updateFormData('activity', this.dataset.activity);
+            state.updateFormData('userInfo.activity', this.dataset.activity);
             
             // فعال کردن دکمه بعدی
             const nextButton = document.querySelector(".next-step");
@@ -135,8 +135,8 @@ window.setupActivitySelection = function(currentStep) {
     });
     
     // اگر قبلاً activity انتخاب شده بود، آن را highlight کن
-    if (state.formData.activity) {
-        const selectedOption = document.querySelector(`.activity-option[data-activity="${state.formData.activity}"]`);
+    if (state.formData.userInfo.activity) {
+        const selectedOption = document.querySelector(`.activity-option[data-activity="${state.formData.userInfo.activity}"]`);
         if (selectedOption) {
             selectedOption.classList.add('selected');
             selectedOption.style.transform = "translateY(-3px)";
@@ -251,8 +251,8 @@ window.setupCancerDetails = function() {
         
         // اگر سرطان انتخاب نشد، اطلاعات سرطان را پاک کنید
         if (!this.checked) {
-            state.updateFormData('cancerTreatment', '');
-            state.updateFormData('cancerType', '');
+            state.updateFormData('userInfo.cancerTreatment', '');
+            state.updateFormData('userInfo.cancerType', '');
             resetCancerSelections();
         }
         
@@ -276,9 +276,9 @@ window.setupCancerDetails = function() {
             // تشخیص نوع داده (درمان یا نوع سرطان)
             const isTreatment = category.querySelector('.cancer-option[data-value="chemo"]');
             if (isTreatment) {
-                state.updateFormData('cancerTreatment', this.dataset.value);
+                state.updateFormData('userInfo.cancerTreatment', this.dataset.value);
             } else {
-                state.updateFormData('cancerType', this.dataset.value);
+                state.updateFormData('userInfo.cancerType', this.dataset.value);
             }
             
             // به‌روزرسانی وضعیت دکمه
@@ -288,8 +288,8 @@ window.setupCancerDetails = function() {
 
     function validateNextButton() {
         if (cancerCheckbox.checked) {
-            const hasTreatment = state.formData.cancerTreatment !== '';
-            const hasType = state.formData.cancerType !== '';
+            const hasTreatment = state.formData.userInfo.cancerTreatment !== '';
+            const hasType = state.formData.userInfo.cancerType !== '';
             
             // اگر سرطان انتخاب شده، باید هر دو فیلد پر شوند
             nextButton.disabled = !(hasTreatment && hasType);
@@ -413,13 +413,13 @@ window.setupWaterIntakeSelection = function(currentStep) {
         if (isDontKnow) {
             waterAmountText.style.display = 'none';
             dontKnowText.style.display = 'block';
-            state.updateFormData('waterIntake', null);
+            state.updateFormData('userInfo.waterIntake', null);
         } else {
             waterAmountDisplay.textContent = amount;
             waterLiterDisplay.textContent = (amount * 0.25).toFixed(1); // محاسبه لیتر (هر لیوان 250 سی‌سی)
             waterAmountText.style.display = 'flex';
             dontKnowText.style.display = 'none';
-            state.updateFormData('waterIntake', amount);
+            state.updateFormData('userInfo.waterIntake', amount);
         }
         updateNextButtonState();
     };
@@ -541,8 +541,8 @@ window.setupExerciseSelection = function(currentStep) {
     const exerciseOptions = document.querySelectorAll('.exercise-option');
     
     // اگر قبلاً ورزشی انتخاب شده بود، آن را highlight کن
-    if (state.formData.exercise) {
-        const selectedOption = document.querySelector(`.exercise-option[data-exercise="${state.formData.exercise}"]`);
+    if (state.formData.userInfo.exercise) {
+        const selectedOption = document.querySelector(`.exercise-option[data-exercise="${state.formData.userInfo.exercise}"]`);
         if (selectedOption) {
             selectedOption.classList.add('selected');
             selectedOption.style.transform = "translateY(-3px)";
@@ -562,7 +562,7 @@ window.setupExerciseSelection = function(currentStep) {
             // انتخاب گزینه کلیک شده
             this.classList.add('selected');
             this.classList.add('selected-with-effect');
-            state.updateFormData('exercise', this.dataset.exercise);
+            state.updateFormData('userInfo.exercise', this.dataset.exercise);
             // افکت بصری
             setTimeout(() => {
                 this.classList.remove('selected-with-effect');
@@ -570,7 +570,7 @@ window.setupExerciseSelection = function(currentStep) {
                 this.style.boxShadow = "0 10px 20px rgba(0, 133, 122, 0.2)";
                 
                 // ذخیره داده
-                // state.updateFormData('exercise', this.dataset.exercise);
+                // state.updateFormData('userInfo.exercise', this.dataset.exercise);
                 
             }, 150);
         });
@@ -627,7 +627,7 @@ window.showStep = function(step) {
                 "weight-loss": "هدف: کاهش وزن",
                 "weight-gain": "هدف: افزایش وزن", 
                 "fitness": "هدف: حفظ سلامت"
-            }[state.formData.goal];
+            }[state.formData.userInfo.goal];
             
             goalTitleElement.textContent = goalText || "هدف: مشخص نشده";
         }
@@ -635,29 +635,29 @@ window.showStep = function(step) {
         const imageContainer = document.querySelector('#goal-weight-display .step7-image-container');
         let svgFile = '';
         
-        if (state.formData.goal === 'weight-loss') {
+        if (state.formData.userInfo.goal === 'weight-loss') {
             svgFile = wpVars.themeBasePath + '/assets/images/svg/weight-loss.svg';
-        } else if (state.formData.goal === 'weight-gain' || state.formData.goal === 'fitness') {
+        } else if (state.formData.userInfo.goal === 'weight-gain' || state.formData.userInfo.goal === 'fitness') {
             svgFile = wpVars.themeBasePath + '/assets/images/svg/weight-gain.svg';
         }
         
         imageContainer.innerHTML = `
             <div class="goal-title-container">
                 <h2 class="goal-title" id="goal-title-text">
-                    ${state.formData.goal === 'weight-loss' ? 'کاهش وزن' : 
-                      state.formData.goal === 'weight-gain' ? 'افزایش وزن' : 
+                    ${state.formData.userInfo.goal === 'weight-loss' ? 'کاهش وزن' : 
+                      state.formData.userInfo.goal === 'weight-gain' ? 'افزایش وزن' : 
                       'حفظ سلامت'}
                 </h2>
             </div>
             <object type="image/svg+xml" data="${svgFile}" class="goal-svg"></object>
             <div class="weight-display-container">
                 <div class="weight-display-box target-weight">
-                    <div class="weight-value">${state.formData.targetWeight || 0}</div>
+                    <div class="weight-value">${state.formData.userInfo.targetWeight || 0}</div>
                     <div class="weight-unit">کیلوگرم</div>
                     <div class="weight-label">وزن هدف</div>
                 </div>
                 <div class="weight-display-box current-weight">
-                    <div class="weight-value">${state.formData.weight || 0}</div>
+                    <div class="weight-value">${state.formData.userInfo.weight || 0}</div>
                     <div class="weight-unit">کیلوگرم</div>
                     <div class="weight-label">وزن فعلی</div>
                 </div>
@@ -909,18 +909,7 @@ window.handleEnterKey = function(event) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+// در تابع setupDietTypeSelection، بعد از انتخاب یک کارت
 window.setupDietTypeSelection = function(currentStep) {
     if (currentStep !== STEPS.DIET_TYPE_SELECTION) return;
 
@@ -929,38 +918,56 @@ window.setupDietTypeSelection = function(currentStep) {
     
     nextButton.disabled = true;
 
+    // اعمال استایل اولیه بر روی همه کارت‌ها
+    dietTypeCards.forEach(card => {
+        card.classList.remove('selected');
+        updateCardAppearance(card);
+    });
+
     dietTypeCards.forEach(card => {
         card.addEventListener('click', function() {
             // حذف انتخاب از همه کارت‌ها
             dietTypeCards.forEach(c => {
                 c.classList.remove('selected');
-                c.style.transform = "";
+                updateCardAppearance(c);
             });
             
             // انتخاب کارت کلیک شده
             this.classList.add('selected');
-            this.style.transform = "translateY(-5px)";
+            updateCardAppearance(this);
             
             const dietType = this.dataset.dietType;
-            state.updateFormData('dietType', dietType);
+            state.updateFormData('serviceSelection.dietType', dietType);
             
             if (dietType === 'ai-only') {
-                // رفتن مستقیم به مرحله بعد
+                state.updateFormData('serviceSelection.selectedSpecialist', null);
                 nextButton.disabled = false;
-                // به صورت خودکار به مرحله بعد برود یا کاربر دکمه بعدی را بزند
             } else if (dietType === 'with-specialist') {
-                // نمایش پاپ‌آپ انتخاب مشاور
                 openSpecialistPopup();
+                console.log('Opening specialist popup, current state:', state.formData);
             }
         });
     });
     
+    // تابع برای به‌روزرسانی ظاهر کارت
+    function updateCardAppearance(card) {
+        if (card.classList.contains('selected')) {
+            card.style.transform = "translateY(-5px)";
+            card.style.opacity = "1";
+            card.style.filter = "grayscale(0)";
+        } else {
+            card.style.transform = "scale(0.95)";
+            card.style.opacity = "0.7";
+            card.style.filter = "grayscale(0.3)";
+        }
+    }
+    
     // اگر قبلاً نوع رژیم انتخاب شده بود، آن را highlight کن
-    if (state.formData.dietType) {
-        const selectedCard = document.querySelector(`.diet-type-card[data-diet-type="${state.formData.dietType}"]`);
+    if (state.formData.serviceSelection.dietType) {
+        const selectedCard = document.querySelector(`.diet-type-card[data-diet-type="${state.formData.serviceSelection.dietType}"]`);
         if (selectedCard) {
             selectedCard.classList.add('selected');
-            selectedCard.style.transform = "translateY(-5px)";
+            updateCardAppearance(selectedCard);
         }
     }
 };
@@ -968,33 +975,70 @@ window.setupDietTypeSelection = function(currentStep) {
 // توابع جدید برای مدیریت پاپ‌آپ مشاور
 window.openSpecialistPopup = function() {
     const popup = document.getElementById('specialist-popup');
+    resetSpecialistPopup();
     popup.style.display = 'flex';
     loadNutritionConsultantsPopup();
 };
 
+function resetSpecialistPopup() {
+    // پاک کردن انتخاب‌های قبلی در پاپ‌آپ
+    document.querySelectorAll('.specialist-card-popup').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // مخفی کردن و خالی کردن اطلاعات متخصص انتخاب شده
+    const specialistInfo = document.getElementById('selected-specialist-info');
+    const specialistDetails = document.getElementById('specialist-details');
+    
+    specialistInfo.style.display = 'none';
+    specialistDetails.innerHTML = '';
+    
+    // غیرفعال کردن دکمه تأیید
+    const confirmBtn = document.querySelector('.popup-confirm-btn');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+    }
+    
+    // اگر می‌خواهید state هم ریست شود (اختیاری):
+    state.updateFormData('serviceSelection.selectedSpecialist', null);
+}
+
 window.closeSpecialistPopup = function() {
+    console.log('closeSpecialistPopup is called');
     const popup = document.getElementById('specialist-popup');
     popup.style.display = 'none';
     // حذف انتخاب مشاور در صورت انصراف
-    state.updateFormData('selectedSpecialist', null);
-    
+    // state.updateFormData('selectedSpecialist', null);
+    console.log('selectedSpecialist: ' + state.formData.serviceSelection.selectedSpecialist);
     // غیرفعال کردن دکمه مرحله بعد
     const nextButton = document.querySelector(".next-step");
-    nextButton.disabled = true;
+    if (!state.formData.serviceSelection.selectedSpecialist) {
+        nextButton.disabled = true;
+    }
 };
 
 window.confirmSpecialistSelection = function() {
-    if (state.formData.selectedSpecialist) {
+    if (state.formData.serviceSelection.selectedSpecialist) {
+        console.log('Confirming specialist:', state.formData.serviceSelection.selectedSpecialist);
         closeSpecialistPopup();
         // فعال کردن دکمه مرحله بعد
         const nextButton = document.querySelector(".next-step");
         nextButton.disabled = false;
+        
+        // به روزرسانی نوع رژیم
+        state.updateFormData('serviceSelection.dietType', 'with-specialist');
+    } else {
+        console.error('No specialist selected');
+        alert('لطفاً یک متخصص را انتخاب کنید');
     }
 };
 
 // بارگذاری مشاورین در پاپ‌آپ
 function loadNutritionConsultantsPopup() {
     const specialistSelection = document.getElementById('specialist-selection-popup');
+    
+    resetSpecialistPopup();
+    
     specialistSelection.innerHTML = `
         <div class="loading-specialists">
             <div class="loading-spinner"></div>
@@ -1060,9 +1104,9 @@ window.selectSpecialistInPopup = function(specialistId, specialistName, specialt
         selectedCard.classList.add('selected');
     }
     
-    // ذخیره در state
-    state.updateFormData('selectedSpecialist', {
-        id: specialistId,
+    // ذخیره در state - این قسمت اصلاح شده
+    state.updateFormData('serviceSelection.selectedSpecialist', {
+        id: parseInt(specialistId),
         name: specialistName,
         specialty: specialty
     });
@@ -1083,4 +1127,7 @@ window.selectSpecialistInPopup = function(specialistId, specialistName, specialt
     // فعال کردن دکمه تأیید در پاپ‌آپ
     const confirmBtn = document.querySelector('.popup-confirm-btn');
     confirmBtn.disabled = false;
+    
+    // لاگ برای دیباگ
+    console.log('Specialist selected:', state.formData.serviceSelection.selectedSpecialist);
 };
