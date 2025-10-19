@@ -636,8 +636,8 @@ window.convertToCompletePersianData = function(formData) {
         
         // تبدیل کلیدهای serviceSelection به فارسی
         const serviceKeyMapping = {
-            'dietType': 'نوع رژیم',
-            'selectedSpecialist': 'متخصص انتخاب شده'
+            'dietType': 'dietType',
+            'selectedSpecialist': 'selectedSpecialist'
         };
         
         for (const [key, value] of Object.entries(serviceData)) {

@@ -12,9 +12,18 @@ jQuery(document).ready(function($) {
         // نمایش loader با امکان بستن
         const loader = new AiDastyarLoader({
             message: 'در حال پردازش درخواست...',
+            theme: 'light',
+            size: 'medium',
+            position: 'center',
             closable: true,
-            persistent: true,
-            redirectOnClose: '/wallet-charge/'
+            overlay: true,
+            autoHide: null,
+            persistent: true, 
+            redirectUrl: '/wallet-charge/',
+            redirectDelay: null, 
+            onShow: null,
+            onHide: null,
+            onRedirect: null     
         });
         loader.show();
 
@@ -31,6 +40,7 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
+                   //  console.log('response:', response);
                     // مخفی کردن پاپ‌آپ پرداخت اگر باز است
                     const paymentPopup = document.querySelector('.payment-confirmation-popup');
                     if (paymentPopup) {
@@ -39,11 +49,7 @@ jQuery(document).ready(function($) {
                     
                     loader.hide();
                     
-                    // ذخیره نتیجه در sessionStorage
-                    sessionStorage.setItem('diet_form_result', JSON.stringify(response.data));
-                    
-                    // هدایت به صفحه نتیجه با پارامتر
-                    window.location.href = '/?ai_diet_result=1';
+                    window.location.href = '/?ai_diet_result=1&t=' + Date.now();
                 } else {
                     // مخفی کردن لودینگ دکمه
                     const confirmBtn = document.querySelector('#confirm-payment');
@@ -55,9 +61,9 @@ jQuery(document).ready(function($) {
                     
                     // نمایش خطا
                     if (response.data && response.data.includes('اعتبار')) {
-                        loader.updateMessage(response.data);
+                        loader.update(response.data);
                     } else {
-                        loader.updateMessage('خطا در پردازش درخواست. لطفاً مجدداً تلاش کنید.');
+                        loader.update('خطا در پردازش درخواست. لطفاً مجدداً تلاش کنید.');
                     }
                     
                     // تغییر دکمه بستن برای ریدایرکت به صفحه شارژ
@@ -81,8 +87,8 @@ jQuery(document).ready(function($) {
                     }
                 }
                 
-                loader.updateMessage(errorMsg);
-                loader.options.redirectOnClose = window.location.href;
+                loader.update(errorMsg);
+                loader.setRedirectOnClose(window.location.href);
             }
         });        
     });

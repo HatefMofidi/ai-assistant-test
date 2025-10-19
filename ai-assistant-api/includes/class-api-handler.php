@@ -105,14 +105,48 @@ class AI_Assistant_Api_Handler {
                 wp_send_json_error(__('برای استفاده از این سرویس باید وارد شوید.', 'ai-assistant'));
             }
             
-        //    $service_name = sanitize_text_field($_POST['name']);
+            
             $service_id = sanitize_text_field($_POST['service_id']);
             $userData = stripslashes($_POST['userData']);
             
-            $all_services = get_option('ai_assistant_services', []);
-            // $system_prompt = $all_services[$service_id]['system_prompt'] ?? '';
-            // $prompt = $system_prompt . "\n\n" . $userData;
+            if ($service_id === 'diet' ){
+                
+                    $decodedData = json_decode($userData, true); // true برای تبدیل به آرایه
+        
+                    // استخراج داده‌ها
+                    $userInfo = $decodedData['userInfo'] ?? [];
+                    $serviceSelection = $decodedData['serviceSelection'] ?? []; 
+                
+                    // استخراج مقادیر در متغیرهای جداگانه از $serviceSelection
+                    $serviceSelectionDiscountApplied = $serviceSelection['discount_applied'] ?? null;
+                    $serviceSelectionFinalPrice = $serviceSelection['final_price'] ?? null;
+                    $serviceSelectionOriginalPrice = $serviceSelection['original_price'] ?? null;
+                    
+                    $serviceSelectionDietType = $serviceSelection['dietType'] ?? null;
+                    
+                    
+                    if ( $serviceSelectionDietType === 'with-specialist'   ){
 
+                        // استخراج داده‌های selectedSpecialist (اگر وجود دارد)
+                        $selectedSpecialistId = null;
+                        $selectedSpecialistName = null;
+                        $selectedSpecialistSpecialty = null;
+                        
+                        if (isset($serviceSelection['selectedSpecialist']) && is_array($serviceSelection['selectedSpecialist'])) {
+                            $selectedSpecialistId = $serviceSelection['selectedSpecialist']['id'] ?? null;
+                            $selectedSpecialistName = $serviceSelection['selectedSpecialist']['name'] ?? null;
+                            $selectedSpecialistSpecialty = $serviceSelection['selectedSpecialist']['specialty'] ?? null;
+                        } 
+                    
+                    }                    
+
+            }
+            
+            
+       
+
+        
+            $all_services = get_option('ai_assistant_services', []);
             $service_name = $all_services[$service_id]['name'];
             $service_manager = AI_Assistant_Service_Manager::get_instance();
             $original_price = $service_manager->get_service_price($service_id);
@@ -120,290 +154,111 @@ class AI_Assistant_Api_Handler {
             $service_info = $service_manager->get_service($service_id);
             if ($service_info && isset($service_info['system_prompt'])) {
                 $system_prompt = $service_info['system_prompt'];
-                // استفاده از system_prompt
-               // error_log('System Prompt: ' . $system_prompt);
             } else {
                 error_log('Service not found or system_prompt not set');
             }
             
-            $prompt = $system_prompt . "\n\n" . $userData;
-            
+            $prompt = $system_prompt . "\n\n" . $userInfo;
             $payment_handler = AI_Assistant_Payment_Handler::get_instance();
             
-/*
-            // اعمال تخفیف
-            $discount_db = AI_Assistant_Discount_DB::get_instance();
-            
-            // در صورتی که کاربر کد تخفیف وارد کرده باشد
-            $coupon_code = isset($_POST['coupon_code']) ? sanitize_text_field($_POST['coupon_code']) : '';
-            
-            $discount = $discount_db->calculate_discount($service_id, $original_price, $user_id, $coupon_code);
-            $final_price = $original_price - $discount['amount'];
-            
-            // افزایش تعداد استفاده از تخفیف پس از خرید موفق
-            if ($discount['id'] > 0) {
-                $discount_db->increment_usage($discount['id']);
-            }        
 
-*/
             $final_price = $original_price;
 
 
+            global $wpdb;
+    
+            try {
+                // 1. اعتبارسنجی اولیه (اطمینان از اینکه درخواست درست است، اعتبار کاربر و ...)
+                $this->validate_request($prompt, $service_id, $user_id, $final_price, $payment_handler);
+    
+                // 2. فراخوانی سرویس خارجی (DeepSeek یا هر API‌ای)
+                $response = $this->call_deepseek_api($prompt);
+                
+                // if (OTP_ENV === 'production') {
+                //     $response = $this->call_deepseek_api($prompt);
+                // } else {
+                //  //   $response  = $json_string ;
+                //     $response = $this->call_deepseek_api($prompt);
+                // }                
+    
+                // 3. بررسی موفقیت پاسخ API
+                if (!$response || (is_array($response) && isset($response['error']))) {
+                    // اگر API پاسخ معتبری برنگردانده، خطا بده
+                    $err = is_array($response) && isset($response['error']) ? $response['error'] : 'Empty or invalid API response';
+                    throw new Exception("API call failed: " . $err);
+                }
+                
+                
+                $cleaned_response = $this->clean_api_response($response);
 
-            
-        
-            $this->validate_request($prompt, $service_id, $user_id, $final_price, $payment_handler);
-
-            // کسر هزینه
-            $payment_handler->deduct_credit($user_id, $final_price, $service_name);
+    
+                // 4. شروع تراکنش دیتابیس
+                $wpdb->query('START TRANSACTION');
+    
+                // 5. کسر اعتبار از کاربر
+                $deductResult = $payment_handler->deduct_credit($user_id, $final_price, $service_name);
+                if ($deductResult === false || (is_array($deductResult) && isset($deductResult['error']))) {
+                    $err = is_array($deductResult) && isset($deductResult['error']) ? $deductResult['error'] : 'Deduct credit failed';
+                    throw new Exception("Payment deduction failed: " . $err);
+                }
+                
+    
+                // 6. ذخیره در تاریخچه
+                $history_manager = AI_Assistant_History_Manager::get_instance();
+                $saved = $history_manager->save_history($user_id, $service_id, $service_name, $userData, $cleaned_response);
+                if ($saved === false || empty($saved)) {
+                    // save_history باید شناسه رکورد یا true برگرداند؛ اگر false یا خالی بود، خطا می‌دهیم
+                    throw new Exception('Failed to save history');
+                }
+                
+    
+                // 7. در صورت نیاز، ثبت درخواست مشاوره
+                $Consultant_Rec = null;
+                if ($service_id === 'diet' && $serviceSelectionDietType === 'with-specialist') {
+                    $Nutrition_Consultant_Manager = AI_Assistant_Nutrition_Consultant_Manager::get_instance();
+                    $Consultant_Rec = $Nutrition_Consultant_Manager->submit_consultation_request($saved, 6000);
+    
+                    if ($Consultant_Rec === false || (is_array($Consultant_Rec) && isset($Consultant_Rec['error']))) {
+                        $err = is_array($Consultant_Rec) && isset($Consultant_Rec['error']) ? $Consultant_Rec['error'] : 'submit_consultation_request failed';
+                        throw new Exception("Consultation request failed: " . $err);
+                    }
+                }
+                
+                
+                // 8. همه چی موفق بود -> commit
+                $wpdb->query('COMMIT');
+    
+    
+            } catch (Exception $e) {
+                // هر خطایی رخ داد، rollback و لاگ
+                try {
+                    $wpdb->query('ROLLBACK');
+                } catch (Exception $rollbackEx) {
+                    // اگر rollback هم خطا داد، لاگش کن
+                    error_log('Rollback failed: ' . $rollbackEx->getMessage());
+                }
+    
+                // لاگ خطا برای دیباگ در سرور
+                error_log('process_request_and_charge error: ' . $e->getMessage());
+    
+                // برگردوندن خطا به فراخواننده — (می‌تونی این شیوه را سفارشی کنی)
+                return [
+                    'success' => false,
+                    'message' => 'Processing failed: ' . $e->getMessage(),
+                    'exception' => $e->getMessage(),
+                ];
+            }
 
             // ثبت لاگ
-            $this->logger->log('Processing API request', [
-                'user_id:' => $user_id,
-                'service_id:' => $service_id,
-                'final_price:' => $final_price,
-                'original_price:' => $original_price,
-                'discount:' => $discount
+            $this->logger->log('LOG::::::::::::LOG:', [
+                '$prompt:' => $prompt,
+                'userData:' => $userData ,
+                '$userInfo' => $userInfo
             ]);
             //-----------------------------------------------------------------
 
-            $json_string = ' 
-            {
-              "title": "برنامه تغذیه‌ای بالینی",
-              "sections": [
-                {
-                  "title": "اخطار",
-                  "content": {
-                    "type": "paragraph",
-                    "text": "با توجه به سابقه جراحی پاراتیروئید و کلیه، هرگونه تغییر در رژیم غذایی باید با پزشک معالج و تیم پیوند شما هماهنگ شود. این برنامه صرفاً یک پیشنهاد کلی است و ممکن است نیاز به تنظیمات خاص بر اساس شرایط بالینی شما داشته باشد."
-                  }
-                },
-                {
-                  "title": "۱. اطلاعات ضروری کاربر",
-                  "content": {
-                    "type": "list",
-                    "className": "horizontal-list",
-                    "items": [
-                      {"label": "سن", "value": "38 سال"},
-                      {"label": "جنسیت", "value": "مرد"},
-                      {"label": "وزن و قد", "value": "98 کیلوگرم - 176 سانتی‌متر (BMI: 31.6)"},
-                      {"label": "بیماری‌ها/داروها", "value": "سابقه جراحی پاراتیروئید و کلیه"},
-                      {"label": "حساسیت‌ها", "value": "ندارد"},
-                      {"label": "سطح فعالیت", "value": "پایین"},
-                      {"label": "هدف", "value": "تناسب اندام و کاهش وزن از 98 به 80 کیلوگرم"}
-                    ]
-                  }
-                },
-                {
-                  "title": "۲. تحلیل علمی",
-                  "content": {
-                    "type": "paragraph",
-                    "text": "شاخص توده بدنی (BMI) شما 31.6 است که در محدوده چاقی درجه 1 قرار دارد. با توجه به سابقه جراحی کلیه، کنترل پروتئین، سدیم، پتاسیم و فسفر در رژیم غذایی اهمیت ویژه‌ای دارد. مطالعات نشان می‌دهند کاهش وزن تدریجی 0.5-1 کیلوگرم در هفته برای افراد با سابقه مشکلات کلیوی ایمن‌تر است (Kovesdy et al., 2017). رژیم کم‌چرب با کالری کنترل‌شده می‌تواند به بهبود پروفایل لیپیدی و کاهش وزن کمک کند."
-                  }
-                },
-                {
-                  "title": "۳. نتیجه مورد انتظار",
-                  "content": {
-                    "type": "list",
-                    "className": "vertical-list",
-                    "items": [
-                      {"label": "وضعیت وزن فعلی شما نسبت به محدوده‌ی ایده‌آل", "value": "وزن فعلی 98 کیلوگرم، محدوده ایده‌آل 60-78 کیلوگرم (اضافه وزن حدود 20 کیلوگرم)"},
-                      {"label": "مدت زمان انجام این برنامه غذایی", "value": "8 هفته (با قابلیت تمدید پس از بررسی پزشکی)"},
-                      {"label": "نتیجه مورد انتظار بعد از یک دوره رعایت رژیم", "value": "کاهش وزن 4-8 کیلوگرم در 8 هفته با فرض پیروی 80% از برنامه و فعالیت فیزیک منظم"}
-                    ]
-                  }
-                },
-                {
-                  "title": "۴. برنامه‌ی عملی",
-                  "content": [
-                    {
-                      "subtitle": "الف) کلیات برنامه:",
-                      "type": "list",
-                      "className": "vertical-list",
-                      "items": [
-                        {"label": "کالری روزانه", "value": "2200 کیلوکالری (با deficit 500 کالری از نیاز روزانه)"},
-                        {"label": "درشت‌مغذی‌ها", "value": "پروتئین: 110 گرم (20%)، چربی: 60 گرم (25%)، کربوهیدرات: 275 گرم (55%)"},
-                        {"label": "مکمل‌ها (در صورت نیاز)", "value": "ویتامین D3 (1000 IU روزانه) پس از تایید پزشک با توجه به سابقه پاراتیروئید"}
-                      ]
-                    },
-                    {
-                      "subtitle": "ب) برنامه‌ی غذایی هفتگی:",
-                      "type": "table",
-                      "headers": ["روز", "صبحانه", "میان‌وعده صبح", "ناهار", "میان‌وعده عصر", "شام"],
-                      "rows": [
-                        ["روز اول", "اوتمیل با شیر کم‌چرب (50 گرم جو دوسر + 200 میلی‌لیتر شیر)", "سیب متوسط (1 عدد)", "مرغ Grill شده (150 گرم) با برنج قهوه‌ای (100 گرم پخته) و سالاد", "ماست کم‌چرب (200 گرم) با گردو (2 عدد)", "ماهی قزل‌آلا بخارپز (120 گرم) با سبزیجات بخارپز"],
-                        ["جایگزین روز اول", "نان سبوس‌دار (2 برش) با پنیر کم‌نمک (30 گرم) و گردو (2 عدد)", "نارنگی (2 عدد کوچک)", "عدس پلو (1 بشقاب متوسط) با سالاد شیرازی", "کefir (200 میلی‌لیتر)", "املت قارچ (2 تخم‌مرغ + 50 گرم قارچ) با نان سبوس‌دار"],
-                        ["روز دوم", "شیر کم‌چرب (1 لیوان) با Corn Flakes سبوس‌دار (40 گرم)", "موز کوچک (1 عدد)", "کوفته تره‌فرنگی با برنج (3 عدد کوفته + 100 گرم برنج)", "خیار (1 عدد متوسط) با کمی نمک", "سینه بوقلمون Grill (120 گرم) با پوره کدو حلوایی"],
-                        ["جایگزین روز دوم", "ماست چکیده کم‌چرب (150 گرم) با عسل (1 قاشق چایخوری)", "انجیر خشک (2 عدد)", "لوبیا چیتی خورشت (1 بشقاب کوچک) با نان سنگک", "سینه مرغ آبپز (50 گرم)", "ماهی تن با سالاد (100 گرم ماهی تن در آب)"],
-                        ["روز سوم", "تخم‌مرغ آبپز (2 عدد) با نان جو (1 برش)", "پرتقال (1 عدد متوسط)", "باقالی پلو با ماهیچه (1 بشقاب متوسط)", "شیر کم‌چرب (1 لیوان)", "مرغ و سبزیجات Stir-fry (150 گرم مرغ + سبزیجات متنوع)"],
-                        ["جایگزین روز سوم", "حلیم جو (1 کاسه کوچک) با دارچین", "کیوی (1 عدد)", "آبگوشت کم‌چرب (1 کاسه) با نان سنگک", "پسته (10 عدد)", "املت سبزیجات (2 تخم‌مرغ + سبزیجات معطر)"],
-                        ["روز چهارم", "پنیر کم‌نمک (30 گرم) با نان سبوس‌دار و گردو", "انار (1/2 عدد)", "قیمه نثار با برنج (1 بشقاب متوسط)", "ماست کم‌چرب (150 گرم)", "سوپ مرغ و جو (1 کاسه بزرگ)"],
-                        ["جایگزین روز چهارم", "شیر برنج کم‌شکر (1 کاسه کوچک)", "سیب زمینی آبپز (1 عدد کوچک)", "دلمه برگ مو (4 عدد) با ماست", "بادام (7 عدد)", "مرغ پیچیده در foil با سبزیجات"],
-                        ["روز پنجم", "املت گوجه‌فرنگی (2 تخم‌مرغ) با نان سنگک", "انگور (1 خوشه کوچک)", "زرشک پلو با مرغ (1 بشقاب متوسط)", "دوغ کم‌نمک (1 لیوان)", "ماهی سفید بخارپز (120 گرم) با سبزیجات"],
-                        ["جایگزین روز پنجم", "عدسی (1 کاسه کوچک) با نان", "خرما (2 عدد)", "خوراک مرغ و قارچ (1 بشقاب)", "کمپوت هلو بدون شکر (1 کاسه کوچک)", "پاستا با سس گوجه‌فرنگی و مرغ"],
-                        ["روز ششم", "پنکیک جو دوسر (2 عدد کوچک) با عسل", "انبه (1/2 عدد کوچک)", "کلم پلو با ماهی (1 بشقاب متوسط)", "شیر سویا (1 لیوان)", "استیک گوشت کم‌چرب (120 گرم) با سالاد"],
-                        ["جایگزین روز ششم", "نان تست آووکادو (1 برش) با تخم مرغ", "هلو (1 عدد)", "خورشت کرفس (1 بشقاب کوچک) با نان", "آب هویج (1 لیوان)", "مرغ کبابی با سبزیجات فرنگی"],
-                        ["وعده آزاد (روز هفتم)", "نان لواش با پنیر و سبزی (2 عدد)", "میوه فصل", "چلوکباب کوبیده (1 سیخ) با نان و سبزی", "آب میوه طبیعی", "پیتزای سبزیجات خانگی (2 قطعه)"]
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "title": "۵. دستور پخت غذاها",
-                  "content": {
-                    "type": "list",
-                    "className": "vertical-list",
-                    "items": [
-                      {"label": "اوتمیل جو دوسر", "value": "1. 50 گرم جو دوسر را با 200 میلی‌لیتر شیر کم‌چرب مخلوط کنید\n2. روی حرارت ملایم به مدت 5 دقیقه هم بزنید\n3. شعله را خاموش کرده و بگذارید 2 دقیقه بماند\n4. با دارچین و کمی عسل سرو کنید"},
-                      {"label": "مرغ Grill شده", "value": "1. سینه مرغ را با ادویه‌های مجاز مزه‌دار کنید\n2. در تابه نچسب Grill کنید\n3. هر طرف 6-7 دقیقه با حرارت متوسط\n4. قبل از سرو از پخت کامل اطمینان حاصل کنید"},
-                      {"label": "ماهی قزل‌آلا بخارپز", "value": "1. فیله ماهی را با لیمو و سبزیجات معطر طعم‌دار کنید\n2. در دستگاه بخارپز یا روی آب جوش قرار دهید\n3. به مدت 15-20 دقیقه بپزید\n4. با سبزیجات تازه سرو کنید"}
-                    ]
-                  }
-                },
-                {
-                  "title": "۶. هشدارها",
-                  "content": {
-                    "type": "list",
-                    "items": [
-                      "با توجه به سابقه کلیوی، از مصرف خودسرانه مکمل‌های پروتئینی پرهیز کنید",
-                      "در صورت مشاهده تورم، کاهش ناگهانی ادرار یا افزایش وزن سریع، فوراً به پزشک مراجعه کنید",
-                      "علائم هیپوکالمی (ضعف عضلانی، خستگی) یا هایپرکالمی (بی‌حسی، ضربان نامنظم) را جدی بگیرید"
-                    ]
-                  }
-                },
-                {
-                  "title": "۷. توصیه‌ها",
-                  "content": {
-                    "type": "list",
-                    "items": [
-                      "مصرف آب را به تدریج و تحت نظر پزشک افزایش دهید",
-                      "فعالیت بدنی منظم مانند پیاده‌روی 30 دقیقه‌ای روزانه را شروع کنید",
-                      "پایش منظم فشار خون و آزمایشات کلیوی را فراموش نکنید"
-                    ]
-                  }
-                },
-                {
-                  "title": "۸. سوالات احتمالی شما",
-                  "content": {
-                    "type": "list",
-                    "className": "vertical-list",
-                    "items": [
-                      {
-                        "label": "آیا می‌توانم قهوه بنوشم؟",
-                        "value": "مصرف متعادل قهوه (1-2 فنجان روزانه) معمولاً مجاز است اما با توجه به سابقه کلیوی، بهتر است با پزشک خود مشورت کنید. توصیه: قهوه بدون شکر و خامه مصرف کنید"
-                      },
-                      {
-                        "label": "در صورت تحمل نکردن گرسنگی چه کار کنم؟",
-                        "value": "میان‌وعده‌های کم‌کالری مانند سبزیجات خام، ماست کم‌چرب یا میوه‌های کم‌قند مصرف کنید. توصیه: آب زیاد بنوشید و وعده‌ها را به 5-6 وعده کوچک‌تر تقسیم کنید"
-                      },
-                      {
-                        "label": "برای کنترل وزن چه زمان‌هایی باید آزمایش دهم؟",
-                        "value": "پایش ماهانه وزن و هر 3 ماه آزمایشات کلیوی توصیه می‌شود. منبع: National Kidney Foundation Guidelines, 2020"
-                      },
-                      {
-                        "label": "نحوه ذخیره و گرم کردن غذاها چگونه است؟",
-                        "value": "غذاها را در ظروف دربسته در یخچال حداکثر 3 روز نگهداری کنید. برای گرم کردن از حرارت غیرمستقیم استفاده کنید. توصیه: از گرم کردن مکرر غذاها خودداری کنید"
-                      },
-                      {
-                        "label": "اگر مواد اولیه را نداشتم چه کار کنم؟",
-                        "value": "از جایگزین‌های ارائه شده استفاده کنید یا با مواد مشابه از همان گروه غذایی جایگزین نمایید. توصیه: همیشه برنامه غذایی هفتگی را از قبل تهیه کنید"
-                      },
-                      {
-                        "label": "آیا می‌توانم فست فود بخورم؟",
-                        "value": "مصرف فست فود به دلیل سدیم و چربی بالا برای شرایط شما توصیه نمی‌شود. منبع: (Shim et al., 2023) - PMID: 36744032"
-                      },
-                      {
-                        "label": "برای بهبود نتایج چه تغییراتی بدهم؟",
-                        "value": "افزایش تدریجی فعالیت بدنی و پایبندی به برنامه غذایی مهم‌ترین عوامل هستند. توصیه: خواب کافی و مدیریت استرس را فراموش نکنید"
-                      },
-                      {
-                        "label": "آیا نیاز به مصرف مکمل دارم؟",
-                        "value": "تنها با توصیه پزشک معالج مکمل مصرف کنید. توصیه: ویتامین D3 ممکن است با توجه به سابقه پاراتیروئید نیاز باشد"
-                      },
-                      {
-                        "label": "چگونه پروتئین کافی دریافت کنم؟",
-                        "value": "از منابع پروتئین کم‌چرب مانند مرغ، ماهی و حبوبات استفاده کنید. توصیه: توزیع پروتئین در طول روز را رعایت کنید"
-                      },
-                      {
-                        "label": "آیا می‌توانم شیرینی مصرف کنم؟",
-                        "value": "مصرف محدود شیرینی‌های طبیعی مانند عسل یا میوه‌های خشک مجاز است. توصیه: از شیرینی‌های صنعتی و قندهای تصفیه شده پرهیز کنید"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "title": "۹. منابع",
-                  "content": {
-                    "type": "list",
-                    "items": [
-                      "Kovesdy CP, et al. Obesity and kidney disease. J Am Soc Nephrol. 2017;28(2):407-408. doi:10.1681/ASN.2016101081",
-                      "National Kidney Foundation. KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update. Am J Kidney Dis. 2020;76(3 Suppl 1):S1-S107",
-                      "Shim JS, et al. Association of fast food consumption with obesity and cardiometabolic risk factors. Nutrients. 2023;15(2):362. PMID: 36744032",
-                      "World Health Organization. Healthy diet. WHO.int. 2020",
-                      "Academy of Nutrition and Dietetics. Nutrition Care Manual. 2023 Edition"
-                    ]
-                  }
-                }
-              ],
-              "footer": "aidastyar.com"
-            }
-            ';     
-    
-            if (OTP_ENV === 'production') {
-                $response = $this->call_deepseek_api($prompt);
-            } else {
-                $response  = $json_string ;
-            }
-            
-            
-            $cleaned_response = $this->clean_api_response($response);
-            
-            $history_manager = AI_Assistant_History_Manager::get_instance();
-            // ذخیره در تاریخچه
-            $saved = $history_manager->save_history($user_id, $service_id , $service_name , $userData , $cleaned_response);
-            
-            if ($service_id === 'diet'){
-                
-                
-                
-                $Nutrition_Consultant_Manager = AI_Assistant_Nutrition_Consultant_Manager::get_instance();
-                $Consultant_Rec = $Nutrition_Consultant_Manager->submit_consultation_request($saved, 6000);
-            }
+            $json_string = ' test tstring ';     
 
-
-
-
-            if (is_wp_error($saved)) {
-                // خطای وردپرس
-                $this->logger->log('History save WP_Error', [
-                    'user_id' => $user_id,
-                    'service_id' => $service_id,
-                    'error_code' => $saved->get_error_code(),
-                    'error_message' => $saved->get_error_message(),
-                    'error_data' => $saved->get_error_data()
-                ]);
-              //  echo 'خطای سیستمی در ذخیره‌سازی: ' . $saved->get_error_message();
-            } elseif ($saved) {
-                // موفقیت‌آمیز
-                $this->logger->log('History saved successfully', [
-                    'user_id' => $user_id,
-                    'service_id' => $service_id,
-                    'service-name' => $service_name ,
-                    'history_id' => $saved,
-                    'output_sample' => substr(strip_tags($response), 0, 100)
-                ]);
-              //  echo 'نتایج با موفقیت ذخیره شد.';
-            } else {
-                // خطای عمومی
-                $this->logger->log('History save failed', [
-                    'user_id' => $user_id,
-                    'service_id' => $service_id,
-                    'html_size' => strlen($response),
-                    'last_error' => error_get_last()
-                ]);
-              //  echo 'خطا در ذخیره‌سازی تاریخچه';
-            }
-            
             header('Content-Type: application/json; charset=utf-8');
 
             wp_send_json_success([
@@ -413,19 +268,14 @@ class AI_Assistant_Api_Handler {
 
         } catch (Exception $e) {
 
-/*
-            if (!empty($user_id) && !empty($price) && isset($payment_handler)) {
-                $payment_handler->add_credit($user_id, $price, $description);
-            }
-            
-*/            
-
             $this->logger->log_error($e->getMessage(), $_POST);
             wp_send_json_error($e->getMessage());
         }
 
         wp_die();
     }
+    
+    
 
     private function validate_request($prompt, $service_id, $user_id, $final_price, $payment_handler) {
         if (!is_user_logged_in()) {
@@ -443,6 +293,10 @@ class AI_Assistant_Api_Handler {
     }
 
     private function call_deepseek_api($prompt) {
+        
+      //  sleep(240); // توقف به مدت 3 ثانیه جهت تست
+         
+         
         $api_url = 'https://api.deepseek.com/v1/chat/completions';
 
         $args = [
@@ -485,7 +339,7 @@ class AI_Assistant_Api_Handler {
 
         if ($response_code !== 200) {
             $add_credit_description='برگشت وجه بدلیل خطا ';
-            $payment_handler->add_credit($user_id, $price, $add_credit_description);
+           // $payment_handler->add_credit($user_id, $price, $add_credit_description);
             $this->logger->log_error('DeepSeek API returned error status', [
                 'status_code' => $response_code,
                 'response' => $body

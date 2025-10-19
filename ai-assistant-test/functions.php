@@ -134,6 +134,7 @@ function ai_assistant_scripts() {
         'ajaxurl' => admin_url('admin-ajax.php'),
         'themeUrl' => get_template_directory_uri(),
         'nonce' => wp_create_nonce('ai_assistant_nonce'),
+        'user_id' => get_current_user_id(),
         'i18n' => [
             'error' => __('خطا', 'ai-assistant'),
             'loading' => __('در حال پردازش...', 'ai-assistant')
@@ -372,7 +373,9 @@ function ai_assistant_load_test_scripts() {
             // اضافه کردن متغیرهای مورد نیاز برای diet.js
             wp_localize_script('ai-assistant-auto-fill', 'aiAssistantVars', [
                 'ajaxurl' => admin_url('admin-ajax.php'),
+                'themeUrl' => get_template_directory_uri(),
                 'nonce' => wp_create_nonce('ai_assistant_nonce'),
+                'user_id' => get_current_user_id(),
                 'i18n' => [
                     'error' => __('خطا', 'ai-assistant'),
                     'loading' => __('در حال پردازش...', 'ai-assistant')
@@ -417,17 +420,23 @@ function enqueue_aidastyar_loader() {
 add_action('wp_enqueue_scripts', 'enqueue_aidastyar_loader');
 
 
-// بارگذاری تمپلیت بر اساس پارامتر URL
-function ai_assistant_load_result_template_simple($template) {
-    if (isset($_GET['ai_diet_result']) && $_GET['ai_diet_result'] === '1') {
-        $template_path = get_template_directory() . '/services/diet/template-parts/page-diet-plan.php';
-        if (file_exists($template_path)) {
-            return $template_path;
+// حذف تابع قدیمی و جایگزینی با این کد ساده:
+function ai_assistant_handle_diet_result_redirect() {
+    if (isset($_GET['ai_diet_result']) && $_GET['ai_diet_result'] === '1' && is_user_logged_in()) {
+        $user_id = get_current_user_id();
+        $history_manager = AI_Assistant_History_Manager::get_instance();
+        $history = $history_manager->get_user_history($user_id, 1);
+        
+        if (!empty($history)) {
+            wp_redirect(home_url('/service-output/' . $history[0]->ID . '/'));
+            exit;
         }
+        
+        wp_redirect(home_url('/page-user-history/'));
+        exit;
     }
-    return $template;
 }
-add_filter('template_include', 'ai_assistant_load_result_template_simple');
+add_action('template_redirect', 'ai_assistant_handle_diet_result_redirect');
 
 
 // اضافه کردن فایل هوک‌های ووکامرس
@@ -620,20 +629,6 @@ require get_template_directory() . '/inc/admin/ai-wallet-admin-report.php';
 
 // فراخوانی کلاس‌های مدیریت تخفیف
 require_once get_template_directory() . '/inc/admin/class-discount-db.php';
-// require_once get_template_directory() . '/inc/admin/class-discount-admin.php';
-
-// مقداردهی اولیه سیستم تخفیف
-// function init_ai_assistant_discounts() {
-//     // فقط در بخش ادمین یا زمانی که لازم است کلاس‌ها را مقداردهی کنیم
-//     if (is_admin() || defined('DOING_CRON') || wp_doing_ajax()) {
-//         AI_Assistant_Discount_DB::get_instance();
-//         AI_Assistant_Discount_Admin::get_instance();
-//     }
-// }
-// add_action('init', 'init_ai_assistant_discounts');
-
-// require_once get_template_directory() . '/inc/admin/ajax-discount-handlers-functions.php';
-
 
 require_once get_template_directory() . '/templates/service-info-functions.php';
 
@@ -641,29 +636,12 @@ require_once get_template_directory() . '/templates/service-info-functions.php';
 require_once get_template_directory() . '/inc/class-comments-frontend-admin.php';
 
 require_once get_template_directory() . '/functions/discounts-functions.php';
+require_once get_template_directory() . '/functions/discount-core-functions.php';
+
 
 require_once get_template_directory() . '/templates/consultant-dashboard-functions.php';
 
 require_once get_template_directory() . '/functions/consultant-users-functions.php';
-
-
-
-// ثبت کرون جاب برای مدیریت تخفیف‌های مناسبتی
-function ai_assistant_schedule_annual_discounts() {
-    if (!wp_next_scheduled('ai_assistant_handle_annual_occasions')) {
-        wp_schedule_event(time(), 'daily', 'ai_assistant_handle_annual_occasions');
-    }
-}
-add_action('wp', 'ai_assistant_schedule_annual_discounts');
-
-// هندلر کرون جاب
-function ai_assistant_handle_annual_occasions_callback() {
-    if (class_exists('AI_Assistant_Discount_DB')) {
-        $discount_db = AI_Assistant_Discount_DB::get_instance();
-        $discount_db->handle_annual_occasions();
-    }
-}
-add_action('ai_assistant_handle_annual_occasions', 'ai_assistant_handle_annual_occasions_callback');
 
 // ایجاد نقش مشاور تغذیه
 function add_nutrition_consultant_role() {
@@ -685,3 +663,23 @@ function add_consultant_cap_to_admin() {
     }
 }
 add_action('init', 'add_consultant_cap_to_admin');
+
+
+add_action('wp_ajax_check_user_auth', 'handle_check_user_auth');
+add_action('wp_ajax_nopriv_check_user_auth', 'handle_check_user_auth_no_priv');
+
+function handle_check_user_auth() {
+    check_ajax_referer('ai_assistant_nonce', 'nonce');
+    
+    wp_send_json_success([
+        'is_logged_in' => is_user_logged_in(),
+        'user_id' => get_current_user_id()
+    ]);
+}
+
+function handle_check_user_auth_no_priv() {
+    wp_send_json_success([
+        'is_logged_in' => false,
+        'user_id' => 0
+    ]);
+}

@@ -6,13 +6,17 @@ jQuery(document).ready(function($) {
         search: ''
     };
 
+    toggleScopeSections(); 
+
     function toggleUserRestrictionSection() {
+        const scope = $('#discount-scope').val();
         const userRestriction = $('#discount-user-restriction').val();
-        if (userRestriction === 'specific_users') {
+        
+        if (scope === 'user_based' && userRestriction === 'specific_users') {
             $('#specific-users-section').show();
             
             // فقط اگر لیست کاربران خالی است، بارگذاری کن
-            if ($('#discount-specific-users option').length <= 1) {
+            if ($('#users-checkbox-list .user-checkbox-item').length === 0) {
                 loadUsersList();
             }
         } else {
@@ -301,25 +305,46 @@ jQuery(document).ready(function($) {
         toggleUserRestrictionSection();
     });
     
-    // در تابع toggleScopeSections، این خط را اضافه کنید:
+    // بهبود تابع toggleScopeSections
     function toggleScopeSections() {
         const scope = $('#discount-scope').val();
         
-        // مخفی کردن همه بخش‌ها
-        $('#services-section, #user-restriction-section, #occasional-section, #jalali-date-section').hide();
+        // مخفی کردن همه بخش‌های وابسته
+        $('#services-section, #user-restriction-section').hide();
         
-        // نمایش بخش‌های مربوطه
-        if (scope === 'service') {
-            $('#services-section').show();
-        } else if (scope === 'user_based') {
-            $('#user-restriction-section').show();
-        } else if (scope === 'occasional') {
-            $('#occasional-section').show();
-            toggleJalaliDateSection();
+        // تنظیمات پیش‌فرض برای فیلد code
+        const codeField = $('#discount-code');
+        const codeHelp = codeField.closest('.form-group').find('.form-help');
+        
+        // نمایش/مخفی کردن بخش‌های مربوطه و تنظیم فیلدها
+        switch(scope) {
+            case 'global':
+                codeHelp.text('اگر این فیلد خالی باشد، تخفیف به صورت خودکار برای همه کاربران اعمال می‌شود');
+                break;
+                
+            case 'service':
+                $('#services-section').show();
+                codeHelp.text('اگر این فیلد خالی باشد، تخفیف به صورت خودکار برای سرویس‌های انتخاب شده اعمال می‌شود');
+                break;
+                
+            case 'coupon':
+                codeHelp.text('کد تخفیف باید توسط کاربر وارد شود');
+                codeField.prop('required', true);
+                break;
+                
+            case 'user_based':
+                $('#user-restriction-section').show();
+                codeHelp.text('اگر این فیلد خالی باشد، تخفیف به صورت خودکار برای کاربران انتخاب شده اعمال می‌شود');
+                toggleUserRestrictionSection();
+                break;
         }
         
-        // اضافه کردن این خط در انتها
-        toggleUserRestrictionSection();
+        // برای scope=coupon، کد اجباری است
+        if (scope === 'coupon') {
+            codeField.prop('required', true);
+        } else {
+            codeField.prop('required', false);
+        }
     }
     
     // بارگذاری اولیه لیست تخفیف‌ها
@@ -467,49 +492,15 @@ jQuery(document).ready(function($) {
         }
         return code;
     }
-
-    // اضافه کردن مدیریت بخش تاریخ شمسی
-    function toggleScopeSections() {
-        const scope = $('#discount-scope').val();
-        
-        // مخفی کردن همه بخش‌ها
-        $('#services-section, #user-restriction-section, #occasional-section, #jalali-date-section').hide();
-        
-        // نمایش بخش‌های مربوطه
-        if (scope === 'service') {
-            $('#services-section').show();
-        } else if (scope === 'user_based') {
-            $('#user-restriction-section').show();
-        } else if (scope === 'occasional') {
-            $('#occasional-section').show();
-            toggleJalaliDateSection();
-        }
-    }
-    
-    // نمایش/مخفی کردن بخش تاریخ شمسی
-    function toggleJalaliDateSection() {
-        const isAnnual = $('#discount-is-annual').val() === '1';
-        if (isAnnual) {
-            $('#jalali-date-section').show();
-        } else {
-            $('#jalali-date-section').hide();
-        }
-    }
-    
-    // اضافه کردن event listener برای تغییر وضعیت سالانه
-    $('#discount-is-annual').on('change', function() {
-        toggleJalaliDateSection();
-    });
     
     // در تابع resetDiscountForm بخش تاریخ شمسی را نیز ریست کنید
     function resetDiscountForm() {
         $('#discount-form')[0].reset();
         $('#discount-id').val('');
         $('input[name="services[]"]').prop('checked', false);
-        $('#discount-occasion-name').val('');
-        $('#discount-is-annual').val('0');
-        $('#discount-jalali-month').val('');
-        $('#discount-jalali-day').val('');
+        
+        $('#discount-scope').val('coupon'); // اضافه کردن این خط
+        
         toggleScopeSections();
         
         $('input[name="specific_users[]"]').prop('checked', false);
@@ -532,6 +523,17 @@ jQuery(document).ready(function($) {
 
     function saveDiscount() {
         const formData = new FormData($('#discount-form')[0]);
+        
+        // اضافه کردن کاربران انتخاب شده به formData
+        const selectedUsers = [];
+        $('input[name="specific_users[]"]:checked').each(function() {
+            selectedUsers.push($(this).val());
+        });
+        
+        selectedUsers.forEach(userId => {
+            formData.append('specific_users[]', userId);
+        });
+        
         formData.append('action', $('#discount-id').val() ? 'update_discount_code' : 'create_discount_code');
         formData.append('nonce', discountFrontendAdminVars.nonce);
     
@@ -782,4 +784,4 @@ jQuery(document).ready(function($) {
             $('.discount-modal').hide();
         }
     });
-});
+}); 

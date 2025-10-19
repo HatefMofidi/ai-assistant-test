@@ -1725,14 +1725,21 @@ function saveFormAndRedirect() {
   const loginUrl = '<?php echo wp_login_url(); ?>?redirect_to=' + encodeURIComponent(currentUrl);
   
   const loader = new AiDastyarLoader({
-    message: 'در حال انتقال به صفحه ورود...',
-    duration: 1500,
+    message: 'در حال انتقال به صفحه ورود',
+    theme: 'light',
+    size: 'medium',
+    position: 'center',
     closable: false,
-    persistent: false,
-    showProgress: true, 
-    redirectOnClose: null    
+    overlay: true,
+    autoHide: null,
+    persistent: false, 
+    redirectUrl: loginUrl,
+    redirectDelay: 2000, 
+    onShow: null,
+    onHide: null,
+    onRedirect: null        
   });
-  loader.redirect(loginUrl);
+  loader.show();
 }
 
 window.addEventListener('load', function() {
@@ -1747,12 +1754,19 @@ window.addEventListener('load', function() {
     if (loggedIn === '1' && sessionStorage.getItem('diet_form_data')) {
         // نمایش loader هنگام بازیابی داده‌ها
         const loader = new AiDastyarLoader({
-            message: 'در حال بازیابی اطلاعات...',
-            duration: 1500,
+            message: 'در حال بازیابی اطلاعات',
+            theme: 'light',
+            size: 'medium',
+            position: 'center',
             closable: false,
-            persistent: false,
-            showProgress: true, 
-            redirectOnClose: null                
+            overlay: true,
+            autoHide: 2000,
+            persistent: false, 
+            redirectUrl: null,
+            redirectDelay: null, 
+            onShow: null,
+            onHide: null,
+            onRedirect: null        
         });
         loader.show();
 
@@ -1780,9 +1794,6 @@ window.addEventListener('load', function() {
             const newUrl = window.location.pathname + window.location.hash;
             window.history.replaceState({}, document.title, newUrl);
         }
-        
-        // مخفی کردن loader پس از 1 ثانیه
-        setTimeout(() => loader.hide(), 1000);
     }
 });
 </script>

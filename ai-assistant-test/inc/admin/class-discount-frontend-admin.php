@@ -213,10 +213,37 @@ class AI_Assistant_Discount_Frontend_Admin {
                         
                         <div class="form-row">
                             <div class="form-group">
+                                <label for="discount-scope">حوزه اعتبار *</label>
+                                <select id="discount-scope" name="scope" required>
+                                    <option value="coupon">کد کوپن</option>
+                                    <option value="global">عمومی (همه سرویس‌ها)</option>
+                                    <option value="service">مخصوص سرویس</option>
+                                    <option value="user_based">مبتنی بر کاربر</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="discount-type">نوع تخفیف *</label>
+                                <select id="discount-type" name="type" required>
+                                    <option value="percentage">درصدی</option>
+                                    <option value="fixed">مبلغی (تومان)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label for="discount-name">نام تخفیف *</label>
                                 <input type="text" id="discount-name" name="name" required>
                             </div>
                             
+                            <div class="form-group">
+                                <label for="discount-amount">مقدار تخفیف *</label>
+                                <input type="number" id="discount-amount" name="amount" min="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="discount-code">کد تخفیف (اختیاری)</label>
                                 <div class="code-input-container">
@@ -227,86 +254,10 @@ class AI_Assistant_Discount_Frontend_Admin {
                                 </div>
                                 <small class="form-help">اگر این فیلد خالی باشد، تخفیف به صورت خودکار برای کاربران اعمال می‌شود</small>
                             </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="discount-type">نوع تخفیف *</label>
-                                <select id="discount-type" name="type" required>
-                                    <option value="percentage">درصدی</option>
-                                    <option value="fixed">مبلغی (تومان)</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="discount-amount">مقدار تخفیف *</label>
-                                <input type="number" id="discount-amount" name="amount" min="1" required>
-                            </div>
-                        </div>
-
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="discount-scope">حوزه اعتبار *</label>
-                                <select id="discount-scope" name="scope" required>
-                                    <option value="global">عمومی (همه سرویس‌ها)</option>
-                                    <option value="service">مخصوص سرویس</option>
-                                    <option value="coupon">کد کوپن</option>
-                                    <option value="user_based">مبتنی بر کاربر</option>
-                                    <option value="occasional">مناسبتی</option> <!-- گزینه جدید -->
-                                </select>
-                            </div>
                             
                             <div class="form-group">
                                 <label for="discount-usage-limit">حداکثر استفاده (0 = نامحدود)</label>
                                 <input type="number" id="discount-usage-limit" name="usage_limit" min="0" value="0">
-                            </div>
-                        </div>
-                        
-                        <div class="form-row" id="occasional-section" style="display: none;">
-                            <div class="form-group">
-                                <label for="discount-occasion-name">نام مناسبت *</label>
-                                <input type="text" id="discount-occasion-name" name="occasion_name" placeholder="مثال: روز مادر">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="discount-is-annual">تخفیف سالانه</label>
-                                <select id="discount-is-annual" name="is_annual">
-                                    <option value="0">خیر</option>
-                                    <option value="1">بله (هر سال در این تاریخ شمسی فعال شود)</option>
-                                </select>
-                                <small class="form-help">در صورت انتخاب "بله"، این تخفیف هر سال در تاریخ شمسی مشخص شده فعال می‌شود</small>
-                            </div>
-                            
-                            <div class="form-row" id="jalali-date-section" style="display: none;">
-                                <div class="form-group">
-                                    <label for="discount-jalali-month">ماه شمسی *</label>
-                                    <select id="discount-jalali-month" name="jalali_month">
-                                        <option value="">انتخاب ماه</option>
-                                        <option value="1">فروردین</option>
-                                        <option value="2">اردیبهشت</option>
-                                        <option value="3">خرداد</option>
-                                        <option value="4">تیر</option>
-                                        <option value="5">مرداد</option>
-                                        <option value="6">شهریور</option>
-                                        <option value="7">مهر</option>
-                                        <option value="8">آبان</option>
-                                        <option value="9">آذر</option>
-                                        <option value="10">دی</option>
-                                        <option value="11">بهمن</option>
-                                        <option value="12">اسفند</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="discount-jalali-day">روز شمسی *</label>
-                                    <select id="discount-jalali-day" name="jalali_day">
-                                        <option value="">انتخاب روز</option>
-                                        <?php for ($i = 1; $i <= 31; $i++): ?>
-                                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
                             </div>
                         </div>
 
@@ -423,17 +374,16 @@ class AI_Assistant_Discount_Frontend_Admin {
             if ($discount_id) {
                 error_log('تخفیف با موفقیت ایجاد شد. ID: ' . $discount_id);
                 
-                // اضافه کردن سرویس‌های مرتبط
-                if (isset($_POST['services']) && is_array($_POST['services'])) {
+                // اضافه کردن سرویس‌های مرتبط (فقط برای scope=service)
+                if ($data['scope'] === 'service' && isset($_POST['services']) && is_array($_POST['services'])) {
                     foreach ($_POST['services'] as $service_id) {
                         $result = $this->discount_db->add_discount_service($discount_id, sanitize_text_field($service_id));
                         error_log('افزودن سرویس ' . $service_id . ': ' . ($result ? 'موفق' : 'ناموفق'));
                     }
                 }
                 
-                // اضافه کردن کاربران خاص
+                // اضافه کردن کاربران خاص (فقط برای scope=user_based و user_restriction=specific_users)
                 if ($data['scope'] === 'user_based' && 
-                    isset($data['user_restriction']) && 
                     $data['user_restriction'] === 'specific_users' &&
                     isset($_POST['specific_users']) && 
                     is_array($_POST['specific_users'])) {
@@ -665,40 +615,11 @@ class AI_Assistant_Discount_Frontend_Admin {
             'amount' => floatval($post_data['amount']),
             'scope' => sanitize_text_field($post_data['scope']),
             'usage_limit' => intval($post_data['usage_limit'] ?? 0),
+            'user_restriction' => !empty($post_data['user_restriction']) ? sanitize_text_field($post_data['user_restriction']) : null,
             'start_date' => !empty($post_data['start_date']) ? sanitize_text_field($post_data['start_date']) : null,
             'end_date' => !empty($post_data['end_date']) ? sanitize_text_field($post_data['end_date']) : null,
-            'user_restriction' => sanitize_text_field($post_data['user_restriction'] ?? ''),
-            'occasion_name' => sanitize_text_field($post_data['occasion_name'] ?? ''),
-            'is_annual' => intval($post_data['is_annual'] ?? 0),
             'active' => 1
         ];
-        
-        // در بخش مربوط به تخفیف‌های سالانه، این تغییر را اعمال کنید:
-        if ($data['scope'] === 'occasional' && $data['is_annual']) {
-            if (!empty($post_data['jalali_month']) && !empty($post_data['jalali_day'])) {
-                $data['annual_month'] = intval($post_data['jalali_month']);
-                $data['annual_day'] = intval($post_data['jalali_day']);
-                
-                $date_helper = AI_Assistant_Persian_Date_Helper::get_instance();
-                $current_jalali = $date_helper->get_current_jalali();
-                
-                // اگر تاریخ مناسبت امسال گذشته، برای سال بعد تنظیم کن
-                if ($data['annual_month'] < $current_jalali['month'] || 
-                    ($data['annual_month'] == $current_jalali['month'] && $data['annual_day'] < $current_jalali['day'])) {
-                    $year = $current_jalali['year'] + 1;
-                } else {
-                    $year = $current_jalali['year'];
-                }
-                
-                // تبدیل به میلادی و تنظیم تاریخ شروع
-                $gregorian_date = $date_helper->jalali_to_gregorian($year, $data['annual_month'], $data['annual_day']);
-                $data['start_date'] = $gregorian_date;
-                
-                // تاریخ پایان: فردای تاریخ شروع (24 ساعت بعد)
-                $end_date = date('Y-m-d H:i:s', strtotime($gregorian_date . ' +1 day'));
-                $data['end_date'] = $end_date;
-            }
-        }
         
         // اعتبارسنجی مقادیر
         if ($data['amount'] <= 0) {
@@ -709,11 +630,10 @@ class AI_Assistant_Discount_Frontend_Admin {
             return new WP_Error('invalid_percentage', 'تخفیف درصدی نمی‌تواند بیشتر از ۱۰۰٪ باشد.');
         }
         
-        if ($data['scope'] === 'user_based' && $data['user_restriction'] === 'specific_users') {
-            if (isset($post_data['specific_users']) && is_array($post_data['specific_users'])) {
-                $data['specific_users'] = array_map('intval', $post_data['specific_users']);
-            }
-        }        
+        // اگر scope برابر user_based است، user_restriction باید تنظیم شود
+        if ($data['scope'] === 'user_based' && empty($data['user_restriction'])) {
+            return new WP_Error('missing_user_restriction', 'برای تخفیف مبتنی بر کاربر، نوع محدودیت کاربر باید مشخص شود.');
+        }
         
         return $data;
     }
@@ -818,9 +738,6 @@ class AI_Assistant_Discount_Frontend_Admin {
                 $scope_info = '<div class="discount-scope-info"><strong>نوع:</strong> کد کوپن</div>';
                 break;
                 
-            case 'occasional':
-                $scope_info = '<div class="discount-scope-info"><strong>نوع:</strong> مناسبتی</div>';
-                break;
         }
         ?>
         <div class="discount-item" data-discount-id="<?php echo $discount->id; ?>">
@@ -925,27 +842,6 @@ class AI_Assistant_Discount_Frontend_Admin {
                 <strong>تعداد استفاده:</strong> 
                 <?php echo $discount->usage_count; ?> از <?php echo $discount->usage_limit ?: 'نامحدود'; ?>
             </div>
-            
-            <?php if ($discount->scope === 'occasional'): ?>
-            <div class="detail-row">
-                <strong>نوع:</strong> تخفیف مناسبتی
-            </div>
-            <div class="detail-row">
-                <strong>مناسبت:</strong> <?php echo esc_html($discount->occasion_name); ?>
-            </div>
-            <div class="detail-row">
-                <strong>سالانه:</strong> <?php echo $discount->is_annual ? 'بله' : 'خیر'; ?>
-            </div>
-            <?php if ($discount->is_annual): ?>
-            <div class="detail-row">
-                <strong>تاریخ مناسبت:</strong> 
-                هر سال در <?php echo $discount->annual_day; ?> ام از ماه <?php echo $date_helper->get_jalali_month_name($discount->annual_month); ?>
-            </div>
-            <div class="detail-row">
-                <strong>مدت اعتبار:</strong> 24 ساعت (تا فردای روز مناسبت)
-            </div>
-            <?php endif; ?>
-            <?php endif; ?>
         
             <?php if ($discount->scope === 'service' && !empty($services)): ?>
             <div class="detail-row">
@@ -1034,24 +930,12 @@ class AI_Assistant_Discount_Frontend_Admin {
         <?php
     }
 
-// تابع کمکی برای نام ماه‌ها
-private function get_persian_month_name($month) {
-    $months = [
-        1 => 'فروردین', 2 => 'اردیبهشت', 3 => 'خرداد',
-        4 => 'تیر', 5 => 'مرداد', 6 => 'شهریور',
-        7 => 'مهر', 8 => 'آبان', 9 => 'آذر',
-        10 => 'دی', 11 => 'بهمن', 12 => 'اسفند'
-    ];
-    return $months[$month] ?? $month;
-}
-
     private function get_scope_text($scope) {
         $scopes = [
             'global' => 'عمومی',
             'service' => 'مخصوص سرویس',
             'coupon' => 'کد کوپن',
             'user_based' => 'مبتنی بر کاربر',
-            'occasional' => 'مناسبتی'
         ];
         
         return $scopes[$scope] ?? $scope;

@@ -281,6 +281,13 @@ if ($has_consultation_request && !$is_approved) {
     echo '<p style="color: #856404; margin: 0;">وضعیت درخواست شما: <strong>' . esc_html($status_text) . '</strong></p>';
     echo '<p style="color: #856404; margin: 0.5rem 0 0 0; font-size: 0.9rem;">درخواست مشاوره شما توسط تیم پشتیبانی در حال بررسی است. پس از تایید نهایی توسط مشاور، رژیم غذایی نهایی در این صفحه نمایش داده خواهد شد.</p>';
     echo '</div>';
+    
+            echo '    <div style="text-align: center;"> ';
+            echo '        <a href="https://test.aidastyar.com" class="back-button" id="diet-back-button"> ';
+            echo '            <i class="fas fa-home"></i> ';
+            echo '            بازگشت به صفحه اصلی ';
+            echo '        </a> ';
+            echo '    </div>    ';
 }
 
 echo '<div class="service-content" style="background: #f9f9f9; padding: 1.5rem; border-radius: 5px; margin-top: 1rem;">';

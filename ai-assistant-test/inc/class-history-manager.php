@@ -65,7 +65,7 @@ class AI_Assistant_History_Manager {
     public function save_history($user_id, $service_id, $service_name, $user_data , $response) {
         global $wpdb;
         
-        
+        error_log('[AI History] USER DATA: ' . $user_data);
         
         // بررسی و ایجاد جدول اگر وجود نداشته باشد
         $this->maybe_create_table();

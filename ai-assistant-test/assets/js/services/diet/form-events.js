@@ -99,10 +99,11 @@ window.preloadImages = function() {
 window.showPaymentConfirmation = function(formData) {
     const paymentPopup = new PaymentPopup({
         serviceType: 'رژیم غذایی',
+        serviceId: 'diet',
         ajaxAction: 'get_diet_service_price', // مشخص کردن action
-        onConfirm: (price) => {
+        onConfirm: (finalPrice) => {
             window.dispatchEvent(new CustomEvent('formSubmitted', {
-                detail: { formData, price }
+                detail: { formData, finalPrice }
             }));
         },
         onCancel: () => {
@@ -320,7 +321,15 @@ window.handleFormSubmit = function(event) {
     // 1. جمع‌آوری ساختارمند تمام داده‌ها
     const formData = {
         userInfo: { ...state.formData.userInfo },
-        serviceSelection: { ...state.formData.serviceSelection }
+        serviceSelection: { ...state.formData.serviceSelection },
+        // اضافه کردن اطلاعات تخفیف
+        discountInfo: {
+            discountApplied: window.discountApplied || false,
+            discountCode: window.appliedDiscountCode || '',
+            discountAmount: window.discountAmount || 0,
+            originalPrice: window.originalPrice || 0,
+            finalPrice: window.finalPrice || 0
+        }
     };
 
     const completePersianData = window.convertToCompletePersianData(formData);
