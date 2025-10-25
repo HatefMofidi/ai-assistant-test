@@ -784,4 +784,4 @@ jQuery(document).ready(function($) {
             $('.discount-modal').hide();
         }
     });
-}); 
+});

@@ -24,6 +24,7 @@ $user_last_name = get_user_meta($current_user->ID, 'last_name', true);
 $full_name = ($user_first_name && $user_last_name) ? $user_first_name . ' ' . $user_last_name : $current_user->display_name;
 
 get_header();
+
 ?>
 
 <div class="prof-profile-main-container">
@@ -39,7 +40,12 @@ get_header();
                 <strong><?php echo $formatted_credit; ?> تومان</strong>
             </div>
         </div>
-
+        <?php if (isset($_GET['updated']) && $_GET['updated'] === 'success'): ?>
+            <div class="prof-internal-success-message">
+                <span class="dashicons dashicons-yes-alt"></span>
+                اطلاعات با موفقیت به روزرسانی شد!
+            </div>
+        <?php endif; ?>        
         <div class="prof-profile-content">
             <div class="prof-profile-section">
                 <h2>
@@ -67,6 +73,12 @@ get_header();
                         <label>تاریخ عضویت:</label>
                         <span><?php echo date_i18n('j F Y', strtotime($current_user->user_registered)); ?></span>
                     </div>
+                    <div class="prof-profile-actions">
+                        <a href="<?php echo add_query_arg('nocache', time(), home_url('/account')); ?>" class="prof-edit-profile-btn">
+                            <span class="dashicons dashicons-edit"></span>
+                            ویرایش اطلاعات شخصی
+                        </a>
+                    </div>        
                 </div>
             </div>
         </div>
@@ -142,7 +154,7 @@ get_header();
 }
 
 .prof-profile-content {
-    padding: 0 25px 25px 25px;
+    padding: 25px;
 }
 
 .prof-profile-section {
@@ -219,8 +231,7 @@ get_header();
     }
     
     .prof-profile-content {
-        padding: 0 20px 20px 20px;
-        margin-top: 20px;
+        padding: 20px;
     }
     
     .prof-profile-section {
@@ -261,6 +272,102 @@ get_header();
 
 .prof-profile-section:nth-child(3) {
     animation-delay: 0.4s;
+}
+
+.prof-profile-actions {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.prof-edit-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #00857a 0%, #00c9b7 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 133, 122, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.prof-edit-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 133, 122, 0.4);
+    color: white;
+}
+
+.prof-edit-profile-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* استایل پیام موفقیت */
+.prof-update-success-message {
+    background: #f0fff4;
+    color: #2d7d32;
+    padding: 16px 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #c8e6c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.prof-update-success-message .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #2d7d32;
+}
+
+/* انیمیشن برای پیام */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* استایل پیام موفقیت داخلی */
+.prof-internal-success-message {
+    background: #f0fff4;
+    color: #2d7d32;
+    padding: 16px 20px;
+    margin: 20px 25px 0 25px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #c8e6c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.prof-internal-success-message .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #2d7d32;
 }
 </style>
 

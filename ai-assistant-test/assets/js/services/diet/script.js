@@ -31,6 +31,14 @@ window.state = {
         serviceSelection: {
             dietType: "",
             selectedSpecialist: null
+        },
+        discountInfo: {
+            discountCode: "",
+            discountApplied: false,
+            discountAmount: 0,
+            originalPrice: 0,
+            finalPrice: 0,
+            discountData: null
         }
     },
     
@@ -51,7 +59,13 @@ window.state = {
         } else if (key.startsWith('serviceSelection.')) {
             const serviceKey = key.replace('serviceSelection.', '');
             this.formData.serviceSelection[serviceKey] = value;
-        } else {
+        } else if (key.startsWith('discountInfo.')) {
+            const discountKey = key.replace('discountInfo.', '');
+            if (!this.formData.discountInfo) {
+                this.formData.discountInfo = {};
+            }
+            this.formData.discountInfo[discountKey] = value;
+        }  else {
             // برای سازگاری با کدهای قدیمی - ذخیره در userInfo
             this.formData.userInfo[key] = value;
         }
@@ -497,8 +511,12 @@ window.VALUE_MAPPING = {
     },
     // نوع رژیم
     dietType: {
-        'ai-only': 'رژیم هوش مصنوعی (بدون تأیید دکتر)',
-        'with-specialist': 'رژیم با تأیید متخصص تغذیه'
+        'ai-only': 'ai-only',
+        'with-specialist': 'with-specialist'
+    },
+    discountType: {
+        'percentage': 'percentage',
+        'fixed': 'fixed'
     }    
 };
 
@@ -532,10 +550,14 @@ window.KEY_MAPPING = {
     // اطلاعات غذایی
     'dietStyle': 'سبک غذایی',
     'foodLimitations': 'محدودیت‌های غذایی',
-    'favoriteFoods': 'غذاهای مورد علاقه'
+    'favoriteFoods': 'غذاهای مورد علاقه',
     
-    // نیازی به اضافه کردن serviceSelection اینجا نیست
-    // چون به صورت جداگانه مدیریت می‌شود
+    // اطلاعات تخفیف
+    'discountCode': 'discountCode',
+    'discountApplied': 'discountApplied',
+    'discountAmount': 'discountAmount',
+    'originalPrice': 'originalPrice',
+    'finalPrice': 'finalPrice'
 };
 
 // تابع برای تبدیل کلیدهای آبجکت به فارسی
@@ -616,7 +638,8 @@ window.convertToCompletePersianData = function(formData) {
     // ایجاد یک کپی از داده‌ها
     const convertedData = {
         userInfo: {},
-        serviceSelection: {}
+        serviceSelection: {},
+        discountInfo: {}
     };
     
     // تبدیل userInfo
@@ -645,6 +668,26 @@ window.convertToCompletePersianData = function(formData) {
             convertedData.serviceSelection[persianKey] = value;
         }
     }
+    
+    
+    // تبدیل discountInfo
+    if (formData.discountInfo) {
+        const discountData = {...formData.discountInfo};
+        
+        // تبدیل کلیدها به فارسی
+        const discountKeyMapping = {
+            'discountCode': 'discountCode',
+            'discountApplied': 'discountApplied',
+            'discountAmount': 'discountAmount',
+            'originalPrice': 'originalPrice',
+            'finalPrice': 'finalPrice'
+        };
+        
+        for (const [key, value] of Object.entries(discountData)) {
+            const persianKey = discountKeyMapping[key] || key;
+            convertedData.discountInfo[persianKey] = value;
+        }
+    }    
     
     return convertedData;
 };

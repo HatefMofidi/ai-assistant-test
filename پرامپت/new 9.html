@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نمایش وضعیت درخواست</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .status-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .status-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .status-header h3 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .status-header p {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+        
+        .status-steps {
+            position: relative;
+            padding: 10px 0;
+        }
+        
+        .status-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .status-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-step::before {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 30px;
+            bottom: -20px;
+            width: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .status-step:last-child::before {
+            display: none;
+        }
+        
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            font-size: 14px;
+            z-index: 2;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .step-description {
+            color: #7f8c8d;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        /* وضعیت‌های مختلف */
+        .status-pending .step-icon {
+            background-color: #ffc107;
+            color: white;
+        }
+        
+        .status-under_review .step-icon {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .status-approved .step-icon {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-completed .step-icon {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-pending .step-content {
+            border-right: 3px solid #ffc107;
+        }
+        
+        .status-under_review .step-content {
+            border-right: 3px solid #17a2b8;
+        }
+        
+        .status-approved .step-content {
+            border-right: 3px solid #28a745;
+        }
+        
+        .status-completed .step-content {
+            border-right: 3px solid #28a745;
+        }
+        
+        /* وضعیت‌های فعال و غیرفعال */
+        .status-active .step-content {
+            background-color: #e8f5e9;
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.1);
+        }
+        
+        .status-completed .step-content {
+            background-color: #e8f5e9;
+        }
+        
+        .status-inactive .step-content {
+            background-color: #f8f9fa;
+            opacity: 0.6;
+        }
+        
+        .status-inactive .step-icon {
+            background-color: #bdc3c7;
+        }
+        
+        .status-inactive .step-content {
+            border-right: 3px solid #bdc3c7;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-under_review {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .status-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .status-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .status-btn-pending {
+            background-color: #ffc107;
+            color: #856404;
+        }
+        
+        .status-btn-review {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .status-btn-approved {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <div class="status-header">
+            <h3><i class="fas fa-clipboard-check"></i> وضعیت درخواست مشاوره</h3>
+            <p>پیشرفت درخواست شما در مراحل زیر نمایش داده شده است</p>
+        </div>
+        
+        <div class="status-steps">
+            <!-- مرحله 1: ثبت درخواست -->
+            <div class="status-step status-completed status-active">
+                <div class="step-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">
+                        <span>ثبت درخواست</span>
+                        <span class="status-badge badge-completed">تکمیل شده</span>
+                    </div>
+                    <div class="step-description">درخواست شما با موفقیت ثبت شد</div>
+                </div>
+            </div>
+            
+            <!-- مرحله 2: در حال بازبینی -->
+            <div class="status-step status-under_review status-active">
+                <div class="step-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">
+                        <span>در حال بازبینی</span>
+                        <span class="status-badge badge-under_review">در حال انجام</span>
+                    </div>
+                    <div class="step-description">تیم پشتیبانی در حال بررسی درخواست شماست</div>
+                </div>
+            </div>
+            
+            <!-- مرحله 3: تایید شده -->
+            <div class="status-step status-approved status-inactive">
+                <div class="step-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">
+                        <span>تایید شده</span>
+                        <span class="status-badge badge-approved">در انتظار</span>
+                    </div>
+                    <div class="step-description">پس از تایید، رژیم غذایی نمایش داده می‌شود</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-footer">
+            <i class="fas fa-info-circle"></i> برای اطلاعات بیشتر با پشتیبانی تماس بگیرید
+        </div>
+        
+        <!-- دکمه‌های نمایش وضعیت‌های مختلف (فقط برای دمو) -->
+        <div class="status-controls">
+            <button class="status-btn status-btn-pending" onclick="setStatus('pending')">در انتظار</button>
+            <button class="status-btn status-btn-review" onclick="setStatus('under_review')">در حال بازبینی</button>
+            <button class="status-btn status-btn-approved" onclick="setStatus('approved')">تایید شده</button>
+        </div>
+    </div>
+
+    <script>
+        function setStatus(status) {
+            // حذف کلاس‌های وضعیت فعلی
+            document.querySelectorAll('.status-step').forEach(step => {
+                step.classList.remove('status-active', 'status-completed', 'status-inactive');
+                step.classList.remove('status-pending', 'status-under_review', 'status-approved');
+            });
+            
+            // تنظیم وضعیت جدید بر اساس انتخاب کاربر
+            if (status === 'pending') {
+                document.querySelectorAll('.status-step')[0].classList.add('status-pending', 'status-active');
+                document.querySelectorAll('.status-step')[1].classList.add('status-inactive');
+                document.querySelectorAll('.status-step')[2].classList.add('status-inactive');
+            } else if (status === 'under_review') {
+                document.querySelectorAll('.status-step')[0].classList.add('status-completed', 'status-active');
+                document.querySelectorAll('.status-step')[1].classList.add('status-under_review', 'status-active');
+                document.querySelectorAll('.status-step')[2].classList.add('status-inactive');
+            } else if (status === 'approved') {
+                document.querySelectorAll('.status-step')[0].classList.add('status-completed', 'status-active');
+                document.querySelectorAll('.status-step')[1].classList.add('status-completed', 'status-active');
+                document.querySelectorAll('.status-step')[2].classList.add('status-approved', 'status-active');
+            }
+        }
+        
+        // تنظیم وضعیت اولیه
+        setStatus('under_review');
+    </script>
+</body>
+</html>

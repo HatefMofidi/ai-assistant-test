@@ -276,19 +276,96 @@ echo '<h1 style="color: #333; border-bottom: 1px solid #eee; padding-bottom: 0.5
 // نمایش وضعیت درخواست مشاوره اگر وجود دارد
 if ($has_consultation_request && !$is_approved) {
     $status_text = $status_texts[$current_status] ?? 'در انتظار بازبینی';
-    echo '<div class="consultation-status-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 1rem; margin-bottom: 1rem; text-align: center;">';
-    echo '<h3 style="color: #856404; margin-bottom: 0.5rem;"><i class="fas fa-clock"></i> درخواست مشاوره در حال بررسی</h3>';
-    echo '<p style="color: #856404; margin: 0;">وضعیت درخواست شما: <strong>' . esc_html($status_text) . '</strong></p>';
-    echo '<p style="color: #856404; margin: 0.5rem 0 0 0; font-size: 0.9rem;">درخواست مشاوره شما توسط تیم پشتیبانی در حال بررسی است. پس از تایید نهایی توسط مشاور، رژیم غذایی نهایی در این صفحه نمایش داده خواهد شد.</p>';
-    echo '</div>';
-    
-            echo '    <div style="text-align: center;"> ';
-            echo '        <a href="https://test.aidastyar.com" class="back-button" id="diet-back-button"> ';
-            echo '            <i class="fas fa-home"></i> ';
-            echo '            بازگشت به صفحه اصلی ';
-            echo '        </a> ';
-            echo '    </div>    ';
+
+
+//$current_status = 'approved'; // وضعیت فعلی
+render_consultation_timeline_inline($current_status);
+
+
+
 }
+                     
+
+function render_consultation_timeline_inline($current_status) {
+
+    $steps = [
+        [
+            'key' => 'pending',
+            'title' => 'ثبت درخواست',
+            'desc'  => 'درخواست شما با موفقیت ثبت شد',
+            'icon'  => 'fas fa-file-alt',
+        ],
+        [
+            'key' => 'under_review',
+            'title' => 'در حال بازبینی',
+            'desc'  => 'مشاور تغذیه در حال بررسی درخواست شماست',
+            'icon'  => 'fas fa-search',
+        ],
+        [
+            'key' => 'approved',
+            'title' => 'تایید شده',
+            'desc'  => 'پس از تایید، رژیم غذایی نمایش داده می‌شود',
+            'icon'  => 'fas fa-check-circle',
+        ],
+    ];
+
+    $status_order = ['pending', 'under_review', 'approved'];
+    $current_index = array_search($current_status, $status_order);
+    if ($current_index === false) $current_index = 0;
+
+    echo '<div style="background:white; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:20px; max-width:500px; margin:2rem auto; font-family:\'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif; direction:rtl;">';
+
+    echo '<div style="text-align:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">';
+    echo '<h3 style="color:#2c3e50; font-size:18px; margin-bottom:5px;"><i class="fas fa-clipboard-check"></i> وضعیت درخواست مشاوره</h3>';
+    echo '<p style="color:#7f8c8d; font-size:13px;">پیشرفت درخواست شما در مراحل زیر نمایش داده شده است</p>';
+    echo '</div>';
+
+    echo '<div style="position:relative; padding:10px 0;">';
+
+    foreach ($steps as $i => $step) {
+        $is_done = $i < $current_index;
+        $is_current = $i === $current_index;
+        $is_next = $i > $current_index;
+
+        // رنگ‌ها
+        $color = $is_done ? '#28a745' : ($is_current ? '#17a2b8' : '#bdc3c7');
+        $badge_bg = $is_done ? '#d4edda' : ($is_current ? '#d1ecf1' : '#f8f9fa');
+        $badge_color = $is_done ? '#155724' : ($is_current ? '#0c5460' : '#6c757d');
+        $badge_text = $is_done ? 'تکمیل شده' : ($is_current ? 'در حال انجام' : 'در انتظار');
+
+        echo '<div style="display:flex; align-items:center; margin-bottom:20px; position:relative;">';
+        if ($i < count($steps) - 1) {
+            echo '<div style="content:\'\'; position:absolute; right:15px; top:30px; bottom:-20px; width:2px; background-color:#e0e0e0; z-index:1;"></div>';
+        }
+
+        echo '<div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-left:15px; font-size:14px; z-index:2; position:relative; flex-shrink:0; background-color:'.$color.'; color:white;">';
+        echo '<i class="'.$step['icon'].'"></i>';
+        echo '</div>';
+
+        $border_color = $color;
+        $bg_content = $is_done || $is_current ? '#e8f5e9' : '#f8f9fa';
+        $opacity = $is_next ? '0.6' : '1';
+        echo '<div style="flex:1; padding:10px 12px; border-radius:8px; background-color:'.$bg_content.'; border-right:3px solid '.$border_color.'; box-shadow:0 2px 6px rgba(0,0,0,0.05); opacity:'.$opacity.';">';
+        echo '<div style="font-weight:600; margin-bottom:3px; font-size:14px; display:flex; justify-content:space-between; align-items:center;">';
+        echo '<span>'.$step['title'].'</span>';
+        echo '<span style="display:inline-block; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:600; background-color:'.$badge_bg.'; color:'.$badge_color.';">'.$badge_text.'</span>';
+        echo '</div>';
+        echo '<div style="color:#7f8c8d; font-size:12px; line-height:1.4;">'.$step['desc'].'</div>';
+        echo '</div>';
+
+        echo '</div>';
+    }
+
+    echo '</div>';
+
+    echo '<div style="margin-top:20px; padding:10px; background-color:#f8f9fa; border-radius:6px; text-align:center; font-size:12px; color:#6c757d;">';
+    echo '<i class="fas fa-info-circle"></i> برای اطلاعات بیشتر با پشتیبانی تماس بگیرید';
+    echo '</div>';
+
+    echo '</div>';
+}
+
+
 
 echo '<div class="service-content" style="background: #f9f9f9; padding: 1.5rem; border-radius: 5px; margin-top: 1rem;">';
 echo apply_filters('the_content', $response_data);

@@ -1,7 +1,6 @@
 <?php
 /**
- * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/templates/functions.php
- * Functions for AI Assistant Theme
+ * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/templates/profile-functions.php
  */
 
 if (!defined('ABSPATH')) {

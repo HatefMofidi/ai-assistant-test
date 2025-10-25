@@ -96,22 +96,75 @@ window.preloadImages = function() {
     });
 }
 
-window.showPaymentConfirmation = function(formData) {
-    const paymentPopup = new PaymentPopup({
-        serviceType: 'رژیم غذایی',
-        serviceId: 'diet',
-        ajaxAction: 'get_diet_service_price', // مشخص کردن action
-        onConfirm: (finalPrice) => {
-            window.dispatchEvent(new CustomEvent('formSubmitted', {
-                detail: { formData, finalPrice }
-            }));
-        },
-        onCancel: () => {
-            document.getElementById('SubmitBtn').disabled = false;
-        }
-    });
-    
-    paymentPopup.show();
+window.showPaymentConfirmation = function(formData, finalPrice) {
+
+    try {
+        const paymentPopup = new PaymentPopup({
+            serviceType: 'رژیم غذایی',
+            serviceId: 'diet',
+            customPrice: finalPrice,
+            ajaxAction: 'get_diet_service_price',
+            onConfirm: (completeFormData, confirmedFinalPrice, discountDetails) => {
+                
+                const completePersianData = window.convertToCompletePersianData(completeFormData);
+                
+                // نمایش پیام مناسب بر اساس نوع رژیم
+                /*let message = '';
+                if (completeFormData.serviceSelection && completeFormData.serviceSelection.dietType === 'ai-only') {
+                    message = 'روند ساخت رژیم هوش مصنوعی ممکن است تا ۱۵ دقیقه طول بکشد. می‌توانید بعد از ۱۵ دقیقه مجدداً سر بزنید.';
+                } else {
+                    message = 'درخواست شما با موفقیت ثبت شد. نتیجه پس از تأیید متخصص در تاریخچه سرویس‌ها قابل مشاهده خواهد بود.';
+                }
+                
+                console.log('📝 Showing message:', message); // برای دیباگ
+                
+                const loader = new AiDastyarLoader({
+                    message: message, // ✅ حالا این message اعمال می‌شود
+                    theme: 'light',
+                    size: 'large',
+                    position: 'center',
+                    closable: true,
+                    overlay: true,
+                    persistent: false,
+                    autoHide: null,
+                    redirectOnClose: null,
+                    onShow: function() {
+                        console.log('✅ Loader shown with message:', this.options.message);
+                    },
+                    onHide: function() {
+                        console.log('✅ Loader hidden');
+                    }
+                });
+                loader.show();*/
+                window.dispatchEvent(new CustomEvent('formSubmitted', {
+                    detail: { 
+                        formData: completePersianData,
+                        finalPrice: confirmedFinalPrice 
+                    }
+                }));
+                
+
+            },
+            onCancel: () => {
+                if (window.state && window.state.formData) {
+                    window.state.formData.discountInfo = {
+                        discountCode: '',
+                        discountApplied: false,
+                        discountAmount: 0,
+                        originalPrice: finalPrice, // برگشت به قیمت اصلی
+                        finalPrice: finalPrice,
+                        discountData: null
+                    };
+                }
+                
+                document.getElementById('SubmitBtn').disabled = false;
+            }
+        });
+        paymentPopup.show();
+    } catch (error) {
+        console.error('Error showing payment popup:', error);
+        alert('خطا در نمایش پرداخت. لطفاً صفحه را رفرش کنید.');
+    }    
 };
 
 function setupChronicDiabetesDetails() {
@@ -322,28 +375,30 @@ window.handleFormSubmit = function(event) {
     const formData = {
         userInfo: { ...state.formData.userInfo },
         serviceSelection: { ...state.formData.serviceSelection },
-        // اضافه کردن اطلاعات تخفیف
-        discountInfo: {
-            discountApplied: window.discountApplied || false,
-            discountCode: window.appliedDiscountCode || '',
-            discountAmount: window.discountAmount || 0,
-            originalPrice: window.originalPrice || 0,
-            finalPrice: window.finalPrice || 0
-        }
+        discountInfo: { ...state.formData.discountInfo }
     };
-
-    const completePersianData = window.convertToCompletePersianData(formData);
     
-    if (aiAssistantVars.environment && aiAssistantVars.environment !== 'production') {
-        console.log('Form submitted (English):', formData);
-        console.log('Form submitted (Persian - Complete):', completePersianData);
+    const discountCodeInput = document.getElementById('discount-code-input');
+    if (discountCodeInput && discountCodeInput.value.trim()) {
+        formData.discountInfo = {
+            ...formData.discountInfo,
+            discountCode: discountCodeInput.value.trim(),
+            discountApplied: true,
+            discountAmount: state.formData.discountInfo?.discountAmount || 0,
+            originalPrice: state.formData.discountInfo?.originalPrice || 0,
+            finalPrice: state.formData.discountInfo?.finalPrice || 0
+        };
     }
+    
+    const finalPrice = formData.discountInfo.finalPrice || formData.discountInfo.originalPrice;
     
     // غیرفعال کردن دکمه سابمیت
     document.getElementById('SubmitBtn').disabled = true;
     
     // نمایش پاپ‌آپ تأیید پرداخت
-    window.showPaymentConfirmation(completePersianData);
+    window.showPaymentConfirmation(formData, finalPrice);
+    
+    return false;
 };
 
 window.showSummary = function() {

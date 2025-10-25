@@ -60,11 +60,10 @@ class AI_Assistant_Discount_DB {
                 updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 
                 PRIMARY KEY (id),
-                UNIQUE KEY unique_code (code),
+                INDEX idx_code (code), 
                 INDEX idx_scope_active (scope, active),
                 INDEX idx_dates (start_date, end_date),
-                INDEX idx_usage (usage_limit, usage_count),
-                INDEX idx_code_active (code, active)
+                INDEX idx_usage (usage_limit, usage_count)
             ) {$charset_collate};";
             
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

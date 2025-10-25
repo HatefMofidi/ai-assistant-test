@@ -52,4 +52,4 @@ function handle_load_more_discount_users() {
 
 function handle_load_more_discount_users_no_priv() {
     wp_send_json_error('دسترسی غیرمجاز');
-} 
+}

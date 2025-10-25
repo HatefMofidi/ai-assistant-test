@@ -456,7 +456,7 @@
 /* رسپانسیو */
 @media (max-width: 768px) {
     .discount-admin-panel {
-        padding: 0 15px;
+        padding: 0px;
     }
     
     .discount-admin-panel-header {

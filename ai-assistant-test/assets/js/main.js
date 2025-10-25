@@ -68,5 +68,5 @@ jQuery(document).ready(function($) {
     
     
     // 4. لاگ وضعیت اولیه
-    console.log('AI Assistant: Main script loaded', aiAssistantVars);
+    // console.log('AI Assistant: Main script loaded', aiAssistantVars);
 });

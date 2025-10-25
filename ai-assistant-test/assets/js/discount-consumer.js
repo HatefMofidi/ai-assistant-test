@@ -106,4 +106,4 @@ jQuery(document).ready(function($) {
         handler.init();
         return handler;
     };
-}); 
+});

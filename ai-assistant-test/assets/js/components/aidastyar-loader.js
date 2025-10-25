@@ -1,11 +1,6 @@
 // /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/assets/js/components/aidastyar-loader.js
 class AiDastyarLoader {
     constructor(options = {}) {
-        // Singleton pattern
-        if (window.AiDastyarLoader.instance) {
-            return window.AiDastyarLoader.instance;
-        }
-
         this.defaultOptions = {
             message: 'در حال پردازش درخواست...',
             theme: 'light',
@@ -28,9 +23,25 @@ class AiDastyarLoader {
         this.isShowing = false;
         this.redirectTimeout = null;
         
+        // 🔥 خط جدید: پاک کردن لودرهای قبلی
+        this.closeOtherLoaders();
+        
         this.init();
-        window.AiDastyarLoader.instance = this;
     }
+    
+    closeOtherLoaders() {
+        // پیدا کردن تمام لودرهای فعال
+        const activeLoaders = document.querySelectorAll('.aidastyar-loader.active');
+        activeLoaders.forEach(loader => {
+            loader.classList.remove('active');
+            // حذف از DOM
+            setTimeout(() => {
+                if (loader.parentNode) {
+                    loader.parentNode.removeChild(loader);
+                }
+            }, 300);
+        });
+    }    
 
     init() {
         this.createLoader();
@@ -46,6 +57,99 @@ class AiDastyarLoader {
         this.loader.innerHTML = this.getTemplate();
         
         document.body.appendChild(this.loader);
+        
+        // bind events بعد از اضافه شدن به DOM
+        this.bindLoaderEvents();
+    }
+
+    bindLoaderEvents() {
+        // دکمه بستن
+        const closeBtn = this.loader.querySelector('.loader-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.hide());
+        }
+
+        // کلیک روی overlay
+        const overlay = this.loader.querySelector('.loader-overlay');
+        if (overlay && this.options.closable) {
+            overlay.addEventListener('click', () => this.hide());
+        }
+    }
+
+    show() {
+        if (this.isShowing) return;
+        
+        console.log('🟢 AiDastyarLoader shown'); // اصلاح شد
+        
+        this.loader.classList.add('active');
+        this.isShowing = true;
+
+        // مدیریت persistent
+        if (this.options.persistent) {
+            document.body.style.overflow = 'hidden';
+        }
+
+        // اجرای callback با bind مناسب
+        if (typeof this.options.onShow === 'function') {
+            try {
+                this.options.onShow.call(this);
+            } catch (error) {
+                console.error('Error in onShow callback:', error);
+            }
+        }
+
+        // اتوماتیک پنهان شدن
+        if (this.options.autoHide && !this.options.persistent) {
+            setTimeout(() => this.hide(), this.options.autoHide);
+        }
+
+        // تنظیم redirect
+        if (this.options.redirectUrl) {
+            this.setupRedirect();
+        }
+    }
+
+    hide() {
+        if (!this.isShowing) return;
+
+        console.log('🔴 AiDastyarLoader hidden'); // اصلاح شد
+        
+        const redirectOnClose = this.options.redirectOnClose;
+        const onCloseCallback = this.options.onClose;
+
+        // پاک کردن timeoutها
+        if (this.redirectTimeout) {
+            clearTimeout(this.redirectTimeout);
+            this.redirectTimeout = null;
+        }
+
+        this.loader.classList.remove('active');
+        this.isShowing = false;
+        document.body.style.overflow = '';
+
+        // اجرای callbackهای مربوط به بستن
+        if (typeof this.options.onHide === 'function') {
+            try {
+                this.options.onHide.call(this);
+            } catch (error) {
+                console.error('Error in onHide callback:', error);
+            }
+        }
+
+        if (typeof onCloseCallback === 'function') {
+            try {
+                onCloseCallback.call(this);
+            } catch (error) {
+                console.error('Error in onClose callback:', error);
+            }
+        }
+
+        // انتقال پس از بستن
+        if (redirectOnClose) {
+            setTimeout(() => {
+                window.location.href = redirectOnClose;
+            }, 150);
+        }
     }
 
     getTemplate() {
@@ -74,65 +178,6 @@ class AiDastyarLoader {
                 ${this.options.redirectUrl ? '<div class="redirect-countdown"></div>' : ''}
             </div>
         `;
-    }
-
-    show() {
-        if (this.isShowing) return;
-
-        this.loader.classList.add('active');
-        this.isShowing = true;
-
-        // مدیریت persistent
-        if (this.options.persistent) {
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Callback اجرای
-        if (typeof this.options.onShow === 'function') {
-            this.options.onShow();
-        }
-
-        // اتوماتیک پنهان شدن (فقط اگر persistent نباشد)
-        if (this.options.autoHide && !this.options.persistent) {
-            setTimeout(() => this.hide(), this.options.autoHide);
-        }
-
-        // تنظیم redirect
-        if (this.options.redirectUrl) {
-            this.setupRedirect();
-        }
-    }
-
-    hide() {
-        if (!this.isShowing) return;
-
-        const redirectOnClose = this.options.redirectOnClose;
-        const onCloseCallback = this.options.onClose;
-
-        // پاک کردن timeoutهای فعال
-        if (this.redirectTimeout) {
-            clearTimeout(this.redirectTimeout);
-            this.redirectTimeout = null;
-        }
-
-        this.loader.classList.remove('active');
-        this.isShowing = false;
-        document.body.style.overflow = '';
-
-        // اجرای callbackهای مربوط به بستن
-        if (typeof this.options.onHide === 'function') {
-            this.options.onHide();
-        }
-
-        if (typeof onCloseCallback === 'function') {
-            onCloseCallback();
-        }
-
-        if (redirectOnClose) {
-            setTimeout(() => {
-                window.location.href = redirectOnClose;
-            }, 150);
-        }
     }
 
     // 🔥 جدید: متد redirect اختصاصی
@@ -238,7 +283,7 @@ class AiDastyarLoader {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                z-index: 9999;
+                z-index: 10000;
                 display: none;
             }
             
@@ -254,6 +299,7 @@ class AiDastyarLoader {
                 height: 100%;
                 background: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(2px);
+                z-index: 10001; 
             }
             
             .loader-content {
@@ -267,6 +313,7 @@ class AiDastyarLoader {
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
                 text-align: center;
                 min-width: 200px;
+                z-index: 10002;
             }
             
             .aidastyar-loader.dark .loader-content {
