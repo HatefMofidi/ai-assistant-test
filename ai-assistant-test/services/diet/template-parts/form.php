@@ -1442,7 +1442,7 @@ $theme_assets = get_stylesheet_directory_uri();
                     
                     <div class="card-footer">
                         <div class="price-section">
-                            <div class="price-amount">50,000</div>
+                            <div class="price-amount" id="ai-only-price">در حال دریافت قیمت...</div>
                             <div class="price-currency">تومان</div>
                         </div>
                     </div>
@@ -1481,7 +1481,7 @@ $theme_assets = get_stylesheet_directory_uri();
                     
                     <div class="card-footer">
                         <div class="price-section">
-                            <div class="price-amount">75,000</div>
+                            <div class="price-amount" id="with-specialist-price">در حال دریافت قیمت...</div>
                             <div class="price-currency">تومان</div>
                         </div>
                     </div>

@@ -12,7 +12,6 @@ if (!is_user_logged_in()) {
     exit;
 }
 
-// جلوگیری از کش شدن صفحه
 nocache_headers();
 
 $current_user = wp_get_current_user();
@@ -23,36 +22,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $nonce = $_POST['_wpnonce'] ?? '';
     
     if (wp_verify_nonce($nonce, 'update_user_profile')) {
-        // به روزرسانی اطلاعات پایه
-        $new_first_name = sanitize_text_field($_POST['first_name']);
-        $new_last_name = sanitize_text_field($_POST['last_name']);
-        $new_phone = sanitize_text_field($_POST['phone']);
         
-        update_user_meta($user_id, 'first_name', $new_first_name);
-        update_user_meta($user_id, 'last_name', $new_last_name);
-        update_user_meta($user_id, 'billing_phone', $new_phone);
+        $new_first_name = sanitize_text_field($_POST['first_name'] ?? '');
+        $new_last_name = sanitize_text_field($_POST['last_name'] ?? '');
+        $new_phone = sanitize_text_field($_POST['phone'] ?? '');
         
-        // به روزرسانی display name اگر نام کامل تغییر کرد
-        if ($new_first_name && $new_last_name) {
-            $new_display_name = $new_first_name . ' ' . $new_last_name;
-            wp_update_user([
-                'ID' => $user_id,
-                'display_name' => $new_display_name
-            ]);
+        // بررسی وضعیت ایمیل
+        $user_email = $current_user->user_email;
+        $can_edit_email = empty($user_email);
+        
+        $error_message = '';
+        
+        // اگر می‌تواند ایمیل را ویرایش کند و ایمیل جدید ارسال شده
+        if ($can_edit_email && !empty($_POST['email'])) {
+            $new_email = trim($_POST['email']);
+            
+            // اعتبارسنجی دقیق‌تر ایمیل
+            if (filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
+                // استفاده از روش مستقیم برای جلوگیری از اعتبارسنجی مضاعف وردپرس
+                global $wpdb;
+                
+                $update_result = $wpdb->update(
+                    $wpdb->users,
+                    ['user_email' => $new_email],
+                    ['ID' => $user_id],
+                    ['%s'],
+                    ['%d']
+                );
+                
+                if ($update_result === false) {
+                    $error_message = 'خطا در به روزرسانی ایمیل در دیتابیس.';
+                } else {
+                    $email_updated = true;
+                    // رفرش اطلاعات کاربر
+                    clean_user_cache($user_id);
+                    $current_user = wp_get_current_user();
+                }
+            } else {
+                $error_message = 'لطفاً یک ایمیل معتبر وارد کنید.';
+            }
         }
         
-        // پاکسازی کامل کش
-        clean_user_cache($user_id);
-        wp_cache_delete($user_id, 'users');
-        wp_cache_flush();
-        
-        // ریدایرکت به پروفایل با پارامتر موفقیت
-        $redirect_url = add_query_arg([
-            'updated' => 'success',
-            't' => time() // پارامتر زمان برای شکستن کش
-        ], home_url('/profile'));
-        wp_redirect($redirect_url);
-        exit;
+        // اگر خطایی وجود نداشت، اطلاعات دیگر را به روزرسانی کن
+        if (empty($error_message)) {
+            update_user_meta($user_id, 'first_name', $new_first_name);
+            update_user_meta($user_id, 'last_name', $new_last_name);
+            update_user_meta($user_id, 'billing_phone', $new_phone);
+            
+            // به روزرسانی display name اگر نام کامل تغییر کرد
+            if ($new_first_name && $new_last_name) {
+                $new_display_name = $new_first_name . ' ' . $new_last_name;
+                wp_update_user([
+                    'ID' => $user_id,
+                    'display_name' => $new_display_name
+                ]);
+            }
+            
+            // پاکسازی کش
+            clean_user_cache($user_id);
+            wp_cache_delete($user_id, 'users');
+            
+            // ریدایرکت به پروفایل با پارامتر موفقیت
+            $redirect_url = add_query_arg([
+                'updated' => 'success',
+                't' => time()
+            ], home_url('/profile'));
+            wp_redirect($redirect_url);
+            exit;
+        }
         
     } else {
         $error_message = 'خطای امنیتی! لطفا دوباره تلاش کنید.';
@@ -65,6 +102,9 @@ $last_name = get_user_meta($user_id, 'last_name', true);
 $user_phone = get_user_meta($user_id, 'billing_phone', true);
 $user_email = $current_user->user_email;
 $display_name = $current_user->display_name;
+
+// بررسی آیا کاربر می‌تواند ایمیل را ویرایش کند
+$can_edit_email = empty($user_email);
 
 get_header();
 ?>
@@ -83,10 +123,10 @@ get_header();
         </div>
 
         <div class="acc-account-content">
-            <?php if (isset($success_message)): ?>
+            <?php if (isset($email_updated) && $email_updated): ?>
                 <div class="acc-alert acc-alert-success">
                     <span class="dashicons dashicons-yes-alt"></span>
-                    <?php echo esc_html($success_message); ?>
+                    ایمیل شما با موفقیت ثبت شد.
                 </div>
             <?php endif; ?>
 
@@ -132,15 +172,24 @@ get_header();
                     
                     <div class="acc-form-group">
                         <label for="email">آدرس ایمیل</label>
-                        <input type="email" id="email" 
-                               value="<?php echo esc_attr($user_email); ?>" 
-                               class="acc-form-input" disabled>
-                        <small class="acc-form-help">
-                            🔒 ایمیل شما به دلایل امنیتی غیرقابل تغییر است. 
-                            برای به‌روزرسانی با 
-                                پشتیبانی
-                            تماس بگیرید.
-                        </small>
+                        <?php if ($can_edit_email): ?>
+                            <input type="email" id="email" name="email"
+                                   value="<?php echo esc_attr($user_email); ?>" 
+                                   class="acc-form-input"
+                                   placeholder="example@gmail.com"
+                                   required>
+                            <small class="acc-form-help">
+                                ✅ لطفاً ایمیل خود را وارد کنید. این فرصت فقط یک بار در اختیار شما قرار می‌گیرد.
+                            </small>
+                        <?php else: ?>
+                            <input type="email" id="email" 
+                                   value="<?php echo esc_attr($user_email); ?>" 
+                                   class="acc-form-input" disabled>
+                            <small class="acc-form-help">
+                                🔒 ایمیل شما به دلایل امنیتی غیرقابل تغییر است. 
+                                برای به‌روزرسانی با پشتیبانی تماس بگیرید.
+                            </small>
+                        <?php endif; ?>
                     </div>
                     
                     <div class="acc-form-group">
@@ -154,7 +203,7 @@ get_header();
                 <div class="acc-form-actions">
                     <button type="submit" name="update_profile" class="acc-submit-btn">
                         <span class="dashicons dashicons-update"></span>
-                        به روزرسانی اطلاعات
+                        <?php echo $can_edit_email ? 'ثبت اطلاعات و ایمیل' : 'به روزرسانی اطلاعات'; ?>
                     </button>
                     
                     <button type="button" onclick="window.location.href='<?php echo home_url('/profile'); ?>'" class="acc-cancel-btn">

@@ -438,7 +438,8 @@ jQuery(document).ready(function($) {
 
     function updateStats(stats) {
         $('#active-count').text(stats.active);
-        $('#inactive-count').text(stats.inactive);
+        $('#inactive-count').text(stats.inactive - stats.expired); // فقط غیرفعال‌های واقعی
+        $('#expired-count').text(stats.expired); // نمایش تعداد منقضی شده
         $('#total-count').text(stats.total);
     }
 

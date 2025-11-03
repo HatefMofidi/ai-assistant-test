@@ -39,7 +39,11 @@ window.state = {
             originalPrice: 0,
             finalPrice: 0,
             discountData: null
-        }
+        },
+        servicePrices: { // 🔥 مقداردهی اولیه برای قیمت‌ها
+            aiOnly: 0,
+            withSpecialist: 0
+        }        
     },
     
     updateStep(step) {

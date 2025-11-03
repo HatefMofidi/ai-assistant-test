@@ -5,91 +5,16 @@
 
 if (!defined('ABSPATH')) exit;
 
-// ایجاد جدول مشاورین تغذیه
-function create_nutrition_consultants_table() {
-    global $wpdb;
-    
-    $table_name = $wpdb->prefix . 'nutrition_consultants';
-    
-    // چک کردن وجود جدول
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-        $charset_collate = $wpdb->get_charset_collate();
-        
-        $sql = "CREATE TABLE $table_name (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            name varchar(100) NOT NULL,
-            specialty varchar(200) NOT NULL,
-            is_active tinyint(1) DEFAULT 1,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id)
-        ) $charset_collate;";
-        
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-        
-        error_log('Nutrition consultants table created successfully');
-    }
-}
-
-// تابع برای درج داده‌های تستی
-function insert_test_nutrition_consultants() {
-    global $wpdb;
-    
-    $table_name = $wpdb->prefix . 'nutrition_consultants';
-    
-    // فقط در محیط sandbox و اگر جدول خالی است
-    if ((defined('WP_ENV') && WP_ENV === 'sandbox') || 
-        (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'test') !== false)) {
-        
-        $existing_count = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-        
-        if ($existing_count == 0) {
-            $wpdb->insert($table_name, [
-                'name' => 'دکتر مریم احمدی',
-                'specialty' => 'متخصص تغذیه و رژیم درمانی',
-                'is_active' => 1
-            ]);
-            
-            $wpdb->insert($table_name, [
-                'name' => 'دکتر علی رضایی', 
-                'specialty' => 'متخصص غدد و متابولیسم',
-                'is_active' => 1
-            ]);
-            
-            $wpdb->insert($table_name, [
-                'name' => 'دکتر سارا محمدی',
-                'specialty' => 'متخصص تغذیه ورزشی',
-                'is_active' => 1
-            ]);
-            
-            error_log('Test nutrition consultants data inserted: ' . $wpdb->rows_affected . ' rows');
-        }
-    }
-}
-
-// ثبت هوک‌ها
-add_action('after_switch_theme', 'create_nutrition_consultants_table');
-add_action('init', 'create_nutrition_consultants_table');
-add_action('init', 'insert_test_nutrition_consultants');
-
-
-// دریافت لیست مشاورین تغذیه
+// دریافت لیست مشاورین تغذیه از کلاس جدید
 function get_nutrition_consultants() {
-    global $wpdb;
-    
     // بررسی nonce
     if (!wp_verify_nonce($_POST['security'], 'ai_assistant_nonce')) {
         wp_die('خطای امنیتی');
     }
     
-    $table_name = $wpdb->prefix . 'nutrition_consultants';
-    
-    $consultants = $wpdb->get_results("
-        SELECT id, name, specialty 
-        FROM $table_name 
-        WHERE is_active = 1 
-        ORDER BY name ASC
-    ");
+    // استفاده از کلاس جدید برای دریافت مشاورین
+    $diet_db = AI_Assistant_Diet_Consultation_DB::get_instance();
+    $consultants = $diet_db->get_active_consultants();
     
     wp_send_json_success([
         'consultants' => $consultants
@@ -97,3 +22,39 @@ function get_nutrition_consultants() {
 }
 add_action('wp_ajax_get_nutrition_consultants', 'get_nutrition_consultants');
 add_action('wp_ajax_nopriv_get_nutrition_consultants', 'get_nutrition_consultants');
+
+
+// اضافه کردن این تابع به consultant-users-functions.php
+function get_service_price_with_discount() {
+    // بررسی nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'ai_assistant_nonce')) {
+        wp_send_json_error('خطای امنیتی');
+    }
+    
+    $service_id = sanitize_text_field($_POST['service_id']);
+    $include_consultant_fee = isset($_POST['include_consultant_fee']) && $_POST['include_consultant_fee'] === '1';
+    $consultant_fee = isset($_POST['consultant_fee']) ? floatval($_POST['consultant_fee']) : 0;
+    
+    // دریافت قیمت پایه سرویس
+    $base_price = get_diet_service_base_price(); // تابع فرضی برای دریافت قیمت پایه
+    
+    // محاسبه قیمت اصلی (با در نظر گرفتن هزینه مشاور)
+    $original_price = $base_price;
+    if ($include_consultant_fee && $consultant_fee > 0) {
+        $original_price += $consultant_fee;
+    }
+    
+    // اعمال تخفیف‌های خودکار (کد مربوط به تخفیف خودکار)
+    $discount_result = apply_auto_discounts($service_id, $original_price);
+    
+    wp_send_json_success([
+        'original_price' => $original_price,
+        'final_price' => $discount_result['final_price'],
+        'discount_amount' => $discount_result['discount_amount'],
+        'has_discount' => $discount_result['has_discount'],
+        'discount' => $discount_result['discount_data']
+    ]);
+}
+
+add_action('wp_ajax_get_service_price_with_discount', 'get_service_price_with_discount');
+add_action('wp_ajax_nopriv_get_service_price_with_discount', 'get_service_price_with_discount');

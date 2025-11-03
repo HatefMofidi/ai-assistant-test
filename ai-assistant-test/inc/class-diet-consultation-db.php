@@ -333,6 +333,54 @@ class AI_Assistant_Diet_Consultation_DB {
         );
     }
 
+    /**
+     * دریافت لیست مشاورین فعال
+     */
+    public function get_active_consultants() {
+        if (!$this->ensure_tables_exist()) {
+            return [];
+        }
+    
+        global $wpdb;
+        
+        $consultants = $wpdb->get_results("
+            SELECT 
+                c.id,
+                c.name,
+                '' as specialty,
+                ct.commission_value as consultation_price
+            FROM {$this->consultants_table} c
+            LEFT JOIN {$this->contracts_table} ct ON c.id = ct.consultant_id 
+                AND ct.active_from <= NOW() 
+                AND (ct.active_to IS NULL OR ct.active_to >= NOW())
+            WHERE c.status = 'active'
+            ORDER BY c.name ASC
+        ");
+        
+        // اگر قیمت مشاور پیدا نشد، از قیمت پیش‌فرض استفاده کن
+        foreach ($consultants as &$consultant) {
+            if (!$consultant->consultation_price) {
+                $consultant->consultation_price = 25000; // قیمت پیش‌فرض
+            }
+        }
+        
+        return $consultants;
+    }
+    
+    /**
+     * دریافت قیمت پایه سرویس رژیم غذایی
+     */
+    public function get_diet_service_base_price() {
+        $service_db = AI_Assistant_Service_DB::get_instance();
+        $service = $service_db->get_service('diet');
+        
+        if ($service && isset($service['price'])) {
+            return (int)$service['price'];
+        }
+        
+        return 0; // قیمت پیش‌فرض در صورت عدم یافتن
+    }
+
     public function get_consultant_request_counts($consultant_id) {
         if (!$this->ensure_tables_exist()) {
             return [];

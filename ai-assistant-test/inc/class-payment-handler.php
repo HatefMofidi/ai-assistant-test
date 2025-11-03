@@ -12,6 +12,36 @@ class AI_Assistant_Payment_Handler {
         return self::$instance;
     }
     
+    // اگر فایل پرداخت جداگانه دارید، این تابع را اضافه کنید
+    /**
+     * اعمال تخفیف در مرحله پرداخت نهایی
+     */
+    public function apply_final_discount($user_id, $service_id, $amount) {
+        // دریافت آخرین تخفیف اعمال شده از متادیتای کاربر
+        $last_discount = get_user_meta($user_id, "last_discount_applied_{$service_id}", true);
+        
+        if ($last_discount && is_array($last_discount)) {
+            $final_amount = floatval($last_discount['final_price']);
+            $discount_amount = floatval($last_discount['discount_amount']);
+            
+            error_log("✅ تخفیف اعمال شده در پرداخت: {$discount_amount} - قیمت نهایی: {$final_amount}");
+            
+            return [
+                'success' => true,
+                'final_amount' => $final_amount,
+                'discount_applied' => true,
+                'discount_data' => $last_discount
+            ];
+        }
+        
+        // اگر تخفیفی وجود نداشت، مقدار اصلی برگردانده شود
+        return [
+            'success' => true,
+            'final_amount' => $amount,
+            'discount_applied' => false
+        ];
+    }
+
     private function __construct() {
         global $wpdb;
         $this->table_name = $wpdb->prefix . 'wallet_balance';
@@ -341,66 +371,98 @@ class AI_Assistant_Payment_Handler {
     private function maybe_create_tables() {
         global $wpdb;
         
-        // ایجاد جدول موجودی کیف پول
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") != $this->table_name) {
-            $charset_collate = $wpdb->get_charset_collate();
-            
-            $sql = "CREATE TABLE {$this->table_name} (
-                user_id bigint(20) UNSIGNED NOT NULL,
-                balance decimal(15,2) NOT NULL DEFAULT 0,
-                updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (user_id),
-                INDEX (updated_at)
-            ) {$charset_collate};";
-            
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
-            
-            // انتقال داده‌های موجود از user_meta به جدول جدید
-            $users = get_users([
-                'meta_key' => 'ai_assistant_credit',
-                'meta_compare' => 'EXISTS'
-            ]);
-            
-            foreach ($users as $user) {
-                $credit = get_user_meta($user->ID, 'ai_assistant_credit', true);
-                $wpdb->replace($this->table_name, [
-                    'user_id' => $user->ID,
-                    'balance' => $credit
-                ]);
-            }
-        }
+        // استفاده از file lock برای جلوگیری از race condition در processهای موازی
+        $lock_file = WP_CONTENT_DIR . '/ai_payment_tables.lock';
+        $lock_handle = fopen($lock_file, 'w');
         
-        // ایجاد جدول تاریخچه تراکنش‌ها
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$this->history_table}'") != $this->history_table) {
-            $charset_collate = $wpdb->get_charset_collate();
-            
-            // استفاده از ساختار جایگزین برای enum
-            $sql = "CREATE TABLE {$this->history_table} (
-                id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                user_id bigint(20) UNSIGNED NOT NULL,
-                amount decimal(15,2) NOT NULL,
-                new_balance decimal(15,2) NOT NULL,
-                type varchar(20) NOT NULL, -- تغییر از enum به varchar
-                description varchar(255) NOT NULL,
-                reference_id varchar(100) DEFAULT NULL,
-                created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (id),
-                INDEX (user_id),
-                INDEX (type),
-                INDEX (created_at),
-                INDEX (reference_id)
-            ) {$charset_collate};";
-            
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
-            
-            // اضافه کردن محدودیت مقدار برای فیلد type
-            $wpdb->query(
-                "ALTER TABLE {$this->history_table} 
-                 ADD CONSTRAINT chk_type CHECK (type IN ('credit', 'debit'))"
-            );
+        if (!flock($lock_handle, LOCK_EX | LOCK_NB)) {
+            // اگر lock گرفته شده، صبر کن
+            fclose($lock_handle);
+            return;
         }
+
+        try {   
+            // ایجاد جدول موجودی کیف پول
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") != $this->table_name) {
+                $charset_collate = $wpdb->get_charset_collate();
+                
+                $sql = "CREATE TABLE {$this->table_name} (
+                    user_id bigint(20) UNSIGNED NOT NULL,
+                    balance decimal(15,2) NOT NULL DEFAULT 0,
+                    updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    PRIMARY KEY (user_id),
+                    INDEX (updated_at)
+                ) {$charset_collate};";
+                
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                dbDelta($sql);
+                
+                // انتقال داده‌های موجود از user_meta به جدول جدید
+                $users = get_users([
+                    'meta_key' => 'ai_assistant_credit',
+                    'meta_compare' => 'EXISTS'
+                ]);
+                
+                foreach ($users as $user) {
+                    $credit = get_user_meta($user->ID, 'ai_assistant_credit', true);
+                    $wpdb->replace($this->table_name, [
+                        'user_id' => $user->ID,
+                        'balance' => $credit
+                    ]);
+                }
+                
+                 error_log('✅ [PAYMENT] Wallet balance table created');
+            } 
+             
+            // ایجاد جدول تاریخچه تراکنش‌ها
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$this->history_table}'") != $this->history_table) {
+                $charset_collate = $wpdb->get_charset_collate();
+                
+                // استفاده از ساختار جایگزین برای enum
+                $sql = "CREATE TABLE {$this->history_table} (
+                    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                    user_id bigint(20) UNSIGNED NOT NULL,
+                    amount decimal(15,2) NOT NULL,
+                    new_balance decimal(15,2) NOT NULL,
+                    type varchar(20) NOT NULL, -- تغییر از enum به varchar
+                    description varchar(255) NOT NULL,
+                    reference_id varchar(100) DEFAULT NULL,
+                    created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (id),
+                    INDEX (user_id),
+                    INDEX (type),
+                    INDEX (created_at),
+                    INDEX (reference_id)
+                ) {$charset_collate};";
+                
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                dbDelta($sql);
+                
+                // اضافه کردن محدودیت مقدار برای فیلد type (اگر وجود ندارد)
+                $constraint_exists = $wpdb->get_var("
+                    SELECT COUNT(*) FROM information_schema.table_constraints 
+                    WHERE table_name = '{$this->history_table}' 
+                    AND constraint_name = 'chk_type'
+                ");
+                
+                if (!$constraint_exists) {
+                    try {
+                        $wpdb->query(
+                            "ALTER TABLE {$this->history_table} 
+                             ADD CONSTRAINT chk_type CHECK (type IN ('credit', 'debit'))"
+                        );
+                    } catch (Exception $e) {
+                        error_log('⚠️ [PAYMENT] Constraint already exists or failed: ' . $e->getMessage());
+                    }
+                }
+                
+                error_log('✅ [PAYMENT] Wallet history table created');
+            }
+            
+        } finally {
+            flock($lock_handle, LOCK_UN);
+            fclose($lock_handle);
+        }  
     }
     
     public function get_user_credit($user_id) {
@@ -414,9 +476,44 @@ class AI_Assistant_Payment_Handler {
         return $balance !== null ? (float) $balance : 0;
     }
     
+    // public function has_enough_credit($user_id, $amount) {
+    //     return $this->get_user_credit($user_id) >= $amount;
+    // }
+    
+    
     public function has_enough_credit($user_id, $amount) {
-        return $this->get_user_credit($user_id) >= $amount;
+    try {
+        // بررسی ورودی‌ها
+        if (empty($user_id) || !is_numeric($user_id)) {
+            return new WP_Error('invalid_user_id', 'شناسه کاربر نامعتبر است.');
+        }
+
+        if (!is_numeric($amount) || $amount < 0) {
+            return new WP_Error('invalid_amount', 'مقدار اعتبار نامعتبر است.');
+        }
+
+        // تلاش برای دریافت اعتبار کاربر
+        $credit = $this->get_user_credit($user_id);
+
+        // اگر تابع get_user_credit خودش خطا (WP_Error) برگردونده باشه
+        if (is_wp_error($credit)) {
+            return $credit;
+        }
+
+        // بررسی کافی بودن اعتبار
+        if ($credit < $amount) {
+            return new WP_Error('not_enough_credit', 'اعتبار کاربر کافی نیست.');
+        }
+
+        // اگر همه‌چیز خوب بود
+        return true;
+
+    } catch (Throwable $e) {
+        // هر نوع خطای سیستمی (Exception, Error, PDOException و...) رو می‌گیره
+        return new WP_Error('system_error', 'خطای سیستمی: ' . $e->getMessage());
     }
+}
+
     
     public function deduct_credit($user_id, $amount, $description, $reference_id = null) {
         global $wpdb;

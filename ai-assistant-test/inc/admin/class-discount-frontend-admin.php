@@ -69,6 +69,26 @@ class AI_Assistant_Discount_Frontend_Admin {
         
         return $users_list;
     }
+    
+    private function is_discount_active($discount) {
+        if (!$discount->active) {
+            return false;
+        }
+    
+        $now = current_time('mysql');
+        
+        // بررسی تاریخ شروع
+        if ($discount->start_date && $discount->start_date > $now) {
+            return false;
+        }
+        
+        // بررسی تاریخ انقضا
+        if ($discount->end_date && $discount->end_date < $now) {
+            return false;
+        }
+    
+        return true;
+    }    
 
     private function init_hooks() {
         // اضافه کردن shortcode برای نمایش پنل مدیریت
@@ -160,6 +180,9 @@ class AI_Assistant_Discount_Frontend_Admin {
                     </span>
                     <span class="discount-stat-item">
                         <strong id="inactive-count">0</strong> غیرفعال
+                    </span>
+                    <span class="discount-stat-item">
+                        <strong id="expired-count">0</strong> منقضی شده
                     </span>
                     <span class="discount-stat-item">
                         <strong id="total-count">0</strong> کل
@@ -653,8 +676,15 @@ class AI_Assistant_Discount_Frontend_Admin {
         foreach ($all_discounts as $discount) {
             // فیلتر وضعیت
             if ($filters['status'] !== 'all') {
-                $status_match = ($filters['status'] === 'active') ? 1 : 0;
-                if ($discount->active != $status_match) continue;
+                $is_really_active = $this->is_discount_active($discount);
+                
+                if ($filters['status'] === 'active' && !$is_really_active) {
+                    continue;
+                }
+                
+                if ($filters['status'] === 'inactive' && $is_really_active) {
+                    continue;
+                }
             }
             
             // فیلتر نوع
@@ -683,14 +713,23 @@ class AI_Assistant_Discount_Frontend_Admin {
         $stats = [
             'active' => 0,
             'inactive' => 0,
+            'expired' => 0,
             'total' => count($all_discounts)
         ];
         
         foreach ($all_discounts as $discount) {
-            if ($discount->active) {
+            $is_really_active = $this->is_discount_active($discount);
+            
+            if ($is_really_active) {
                 $stats['active']++;
             } else {
                 $stats['inactive']++;
+                
+                // شمارش تخفیف‌های منقضی شده
+                $now = current_time('mysql');
+                if ($discount->active && $discount->end_date && $discount->end_date < $now) {
+                    $stats['expired']++;
+                }
             }
         }
         
@@ -709,8 +748,19 @@ class AI_Assistant_Discount_Frontend_Admin {
     }
     
     private function render_discount_item($discount) {
-        $status_class = $discount->active ? 'active' : 'inactive';
-        $status_text = $discount->active ? 'فعال' : 'غیرفعال';
+        $is_really_active = $this->is_discount_active($discount);
+        $status_class = $is_really_active ? 'active' : 'inactive';
+        $status_text = $is_really_active ? 'فعال' : 'غیرفعال';
+        
+        // اضافه کردن توضیح اگر تاریخ انقضا گذشته باشد
+        $status_note = '';
+        $now = current_time('mysql');
+        if ($discount->active && $discount->end_date && $discount->end_date < $now) {
+            $status_text = 'منقضی شده';
+            $status_class = 'expired';
+            $status_note = ' (تاریخ انقضا گذشته)';
+        }
+        
         $type_text = $discount->type === 'percentage' ? '٪' : 'تومان';
         $code_display = empty($discount->code) ? '<em>بدون کد (خودکار)</em>' : esc_html($discount->code);
         $has_code = !empty($discount->code);
@@ -756,7 +806,7 @@ class AI_Assistant_Discount_Frontend_Admin {
                 
                 <div class="discount-meta">
                     <span class="discount-status <?php echo $status_class; ?>">
-                        <i class="fas fa-circle"></i> <?php echo $status_text; ?>
+                        <i class="fas fa-circle"></i> <?php echo $status_text . $status_note; ?>
                     </span>
                     <span class="discount-amount">
                         <?php echo number_format($discount->amount); ?> <?php echo $type_text; ?>

@@ -130,7 +130,14 @@ function verify_otp_request() {
         $user = get_user_by('login', $mobile);
         
         if(!$user) {
-            $user_id = wp_create_user($mobile, wp_generate_password(), $mobile . '@aidastyar.com');
+            $userdata = array(
+                'user_login' => $mobile,
+                'user_pass'  => wp_generate_password(),
+                'user_email' => '', // ایمیل خالی
+                'role'       => 'subscriber'
+            );
+            
+            $user_id = wp_insert_user($userdata);
             
             if(is_wp_error($user_id)) {
                 throw new Exception('خطا در ایجاد حساب کاربری: ' . $user_id->get_error_message());

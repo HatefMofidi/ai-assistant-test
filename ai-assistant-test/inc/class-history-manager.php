@@ -18,6 +18,9 @@ class AI_Assistant_History_Manager {
         global $wpdb;
         $this->table_name = $wpdb->prefix . 'service_history';
         add_action('admin_init', [$this, 'handle_history_deletion']);
+        
+        // ایجاد جدول در زمان ساخت instance
+       // $this->maybe_create_table();        
     }
 
     /**
@@ -30,52 +33,77 @@ class AI_Assistant_History_Manager {
 
         global $wpdb;
         
-        // بررسی وجود جدول
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") != $this->table_name) {
-            $charset_collate = $wpdb->get_charset_collate();
-            
-            $sql = "CREATE TABLE {$this->table_name} (
-                id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                user_id bigint(20) UNSIGNED NOT NULL,
-                service_id varchar(100) NOT NULL,
-                service_name varchar(255) NOT NULL,
-                response longtext NOT NULL,
-                user_data longtext NULL,
-                created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (id),
-                KEY user_id (user_id),
-                KEY service_id (service_id),
-                KEY created_at (created_at)
-            ) {$charset_collate};";
-            
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
-            
-            // لاگ برای اشکالزدایی
-            error_log('[AI History] Table created: ' . $this->table_name);
-        }
+        // استفاده از file lock
+        $lock_file = WP_CONTENT_DIR . '/ai_history_table.lock';
+        $lock_handle = fopen($lock_file, 'w');
         
-        $this->table_created = true;
-        return true;
-    }
+        if (!flock($lock_handle, LOCK_EX | LOCK_NB)) {
+            fclose($lock_handle);
+            return true;
+        }
+
+        try {        
+            // بررسی وجود جدول
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") != $this->table_name) {
+                $charset_collate = $wpdb->get_charset_collate();
+                
+                $sql = "CREATE TABLE {$this->table_name} (
+                    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                    user_id bigint(20) UNSIGNED NOT NULL,
+                    service_id varchar(100) NOT NULL,
+                    service_name varchar(255) NOT NULL,
+                    response longtext NOT NULL,
+                    user_data longtext NULL,
+                    status ENUM('pending','processing','done','error','consultant_pending','under_review','approved') DEFAULT 'pending',
+                    created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+                    PRIMARY KEY (id),
+                    KEY user_id (user_id),
+                    KEY service_id (service_id),
+                    KEY created_at (created_at)
+                ) {$charset_collate};";
+                
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                dbDelta($sql);
+                
+                // لاگ برای اشکالزدایی
+                error_log('[AI History] Table created: ' . $this->table_name);
+            }
+        
+            $this->table_created = true;
+            return true;
+        
+            
+        } finally { 
+            flock($lock_handle, LOCK_UN);
+            fclose($lock_handle);
+        }        
+    } 
 
     /**
      * ذخیره یک آیتم در تاریخچه
      */
-    public function save_history($user_id, $service_id, $service_name, $user_data , $response) {
-        global $wpdb;
+public function save_history($user_id, $service_id, $service_name, $user_data, $response) {
+    global $wpdb;
+    
+    // بررسی و ایجاد جدول اگر وجود نداشته باشد
+    $this->maybe_create_table();
+    
+    // بررسی وجود کاربر - نسخه ایمن‌تر
+    $user = get_user_by('ID', $user_id);
+    if (!$user) {
+        error_log('❌ [HISTORY] Invalid user ID: ' . $user_id);
+        return false;
+    }
+    
+    try {
+        $wpdb->query("SET time_zone = '+03:30';");
         
-        error_log('[AI History] USER DATA: ' . $user_data);
-        
-        // بررسی و ایجاد جدول اگر وجود نداشته باشد
-        $this->maybe_create_table();
-        
-        if (!get_user_by('ID', $user_id)) {
-            error_log('[AI History] Invalid user ID: ' . $user_id);
-            return false;
+        // بررسی اینکه user_data آرایه است یا نه
+        if (is_array($user_data) || is_object($user_data)) {
+            $user_data = maybe_serialize($user_data);
         }
         
-        $wpdb->query("SET time_zone = '+03:30';");
         $result = $wpdb->insert(
             $this->table_name,
             [
@@ -85,16 +113,22 @@ class AI_Assistant_History_Manager {
                 'user_data' => $user_data,
                 'response' => wp_kses($response, $this->get_allowed_html_tags())
             ],
-            ['%d', '%s', '%s','%s', '%s']
+            ['%d', '%s', '%s', '%s', '%s']
         );
         
         if ($result === false) {
-            error_log('[AI History] Database error: ' . $wpdb->last_error);
+            error_log('❌ [HISTORY] Database error: ' . $wpdb->last_error);
             return false;
         }
         
+        error_log('✅ [HISTORY] Successfully saved history for user ' . $user_id);
         return $wpdb->insert_id;
+        
+    } catch (Exception $e) {
+        error_log('❌ [HISTORY] Exception: ' . $e->getMessage());
+        return false;
     }
+}
 
     /**
      * دریافت تاریخچه کاربر با قابلیت صفحه‌بندی
@@ -103,7 +137,7 @@ class AI_Assistant_History_Manager {
         global $wpdb;
         
         // بررسی و ایجاد جدول اگر وجود نداشته باشد
-        $this->maybe_create_table();
+     //   $this->maybe_create_table();
         
         $paged = get_query_var('paged') ?: 1;
         $offset = ($paged - 1) * $per_page;
@@ -140,7 +174,7 @@ class AI_Assistant_History_Manager {
         global $wpdb;
         
         // بررسی و ایجاد جدول اگر وجود نداشته باشد
-        $this->maybe_create_table();
+    //    $this->maybe_create_table();
         
         if (!$this->is_user_owner($item_id, $user_id)) {
             return false;
@@ -160,7 +194,7 @@ class AI_Assistant_History_Manager {
         global $wpdb;
         
         // بررسی و ایجاد جدول اگر وجود نداشته باشد
-        $this->maybe_create_table();
+    //    $this->maybe_create_table();
         
         $owner_id = $wpdb->get_var(
             $wpdb->prepare(
@@ -234,7 +268,7 @@ class AI_Assistant_History_Manager {
     public function get_history_item($history_id) {
         global $wpdb;
         
-        $this->maybe_create_table();
+      //  $this->maybe_create_table();
         
         return $wpdb->get_row(
             $wpdb->prepare("SELECT * FROM {$this->table_name} WHERE id = %d", $history_id)
@@ -247,7 +281,7 @@ class AI_Assistant_History_Manager {
     public function update_history_response($history_id, $new_response) {
         global $wpdb;
         
-        $this->maybe_create_table();
+    //    $this->maybe_create_table();
         
         $result = $wpdb->update(
             $this->table_name,

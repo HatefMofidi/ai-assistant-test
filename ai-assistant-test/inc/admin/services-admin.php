@@ -53,9 +53,9 @@ function ai_assistant_render_services_admin() {
             'template' => $current_service['template'] ??  '/services/' . $service_id . '/template-parts/form.php' // حفظ مسیر قالب
         ];
 
-
-
-
+     
+        
+        
         $service_manager->update_service($service_id, $service_data);
         
 

@@ -1062,6 +1062,7 @@ function loadNutritionConsultantsPopup() {
             specialistSelection.innerHTML = '';
             
             if (data.data.consultants && data.data.consultants.length > 0) {
+                // در تابع loadNutritionConsultantsPopup - بخش ایجاد کارت مشاور
                 data.data.consultants.forEach(consultant => {
                     const specialistCard = document.createElement('div');
                     specialistCard.className = 'specialist-card-popup';
@@ -1070,9 +1071,9 @@ function loadNutritionConsultantsPopup() {
                         <div class="specialist-info-popup">
                             <div class="specialist-name-popup">${consultant.name}</div>
                             <div class="specialist-specialty-popup">${consultant.specialty}</div>
-                            <div class="specialist-price-popup">+25,000 تومان</div>
+                            <div class="specialist-price-popup">+${new Intl.NumberFormat('fa-IR').format(consultant.consultation_price)} تومان</div>
                         </div>
-                        <button type="button" class="select-specialist-btn-popup" onclick="selectSpecialistInPopup(${consultant.id}, '${consultant.name.replace(/'/g, "\\'")}', '${consultant.specialty.replace(/'/g, "\\'")}')">
+                        <button type="button" class="select-specialist-btn-popup" onclick="selectSpecialistInPopup(${consultant.id}, '${consultant.name.replace(/'/g, "\\'")}', '${consultant.specialty.replace(/'/g, "\\'")}', ${consultant.consultation_price})">
                             انتخاب
                         </button>
                     `;
@@ -1092,7 +1093,7 @@ function loadNutritionConsultantsPopup() {
 }
 
 // انتخاب مشاور در پاپ‌آپ
-window.selectSpecialistInPopup = function(specialistId, specialistName, specialty) {
+window.selectSpecialistInPopup = function(specialistId, specialistName, specialty, consultationPrice) {
     // حذف انتخاب از همه کارت‌ها
     document.querySelectorAll('.specialist-card-popup').forEach(card => {
         card.classList.remove('selected');
@@ -1104,11 +1105,12 @@ window.selectSpecialistInPopup = function(specialistId, specialistName, specialt
         selectedCard.classList.add('selected');
     }
     
-    // ذخیره در state - این قسمت اصلاح شده
+    // ذخیره در state
     state.updateFormData('serviceSelection.selectedSpecialist', {
         id: parseInt(specialistId),
         name: specialistName,
-        specialty: specialty
+        specialty: specialty,
+        consultation_price: parseInt(consultationPrice)
     });
     
     // نمایش اطلاعات مشاور انتخاب شده
@@ -1119,7 +1121,7 @@ window.selectSpecialistInPopup = function(specialistId, specialistName, specialt
         <div><strong>${specialistName}</strong></div>
         <div style="color: #666; font-size: 0.9em; margin: 5px 0;">${specialty}</div>
         <div style="color: #4CAF50; font-weight: bold; font-size: 0.9em;">
-            +25,000 تومان هزینه تأیید متخصص
+            +${new Intl.NumberFormat('fa-IR').format(consultationPrice)} تومان هزینه تأیید متخصص
         </div>
     `;
     specialistInfo.style.display = 'block';
@@ -1128,6 +1130,5 @@ window.selectSpecialistInPopup = function(specialistId, specialistName, specialt
     const confirmBtn = document.querySelector('.popup-confirm-btn');
     confirmBtn.disabled = false;
     
-    // لاگ برای دیباگ
     console.log('Specialist selected:', state.formData.serviceSelection.selectedSpecialist);
 };
