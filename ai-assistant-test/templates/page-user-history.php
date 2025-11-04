@@ -39,6 +39,9 @@ foreach ($user_consultations as $consultation) {
 }
 
 
+
+
+
 // محاسبه تعداد کل آیتم‌ها برای صفحه‌بندی
 global $wpdb;
 $total_items = $wpdb->get_var(
@@ -96,39 +99,43 @@ $total_items = $wpdb->get_var(
                                 <td>
                                     <?php echo esc_html(date_i18n('j F Y - H:i', strtotime($item->created_at))); ?>
                                 </td>
-                                <td>
-                                    <?php 
-                                    $history_id = $item->ID;
-                                    if (isset($consultation_statuses[$history_id])) {
-                                        $consultation = $consultation_statuses[$history_id];
-                                        $status_badges = [
-                                            'pending' => 'ai-status-pending',
-                                            'under_review' => 'ai-status-review', 
-                                            'approved' => 'ai-status-approved',
-                                            'rejected' => 'ai-status-rejected'
-                                        ];
-                                        $status_texts = [
-                                            'pending' => 'در انتظار بازبینی',
-                                            'under_review' => 'در حال بازبینی',
-                                            'approved' => 'تایید شده',
-                                            'rejected' => 'نیاز به اصلاح'
-                                        ];
-                                        $badge_class = $status_badges[$consultation->status] ?? 'ai-status-pending';
-                                        $status_text = $status_texts[$consultation->status] ?? 'در انتظار بازبینی';
-                                    ?>
-                                        <span class="ai-status-badge <?php echo $badge_class; ?>">
-                                            <?php echo $status_text; ?>
-                                        </span>
-                                        <?php if ($consultation->status === 'approved') : ?>
-                                            <br>
-                                            <small class="ai-consultation-date">
-                                                <?php echo esc_html(date_i18n('j F Y', strtotime($consultation->reviewed_at))); ?>
-                                            </small>
-                                        <?php endif; ?>
-                                    <?php } else { ?>
-                                        <span class="ai-status-badge ai-status-completed">تکمیل شده</span>
-                                    <?php } ?>
-                                </td>
+<td>
+    <?php 
+    $history_status = $item->status;
+    $status_badges = [
+        'queued' => 'ai-status-pending',
+        'processing' => 'ai-status-processing',
+        'completed' => 'ai-status-completed',
+        'consultant_queue' => 'ai-status-pending',
+        'under_review' => 'ai-status-review',
+        'draft' => 'ai-status-draft',
+        'approved' => 'ai-status-approved',
+        'error' => 'ai-status-error'
+    ];
+    $status_texts = [
+        'queued' => 'در صف انتظار',
+        'processing' => 'در حال پردازش',
+        'completed' => 'تکمیل شده',
+        'consultant_queue' => 'در انتظار مشاور',
+        'under_review' => 'در حال بازبینی',
+        'draft' => 'پیش‌نویس',
+        'approved' => 'تایید شده',
+        'error' => 'خطا در پردازش'
+    ];
+    $badge_class = $status_badges[$history_status] ?? 'ai-status-pending';
+    $status_text = $status_texts[$history_status] ?? 'در صف انتظار';
+    ?>
+    <span class="ai-status-badge <?php echo $badge_class; ?>">
+        <?php echo $status_text; ?>
+    </span>
+    
+    <?php if ($history_status === 'approved' && isset($consultation->reviewed_at)) : ?>
+        <br>
+        <small class="ai-consultation-date">
+            <?php echo esc_html(date_i18n('j F Y', strtotime($consultation->reviewed_at))); ?>
+        </small>
+    <?php endif; ?>
+</td>
                                 <td >
                                     <div class="ai-history-actions">
                                         <a href="<?php echo esc_url($output_url); ?>" class="ai-view-button" target="_blank" title="مشاهده نتیجه">

@@ -54,7 +54,7 @@ class AI_Assistant_History_Manager {
                     service_name varchar(255) NOT NULL,
                     response longtext NOT NULL,
                     user_data longtext NULL,
-                    status ENUM('pending','processing','done','error','consultant_pending','under_review','approved') DEFAULT 'pending',
+                    status ENUM('queued','processing','completed','consultant_queue','under_review','draft','approved','error') DEFAULT 'queued',
                     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     updated_at datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
                     PRIMARY KEY (id),
@@ -111,9 +111,10 @@ public function save_history($user_id, $service_id, $service_name, $user_data, $
                 'service_id' => $service_id,
                 'service_name' => $service_name,
                 'user_data' => $user_data,
-                'response' => wp_kses($response, $this->get_allowed_html_tags())
+                'response' => wp_kses($response, $this->get_allowed_html_tags()),
+                'status'      => 'queued'    
             ],
-            ['%d', '%s', '%s', '%s', '%s']
+            ['%d', '%s', '%s', '%s', '%s', '%s']
         );
         
         if ($result === false) {
@@ -162,7 +163,8 @@ public function save_history($user_id, $service_id, $service_name, $user_data, $
                 'service_name' => 'سرویس: ' . $item->service_name,
                 'response' => $item->response,
                 'created_at' => $item->created_at,
-                'service_id' => $item->service_id
+                'service_id' => $item->service_id ,
+                'status' => $item->status
             ];
         }, $items);
     }
@@ -294,7 +296,63 @@ public function save_history($user_id, $service_id, $service_name, $user_data, $
         );
         
         return $result !== false;
-    }    
+    }
+    
+    
+    public function update_history($history_id, $status, $response = null) {
+        global $wpdb;
+    
+        // بررسی وضعیت معتبر
+        $valid_statuses = ['queued','processing','completed','consultant_queue','under_review','draft','approved','error'];
+        if (!in_array($status, $valid_statuses, true)) {
+            error_log("❌ [HISTORY] Invalid status value: {$status}");
+            return false;
+        }
+    
+        // بررسی وجود رکورد
+        $history = $wpdb->get_row(
+            $wpdb->prepare("SELECT id FROM {$this->table_name} WHERE id = %d", $history_id)
+        );
+        if (!$history) {
+            error_log("❌ [HISTORY] No history found with ID: {$history_id}");
+            return false;
+        }
+    
+        try {
+            $wpdb->query("SET time_zone = '+03:30';");
+    
+            $data = ['status' => $status];
+            $format = ['%s'];
+    
+            // اگر response ارسال شده، آن را هم آپدیت کن
+            if (!is_null($response)) {
+                $data['response'] = wp_kses($response, $this->get_allowed_html_tags());
+                $format[] = '%s';
+            }
+    
+            $result = $wpdb->update(
+                $this->table_name,
+                $data,
+                ['id' => $history_id],
+                $format,
+                ['%d']
+            );
+    
+            if ($result === false) {
+                error_log('❌ [HISTORY] Update failed: ' . $wpdb->last_error);
+                return false;
+            }
+    
+            error_log("✅ [HISTORY] Updated history ID {$history_id} → status={$status}");
+            return true;
+    
+        } catch (Exception $e) {
+            error_log('❌ [HISTORY] Exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    
 }
 
 // راه‌اندازی کلاس

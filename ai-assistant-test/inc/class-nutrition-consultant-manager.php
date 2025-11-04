@@ -154,7 +154,23 @@ class AI_Assistant_Nutrition_Consultant_Manager {
                 
                 $commission = $this->consultation_db->calculate_commission($request_id);
                 $this->notification_manager->send_consultation_result($request->user_id, $request_id);
+                
+                // Updateing history status for user
+                error_log('📝 [WORKER] Updateing history to processing for job' );
+                $update_result = $this->history_manager->update_history(
+                    $request->service_history_id,
+                    'approved'
+                );
  
+            }elseif ($action === 'save_draft') {
+            
+                // Updateing history status for user
+                error_log('📝 [WORKER] Updateing history to processing for job' );
+                $update_result = $this->history_manager->update_history(
+                    $request->service_history_id,
+                    'under_review'
+                );
+                
             }
             
             wp_send_json_success('تغییرات با موفقیت ذخیره شد.');

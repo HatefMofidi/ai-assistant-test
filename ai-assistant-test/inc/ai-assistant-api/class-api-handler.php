@@ -115,148 +115,7 @@ class AI_Assistant_Api_Handler {
             $service_id = sanitize_text_field($_POST['service_id']);
             $userData = stripslashes($_POST['userData']);
             
-            // $decodedData = json_decode($userData, true); // true برای تبدیل به آرایه
-            
-            
-            // استخراج داده‌ها
-            // $userInfo = $decodedData['userInfo'] ?? [];
-            // $serviceSelection = $decodedData['serviceSelection'] ?? []; 
-            // $discountInfo = $decodedData['discountInfo'] ?? [];
-           
-            // 🔥 تغییرات جدید: اعمال تخفیف از داده‌های کلاینت
-            // $final_price_data = [];
-            
-            // // بررسی وجود کلاس Discount Manager
-            // if (!class_exists('AI_Assistant_Discount_Manager')) {
-            //     require_once get_template_directory() . '/functions/discount-core-functions.php';
-            // }
-            
-            // اعمال تخفیف بر اساس داده‌های دریافتی از کلاینت
-            // $final_price_data = AI_Assistant_Discount_Manager::apply_discount_from_client(
-            //     $service_id, 
-            //     $user_id, 
-            //     $discountInfo
-            // );
-            
-            // if (!$final_price_data) {
-            //     throw new Exception('خطا در محاسبه قیمت نهایی');
-            // }
-            
-            // error_log("💰 قیمت نهایی محاسبه شده: " . $final_price_data['final_price']);
-            // error_log("💰 منبع تخفیف: " . ($final_price_data['discount_source'] ?? 'auto'));
-            
-            // // ذخیره اطلاعات تخفیف در متادیتای کاربر یا سشن
-            // if ($final_price_data['has_discount'] && isset($final_price_data['discount'])) {
-            //     $discount_data = [
-            //         'discount_id' => $final_price_data['discount']->id,
-            //         'discount_name' => $final_price_data['discount']->name,
-            //         'discount_amount' => $final_price_data['discount_amount'],
-            //         'final_price' => $final_price_data['final_price'],
-            //         'original_price' => $final_price_data['original_price'],
-            //         'applied_at' => current_time('mysql')
-            //     ];
-                
-            //     // ذخیره در متادیتای کاربر برای این سرویس
-            //     update_user_meta($user_id, "last_discount_applied_{$service_id}", $discount_data);
-                
-            //     error_log("✅ اطلاعات تخفیف در متادیتای کاربر ذخیره شد");
-            // }           
-            
-            // if ($service_id === 'diet' ){
-                
-            //         $serviceSelectionDietType = $serviceSelection['dietType'] ?? null;
-                    
-            //         if ( $serviceSelectionDietType === 'with-specialist'   ){
-
-            //             // استخراج داده‌های selectedSpecialist (اگر وجود دارد)
-            //             $selectedSpecialistId = null;
-            //             $selectedSpecialistName = null;
-            //             $selectedSpecialistSpecialty = null;
-                        
-            //             if (isset($serviceSelection['selectedSpecialist']) && is_array($serviceSelection['selectedSpecialist'])) {
-            //                 $selectedSpecialistId = $serviceSelection['selectedSpecialist']['id'] ?? null;
-            //                 $selectedSpecialistName = $serviceSelection['selectedSpecialist']['name'] ?? null;
-            //                 $selectedSpecialistSpecialty = $serviceSelection['selectedSpecialist']['specialty'] ?? null;
-            //             } 
-                    
-            //         }                    
-
-            // }
-            
-        
-            // $all_services = get_option('ai_assistant_services', []);
-            // $service_name = $all_services[$service_id]['name'];
-            // $service_manager = AI_Assistant_Service_Manager::get_instance();
-            // $original_price = $service_manager->get_service_price($service_id);
-            
-            // $service_info = $service_manager->get_service($service_id);
-            // if ($service_info && isset($service_info['system_prompt'])) {
-            //     $system_prompt = $service_info['system_prompt'];
-            // } else {
-            //     error_log('Service not found or system_prompt not set');
-            // }
-            
-          //  $prompt = $system_prompt . "\n\n" . $userInfo;
-            // $prompt = $system_prompt . "\n\n" . json_encode($userInfo, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-
-            
-            // // ثبت لاگ
-            // $this->logger->log('$prompt LOG:::::::::::::::::::::::::::::$prompt LOG:', [
-            //     '$prompt:' => $prompt
-            // ]);            
-            
-            
-            // $payment_handler = AI_Assistant_Payment_Handler::get_instance();
-            
-            
-            //// DISCOUNT
-                        
-            // try {
-            //     $discountInfo_discount_code = $discountInfo['discountCode'] ?? null;
-            //     $discountInfo_discountApplied = $discountInfo['discountApplied'] ?? null;
-                
-            //     // اگر کد تخفیف وارد شده بود اما معتبر نبود
-            //     if ($discountInfo_discount_code && !empty($discountInfo_discount_code && $discountInfo_discountApplied)) {
-            //         // اعتبارسنجی کد تخفیف
-            //         $validation_result = AI_Assistant_Discount_Manager::validate_discount(
-            //             $discountInfo_discount_code, 
-            //             $service_id, 
-            //             $user_id
-            //         );
-                    
-            //         if ($validation_result['valid']) {
-            //             // محاسبه قیمت با تخفیف
-            //             $discounted_price = AI_Assistant_Discount_Manager::calculate_discounted_price(
-            //                 $original_price, 
-            //                 $validation_result['discount']
-            //             );
-                        
-            //             // استفاده از قیمت با تخفیف
-            //             $final_price = $discounted_price;
-            //             $discount_applied = true;
-                        
-            //         } else {
-            //             throw new Exception("کد تخفیف نامعتبر: " . $validation_result['message']);
-                        
-            //         }
-            //     } else {
-            //         // اگر کد تخفیف وارد نشده بود
-            //         $final_price = $original_price;
-            //         $discount_applied = false;
-            //     }
-                
-            //     // ادامه پردازش با $final_price
-                
-            // } catch (Exception $e) {
-            //     // مدیریت خطا
-            //     error_log('Discount Error: ' . $e->getMessage());
-                
-                
-            // }
-            
-            
-             
-           
+ 
             //           // ثبت لاگ
             // $this->logger->log('DISCOUNT LOG::::::::::::DISCOUNT LOG:', [
             //     'original_price:' => $original_price,
@@ -269,12 +128,28 @@ class AI_Assistant_Api_Handler {
             $prompt = '';
             $final_price = 0;
             
+            $all_services = get_option('ai_assistant_services', []);
+            $service_name = $all_services[$service_id]['name'];            
+            
+            // Save history
+
+            $history_manager = AI_Assistant_History_Manager::get_instance();
+            $history_id = $history_manager->save_history(
+                $user_id,
+                $service_id,
+                $service_name,
+                $userData,
+                null
+            );
+            
+            if ($history_id === false || empty($history_id)) {
+                throw new Exception('Failed to save history');
+            }  
+            
+            error_log('📝 [WORKER] Saved history for history_id #' . $history_id);            
+            
             $queue = AI_Job_Queue::get_instance();
-            $queue->enqueue_job($user_id, $service_id, $prompt, $final_price, $userData);
-
-
-            // $queue = AI_Job_Queue_Sequential::get_instance();
-            // $queue->enqueue_job($user_id, $service_id, $prompt, $final_price, $userData);
+            $queue->enqueue_job($history_id , $user_id);
 
 
             header('Content-Type: application/json; charset=utf-8');

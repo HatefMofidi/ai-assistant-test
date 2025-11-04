@@ -4,6 +4,17 @@
  * /home/aidastya/public_html/test/wp-content/themes/ai-assistant-test/templates/single-ai_service_history.php
  */
 
+// غیرفعال کردن کش قبل از هر خروجی
+if (!defined('DONOTCACHEPAGE')) {
+    define('DONOTCACHEPAGE', true);
+}
+
+// غیرفعال کردن کش برای این صفحه
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+
 get_header('service');
 
 // دریافت ID از URL
@@ -81,6 +92,8 @@ if ($has_consultation_request) {
     $current_status = $consultation_request->status;
     $is_approved = ($current_status === 'approved');
     
+
+    
     if ($is_approved && !empty($consultation_request->final_diet_data)) {
         $final_diet_data = $consultation_request->final_diet_data;
     }
@@ -146,7 +159,6 @@ if ($response_data && is_string($response_data)) {
                 ?>
             </p>
             <p style="color: #856404; margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-                رژیم غذایی نهایی پس از تایید مشاور در اینجا نمایش داده خواهد شد.
             </p>
         </div>
         <?php endif; ?>
@@ -274,26 +286,43 @@ echo '<div class="ai-service-output-container" style="max-width: 800px; margin: 
 echo '<h1 style="color: #333; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">' . esc_html($item->service_name) . '</h1>';
 
 // نمایش وضعیت درخواست مشاوره اگر وجود دارد
-if ($has_consultation_request && !$is_approved) {
-    $status_text = $status_texts[$current_status] ?? 'در انتظار بازبینی';
+// if ($has_consultation_request && !$is_approved) {
+//     $status_text = $status_texts[$current_status] ?? 'در انتظار بازبینی';
 
 
-//$current_status = 'approved'; // وضعیت فعلی
-render_consultation_timeline_inline($current_status);
+$current_status = $item->status; // وضعیت فعلی
+render_consultation_timeline_inline($current_status ,$has_consultation_request );
 
 
 
-}
-                     
+// }
+function render_consultation_timeline_inline($current_status, $has_consultation_request = true) {
 
-function render_consultation_timeline_inline($current_status) {
-
-    $steps = [
+    // مراحل برای درخواست‌های با مشاوره
+    $steps_with_consultation = [
         [
-            'key' => 'pending',
-            'title' => 'ثبت درخواست',
-            'desc'  => 'درخواست شما با موفقیت ثبت شد',
-            'icon'  => 'fas fa-file-alt',
+            'key' => 'queued',
+            'title' => 'در صف انتظار',
+            'desc'  => 'درخواست شما در صف انتظار پردازش قرار دارد',
+            'icon'  => 'fas fa-clock',
+        ],
+        [
+            'key' => 'processing',
+            'title' => 'در حال پردازش',
+            'desc'  => 'درخواست شما در حال پردازش است',
+            'icon'  => 'fas fa-cogs',
+        ],
+        [
+            'key' => 'completed',
+            'title' => 'پردازش موفق',
+            'desc'  => 'پردازش با موفقیت انجام شد',
+            'icon'  => 'fas fa-check-circle',
+        ],
+        [
+            'key' => 'consultant_queue',
+            'title' => 'در صف مشاور',
+            'desc'  => 'درخواست شما در کارتابل مشاور قرار گرفته است',
+            'icon'  => 'fas fa-user-clock',
         ],
         [
             'key' => 'under_review',
@@ -302,14 +331,76 @@ function render_consultation_timeline_inline($current_status) {
             'icon'  => 'fas fa-search',
         ],
         [
+            'key' => 'draft',
+            'title' => 'پیش‌نویس مشاور',
+            'desc'  => 'مشاور در حال تهیه پیش‌نویس رژیم غذایی است',
+            'icon'  => 'fas fa-edit',
+        ],
+        [
             'key' => 'approved',
-            'title' => 'تایید شده',
-            'desc'  => 'پس از تایید، رژیم غذایی نمایش داده می‌شود',
-            'icon'  => 'fas fa-check-circle',
+            'title' => 'تایید نهایی',
+            'desc'  => 'رژیم غذایی با موفقیت تایید و آماده ارائه است',
+            'icon'  => 'fas fa-check-double',
+        ],
+        [
+            'key' => 'error',
+            'title' => 'خطا در پردازش',
+            'desc'  => 'خطایی در پردازش رخ داده است',
+            'icon'  => 'fas fa-exclamation-triangle',
         ],
     ];
 
-    $status_order = ['pending', 'under_review', 'approved'];
+    // مراحل برای درخواست‌های بدون مشاوره
+    $steps_without_consultation = [
+        [
+            'key' => 'queued',
+            'title' => 'در صف انتظار',
+            'desc'  => 'درخواست شما در صف انتظار پردازش قرار دارد',
+            'icon'  => 'fas fa-clock',
+        ],
+        [
+            'key' => 'processing',
+            'title' => 'در حال پردازش',
+            'desc'  => 'درخواست شما در حال پردازش است',
+            'icon'  => 'fas fa-cogs',
+        ],
+        [
+            'key' => 'completed',
+            'title' => 'پردازش موفق',
+            'desc'  => 'پردازش با موفقیت انجام شد',
+            'icon'  => 'fas fa-check-circle',
+        ],
+        [
+            'key' => 'error',
+            'title' => 'خطا در پردازش',
+            'desc'  => 'خطایی در پردازش رخ داده است',
+            'icon'  => 'fas fa-exclamation-triangle',
+        ],
+    ];
+
+    // انتخاب مراحل بر اساس نوع درخواست
+    $steps = $has_consultation_request ? $steps_with_consultation : $steps_without_consultation;
+
+    // ترتیب مراحل برای نمایش در تایم‌لاین
+    if ($has_consultation_request) {
+        $status_order = [
+            'queued', 
+            'processing', 
+            'completed', 
+            'consultant_queue', 
+            'under_review', 
+            'draft', 
+            'approved'
+        ];
+    } else {
+        $status_order = [
+            'queued', 
+            'processing', 
+            'completed'
+        ];
+    }
+    
+    // پیدا کردن ایندکس وضعیت جاری
     $current_index = array_search($current_status, $status_order);
     if ($current_index === false) $current_index = 0;
 
@@ -323,15 +414,26 @@ function render_consultation_timeline_inline($current_status) {
     echo '<div style="position:relative; padding:10px 0;">';
 
     foreach ($steps as $i => $step) {
+        // تعیین وضعیت هر مرحله
         $is_done = $i < $current_index;
         $is_current = $i === $current_index;
         $is_next = $i > $current_index;
+        
+        // برای وضعیت error، فقط زمانی که وضعیت جاری error باشد، قرمز نمایش داده می‌شود
+        $is_error_state = ($step['key'] === 'error') && ($current_status === 'error');
 
         // رنگ‌ها
-        $color = $is_done ? '#28a745' : ($is_current ? '#17a2b8' : '#bdc3c7');
-        $badge_bg = $is_done ? '#d4edda' : ($is_current ? '#d1ecf1' : '#f8f9fa');
-        $badge_color = $is_done ? '#155724' : ($is_current ? '#0c5460' : '#6c757d');
-        $badge_text = $is_done ? 'تکمیل شده' : ($is_current ? 'در حال انجام' : 'در انتظار');
+        if ($is_error_state) {
+            $color = '#dc3545';
+            $badge_bg = '#f8d7da';
+            $badge_color = '#721c24';
+            $badge_text = 'خطا';
+        } else {
+            $color = $is_done ? '#28a745' : ($is_current ? '#17a2b8' : '#bdc3c7');
+            $badge_bg = $is_done ? '#d4edda' : ($is_current ? '#d1ecf1' : '#f8f9fa');
+            $badge_color = $is_done ? '#155724' : ($is_current ? '#0c5460' : '#6c757d');
+            $badge_text = $is_done ? 'تکمیل شده' : ($is_current ? 'در حال انجام' : 'در انتظار');
+        }
 
         echo '<div style="display:flex; align-items:center; margin-bottom:20px; position:relative;">';
         if ($i < count($steps) - 1) {
@@ -343,7 +445,7 @@ function render_consultation_timeline_inline($current_status) {
         echo '</div>';
 
         $border_color = $color;
-        $bg_content = $is_done || $is_current ? '#e8f5e9' : '#f8f9fa';
+        $bg_content = $is_error_state ? '#f8d7da' : (($is_done || $is_current) ? '#e8f5e9' : '#f8f9fa');
         $opacity = $is_next ? '0.6' : '1';
         echo '<div style="flex:1; padding:10px 12px; border-radius:8px; background-color:'.$bg_content.'; border-right:3px solid '.$border_color.'; box-shadow:0 2px 6px rgba(0,0,0,0.05); opacity:'.$opacity.';">';
         echo '<div style="font-weight:600; margin-bottom:3px; font-size:14px; display:flex; justify-content:space-between; align-items:center;">';
