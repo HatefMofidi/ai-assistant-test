@@ -120,7 +120,12 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         self.renderConsultantsTable(response.data);
+                                        // آپدیت عدد تب مشاوران از داده‌های pagination
+                        $('#consultants-tab-count').text(response.data.pagination.total_items);
+                       
+                        
                     } else {
+                        
                         self.showMessage('خطا در بارگذاری مشاوران: ' + response.data, 'error');
                     }
                 },
@@ -301,7 +306,11 @@ jQuery(document).ready(function($) {
                     if (response.success) {
                         self.renderPayoutsTable(response.data);
                         self.updateSummary(response.data.summary);
+                                        // آپدیت عدد تب تسویه‌ها از داده‌های pagination
+                         $('#payouts-tab-count').text(response.data.pagination.total_items);
+                        
                     } else {
+                        
                         self.showMessage('خطا در بارگذاری داده‌ها: ' + response.data, 'error');
                     }
                 },
@@ -438,31 +447,31 @@ jQuery(document).ready(function($) {
                 $('#last-payout').text('---');
             }
         },
-
-applyFilters: function() {
-    // جمع‌آوری فیلترها
-    this.currentFilters = {
-        search: $('#filter-search').val(),
-        status: $('#filter-status').val(),
-        date_from: $('#filter-date-from').val(),
-        date_to: $('#filter-date-to').val(),
-        min_amount: $('#filter-min-amount').val(),
-        max_amount: $('#filter-max-amount').val()
-    };
-    
-    this.currentPage = 1;
-
-    // پیدا کردن تب فعال
-    const $activeTab = $('.payout-tab-button.active');
-    const activeTabId = $activeTab.data('tab');
-
-    // بر اساس تب فعال، داده‌ها را لود کن
-    if (activeTabId === 'payouts-tab') {
-        this.loadPayouts(this.currentFilters);
-    } else if (activeTabId === 'consultants-tab') {
-        this.loadConsultantsWithPendingCommissions(this.currentFilters);
-    }
-},
+        
+        applyFilters: function() {
+            // جمع‌آوری فیلترها
+            this.currentFilters = {
+                search: $('#filter-search').val(),
+                status: $('#filter-status').val(),
+                date_from: $('#filter-date-from').val(),
+                date_to: $('#filter-date-to').val(),
+                min_amount: $('#filter-min-amount').val(),
+                max_amount: $('#filter-max-amount').val()
+            };
+            
+            this.currentPage = 1;
+        
+            // پیدا کردن تب فعال
+            const $activeTab = $('.payout-tab-button.active');
+            const activeTabId = $activeTab.data('tab');
+        
+            // بر اساس تب فعال، داده‌ها را لود کن
+            if (activeTabId === 'payouts-tab') {
+                this.loadPayouts(this.currentFilters);
+            } else if (activeTabId === 'consultants-tab') {
+                this.loadConsultantsWithPendingCommissions(this.currentFilters);
+            }
+        },
 
 
         resetFilters: function() {
@@ -714,48 +723,48 @@ applyFilters: function() {
         },
        
 
-showCreatePayoutModal: function() {
-    const $modal = $('#create-payout-modal');
-    const $modalBody = $modal.find('.modal-body');
-
-    // نمایش مودال
-    $modal.fadeIn(300);
-
-    // حالت تاریخ‌ها
-    const today = new Date().toISOString().split('T')[0];
-    const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 2)
-        .toISOString().split('T')[0];
-    $('#period-start').val(firstDayOfMonth);
-    $('#period-end').val(today);
-
-    // اضافه کردن overlay برای قفل کردن محتوا
-    $modalBody.append(`
-        <div class="loading-overlay" style="
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.8);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        ">
-            در حال بارگذاری مشاوران...
-        </div>
-    `);
-
-    // بازگرداندن Promise از loadConsultants
-    return this.loadConsultants()
-        .then(() => {
-            // برداشتن overlay وقتی لود تمام شد
-            $modalBody.find('.loading-overlay').remove();
-        })
-        .catch((err) => {
-            $modalBody.find('.loading-overlay').remove();
-            console.error('loadConsultants error:', err);
-            this.showMessage('امکان بارگذاری لیست مشاوران وجود ندارد', 'error');
-        });
-},
+        showCreatePayoutModal: function() {
+            const $modal = $('#create-payout-modal');
+            const $modalBody = $modal.find('.modal-body');
+        
+            // نمایش مودال
+            $modal.fadeIn(300);
+        
+            // حالت تاریخ‌ها
+            const today = new Date().toISOString().split('T')[0];
+            const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+                .toISOString().split('T')[0];
+            $('#period-start').val(firstDayOfMonth);
+            $('#period-end').val(today);
+        
+            // اضافه کردن overlay برای قفل کردن محتوا
+            $modalBody.append(`
+                <div class="loading-overlay" style="
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(255,255,255,0.8);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                ">
+                    در حال بارگذاری مشاوران...
+                </div>
+            `);
+        
+            // بازگرداندن Promise از loadConsultants
+            return this.loadConsultants()
+                .then(() => {
+                    // برداشتن overlay وقتی لود تمام شد
+                    $modalBody.find('.loading-overlay').remove();
+                })
+                .catch((err) => {
+                    $modalBody.find('.loading-overlay').remove();
+                    console.error('loadConsultants error:', err);
+                    this.showMessage('امکان بارگذاری لیست مشاوران وجود ندارد', 'error');
+                });
+        },
 
         
         
@@ -876,14 +885,14 @@ showCreatePayoutModal: function() {
             });
         },
 
-    calculateTotalAmount: function() {
-        let total = 0;
-        $('input[name="commission_ids[]"]:checked').each(function() {
-            total += parseFloat($(this).data('amount')) || 0;
-        });
-        $('#payout-amount').val(total);
-        $('.total-amount strong').text(`مجموع مبلغ انتخاب‌شده: ${this.formatNumber(total)} تومان`);
-    },
+        calculateTotalAmount: function() {
+            let total = 0;
+            $('input[name="commission_ids[]"]:checked').each(function() {
+                total += parseFloat($(this).data('amount')) || 0;
+            });
+            $('#payout-amount').val(total);
+            $('.total-amount strong').text(`مجموع مبلغ انتخاب‌شده: ${this.formatNumber(total)} تومان`);
+        },
 
 
         createPayout: function(e) {
@@ -926,8 +935,16 @@ showCreatePayoutModal: function() {
                     if (response.success) {
                         self.showMessage('تسویه با موفقیت ایجاد شد', 'success');
                         self.closeModals();
-                        self.loadPayouts();
-                     //   this.loadConsultantsWithPendingCommissions();
+                // اجرای همزمان هر دو
+                Promise.all([
+                    self.loadPayouts(),
+                    self.loadConsultantsWithPendingCommissions()
+                ]).then(function(results) {
+                    console.log('همه داده‌ها با موفقیت بارگذاری شدند');
+                    console.log('نتایج:', results);
+                }).catch(function(error) {
+                    console.error('خطا در بارگذاری داده‌ها:', error);
+                });
                     } else {
                         self.showMessage('خطا در ایجاد تسویه: ' + response.data, 'error');
                     }
@@ -942,6 +959,7 @@ showCreatePayoutModal: function() {
                 }
             });
         },
+
 
         exportPayout: function(e) {
             const payoutId = $(e.currentTarget).data('payout-id');
@@ -986,6 +1004,8 @@ showCreatePayoutModal: function() {
 
         refreshData: function() {
             this.loadPayouts();
+            this.loadConsultantsWithPendingCommissions();
+
             this.showMessage('داده‌ها به روز شد', 'success');
         },
 
@@ -1010,7 +1030,7 @@ showCreatePayoutModal: function() {
                 messageEl.fadeOut(300, function() {
                     $(this).remove();
                 });
-            }, 5000);
+            }, 500);
         },
 
         formatNumber: function(number) {

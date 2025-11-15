@@ -180,12 +180,12 @@ wp_localize_script('admin-payout-manager', 'admin_payout_ajax', [
     <button class="payout-tab-button active" data-tab="payouts-tab">
         <i class="fas fa-receipt"></i>
         تسویه‌ها
-        <span class="tab-badge"><?php echo $payouts_count; ?></span>
+        <span class="tab-badge" id="payouts-tab-count"><?php echo $payouts_count; ?></span>
     </button>
     <button class="payout-tab-button" data-tab="consultants-tab">
         <i class="fas fa-user-tie"></i>
         مشاوران قابل پرداخت
-        <span class="tab-badge"><?php echo $consultants_count; ?></span>
+        <span class="tab-badge" id="ConsultantsWithPending-tab-count"><?php echo $consultants_count; ?></span>
     </button>
 </div>
 

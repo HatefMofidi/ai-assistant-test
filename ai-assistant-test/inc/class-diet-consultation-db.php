@@ -1038,7 +1038,6 @@ public function mark_payout_as_done($payout_id, $reference_code = '') {
     // شروع تراکنش
     $wpdb->query('START TRANSACTION');
     
-     error_log("Email sent for payout ID: " . $result);
     
     try {
         // آپدیت وضعیت تسویه
@@ -1154,6 +1153,32 @@ public function create_payout($data) {
         error_log('[Payout Manager] Error creating payout: ' . $e->getMessage());
         return false;
     }
+}
+
+
+/**
+ * حذف تسویه (فقط برای وضعیت pending)
+ */
+public function delete_payout($payout_id) {
+    if (!$this->ensure_tables_exist()) {
+        return false;
+    }
+
+    global $wpdb;
+    
+    // فقط تسویه‌های در انتظار قابل حذف هستند
+    $result = $wpdb->delete(
+        $this->payouts_table,
+        ['id' => $payout_id, 'status' => 'pending'],
+        ['%d', '%s']
+    );
+    
+    if ($result === false) {
+        error_log('[Payout Manager] Delete payout failed: ' . $wpdb->last_error);
+        return false;
+    }
+    
+    return $result !== false;
 }
 
 /**

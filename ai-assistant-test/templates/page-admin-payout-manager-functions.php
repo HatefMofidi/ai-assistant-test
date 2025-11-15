@@ -131,13 +131,13 @@ function admin_delete_payout_handler() {
     
     global $wpdb;
     $consultation_db = AI_Assistant_Diet_Consultation_DB::get_instance();
-    
-    // فقط تسویه‌های در انتظار قابل حذف هستند
-    $result = $wpdb->delete(
-        $consultation_db->payouts_table,
-        ['id' => $payout_id, 'status' => 'pending'],
-        ['%d', '%s']
-    );
+ $result= $consultation_db -> delete_payout($payout_id)  ; 
+    // // فقط تسویه‌های در انتظار قابل حذف هستند
+    // $result = $wpdb->delete(
+    //     $consultation_db->payouts_table,
+    //     ['id' => $payout_id, 'status' => 'pending'],
+    //     ['%d', '%s']
+    // );
     
     if ($result) {
         wp_send_json_success('تسویه با موفقیت حذف شد');
