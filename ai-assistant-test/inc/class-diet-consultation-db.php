@@ -125,6 +125,8 @@ class AI_Assistant_Diet_Consultation_DB {
             status enum('pending','done','failed') NOT NULL DEFAULT 'pending',
             paid_at datetime NULL,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            notes longtext NULL,
+            commission_ids TEXT NULL ,
             PRIMARY KEY (id),
             KEY consultant_id (consultant_id),
             KEY period_start (period_start),
@@ -272,6 +274,18 @@ class AI_Assistant_Diet_Consultation_DB {
             $wpdb->prepare("SELECT * FROM {$this->table_name} WHERE id = %d", $request_id)
         );
     }
+    
+    public function get_consultation_by_user_id($user_id) {
+        if (!$this->ensure_tables_exist()) {
+            return false;
+        }
+
+        global $wpdb;
+        
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM {$this->consultants_table} WHERE user_id = %d", $user_id)
+        );
+    }    
 
     public function get_user_consultation_requests($user_id) {
         if (!$this->ensure_tables_exist()) {
@@ -333,39 +347,37 @@ class AI_Assistant_Diet_Consultation_DB {
         );
     }
 
-    /**
-     * دریافت لیست مشاورین فعال
-     */
     public function get_active_consultants() {
         if (!$this->ensure_tables_exist()) {
-            return [];
+            return array();
         }
-    
-        global $wpdb;
         
+        global $wpdb;
         $consultants = $wpdb->get_results("
-            SELECT 
-                c.id,
-                c.name,
-                '' as specialty,
-                ct.commission_value as consultation_price
+            SELECT c.id, c.name, '' as specialty, 
+            ct.commission_value as consultation_price,
+            ct.commission_type
             FROM {$this->consultants_table} c
-            LEFT JOIN {$this->contracts_table} ct ON c.id = ct.consultant_id 
-                AND ct.active_from <= NOW() 
-                AND (ct.active_to IS NULL OR ct.active_to >= NOW())
+            LEFT JOIN {$this->contracts_table} ct 
+            ON c.id = ct.consultant_id
+            AND ct.active_from <= NOW()
+            AND (ct.active_to IS NULL OR ct.active_to >= NOW())
+            AND ct.commission_type = 'fixed'  -- فقط قراردادهای fixed
             WHERE c.status = 'active'
-            ORDER BY c.name ASC
+            ORDER BY ct.active_from DESC, c.name ASC
         ");
         
-        // اگر قیمت مشاور پیدا نشد، از قیمت پیش‌فرض استفاده کن
-        foreach ($consultants as &$consultant) {
-            if (!$consultant->consultation_price) {
-                $consultant->consultation_price = 25000; // قیمت پیش‌فرض
+        foreach ($consultants as $consultant) {
+            // اگه قرارداد نداشته باشه یا commission_value صفر باشه
+            if (!$consultant->consultation_price || $consultant->consultation_price <= 0) {
+                error_log("Consultant {$consultant->id} has no valid contract!");
+                $consultant->consultation_price = 150000; // یه قیمت پیش‌فرض معقول
             }
         }
         
         return $consultants;
     }
+
     
     /**
      * دریافت قیمت پایه سرویس رژیم غذایی
@@ -619,16 +631,19 @@ class AI_Assistant_Diet_Consultation_DB {
         
         if (! $contract) return false;
 
-        $delay_hours = $this->calculate_delay_hours($plan->created_at, $plan->reviewed_at);
-        $penalty_multiplier = $this->calculate_penalty($delay_hours, $contract->full_payment_hours, $contract->delay_penalty_factor);
+        $do_time = $this->calculate_delay_hours($plan->created_at, $plan->reviewed_at);
+        $delay_hours = ($do_time < $contract->full_payment_hours) ? 0 : ($do_time - $contract->full_payment_hours);
+        $penalty_multiplier = $this->calculate_penalty($delay_hours, $contract->delay_penalty_factor);
 
-        $base_commission = ($contract->commission_type === 'percent')
-            ? $plan->consultation_price * ($contract->commission_value / 100)
-            : $contract->commission_value;
+        // $base_commission = ($contract->commission_type === 'percent')
+        //     ? $plan->consultation_price * ($contract->commission_value / 100)
+        //     : $contract->commission_value;
+        
+        $base_commission = $contract->commission_value;
 
         $final_commission = $base_commission * $penalty_multiplier;
 
-        $wpdb->insert($this->commissions_table, [
+        $wpdb->insert($this->commissions_table, [ 
             'request_id' => $request_id,
             'consultant_id' => $plan->consultant_id,
             'base_amount' => $plan->consultation_price,
@@ -822,6 +837,481 @@ class AI_Assistant_Diet_Consultation_DB {
     }
     
     
+        
+
+// در کلاس AI_Assistant_Diet_Consultation_DB
+
+/**
+ * دریافت تمام تسویه‌ها با فیلتر
+ */
+public function get_all_payouts($filters = [], $page = 1, $per_page = 20) {
+    if (!$this->ensure_tables_exist()) {
+        return ['payouts' => [], 'pagination' => [], 'summary' => []];
+    }
+
+    global $wpdb;
+    
+    $where = [];
+    $params = [];
+    
+    // فیلتر وضعیت
+    if (!empty($filters['status'])) {
+        $where[] = "p.status = %s";
+        $params[] = $filters['status'];
+    }
+    
+    // فیلتر تاریخ
+    if (!empty($filters['date_from'])) {
+        $where[] = "p.period_start >= %s";
+        $params[] = $filters['date_from'];
+    }
+    
+    if (!empty($filters['date_to'])) {
+        $where[] = "p.period_end <= %s";
+        $params[] = $filters['date_to'];
+    }
+    
+    // فیلتر مبلغ
+    if (!empty($filters['min_amount'])) {
+        $where[] = "p.amount >= %d";
+        $params[] = $filters['min_amount'];
+    }
+    
+    if (!empty($filters['max_amount'])) {
+        $where[] = "p.amount <= %d";
+        $params[] = $filters['max_amount'];
+    }
+    
+    // فیلتر جستجو
+    if (!empty($filters['search'])) {
+        $where[] = "(c.name LIKE %s OR c.email LIKE %s OR p.id LIKE %s)";
+        $search_term = '%' . $wpdb->esc_like($filters['search']) . '%';
+        $params[] = $search_term;
+        $params[] = $search_term;
+        $params[] = $search_term;
+    }
+    
+    $where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+    
+    // شمارش کل
+    $count_query = "
+        SELECT COUNT(*) 
+        FROM {$this->payouts_table} p 
+        LEFT JOIN {$this->consultants_table} c ON p.consultant_id = c.id 
+        {$where_sql}
+    ";
+    
+    $total_items = $wpdb->get_var($wpdb->prepare($count_query, $params));
+    $total_pages = ceil($total_items / $per_page);
+    $offset = ($page - 1) * $per_page;
+    
+    // دریافت داده‌ها
+    $query = "
+        SELECT 
+            p.*,
+            c.name as consultant_name,
+            c.email as consultant_email,
+            (SELECT COUNT(*) FROM {$this->commissions_table} WHERE payout_id = p.id) as commissions_count
+        FROM {$this->payouts_table} p 
+        LEFT JOIN {$this->consultants_table} c ON p.consultant_id = c.id 
+        {$where_sql}
+        ORDER BY p.created_at DESC 
+        LIMIT %d OFFSET %d
+    ";
+    
+    $params[] = $per_page;
+    $params[] = $offset;
+    
+    $payouts = $wpdb->get_results($wpdb->prepare($query, $params));
+    
+    // محاسبه خلاصه
+    $summary = $this->get_payouts_summary();
+    
+    return [
+        'payouts' => $payouts,
+        'pagination' => [
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+            'total_items' => $total_items,
+            'per_page' => $per_page,
+            'start_item' => $offset + 1,
+            'end_item' => min($offset + $per_page, $total_items)
+        ],
+        'summary' => $summary
+    ];
+}
+
+/**
+ * دریافت خلاصه آمار
+ */
+public function get_payouts_summary() {
+    if (!$this->ensure_tables_exist()) {
+        return [];
+    }
+
+    global $wpdb;
+    
+    // مجموع کمیسیون‌های پرداخت نشده
+    $total_pending = $wpdb->get_var("
+        SELECT SUM(final_commission) 
+        FROM {$this->commissions_table} 
+        WHERE status = 'pending'
+    ") ?: 0;
+    
+    // مجموع پرداخت‌های ماه جاری
+    $current_month = date('Y-m-01');
+    $total_paid_month = $wpdb->get_var($wpdb->prepare("
+        SELECT SUM(amount) 
+        FROM {$this->payouts_table} 
+        WHERE status = 'done' AND paid_at >= %s
+    ", $current_month)) ?: 0;
+    
+    // تعداد مشاوران با موجودی
+    $consultants_with_balance = $wpdb->get_var("
+        SELECT COUNT(DISTINCT consultant_id) 
+        FROM {$this->commissions_table} 
+        WHERE status = 'pending' AND final_commission > 0
+    ") ?: 0;
+    
+    // آخرین تسویه
+    $last_payout = $wpdb->get_row("
+        SELECT p.*, c.name as consultant_name 
+        FROM {$this->payouts_table} p 
+        LEFT JOIN {$this->consultants_table} c ON p.consultant_id = c.id 
+        WHERE p.status = 'done' 
+        ORDER BY p.paid_at DESC 
+        LIMIT 1
+    ");
+    
+    return [
+        'total_pending' => $total_pending,
+        'total_paid_month' => $total_paid_month,
+        'consultants_with_balance' => $consultants_with_balance,
+        'last_payout' => $last_payout
+    ];
+}
+
+/**
+ * دریافت جزئیات یک تسویه
+ */
+public function get_payout_details($payout_id) {
+    if (!$this->ensure_tables_exist()) {
+        return false;
+    }
+
+    global $wpdb;
+    
+    $payout = $wpdb->get_row($wpdb->prepare("
+        SELECT p.*, c.name as consultant_name, c.email as consultant_email 
+        FROM {$this->payouts_table} p 
+        LEFT JOIN {$this->consultants_table} c ON p.consultant_id = c.id 
+        WHERE p.id = %d
+    ", $payout_id));
+    
+    if (!$payout) {
+        return false;
+    }
+    
+    $commissions = $wpdb->get_results($wpdb->prepare("
+        SELECT * 
+        FROM {$this->commissions_table} 
+        WHERE payout_id = %d 
+        ORDER BY created_at DESC
+    ", $payout_id));
+    
+    return [
+        'payout' => $payout,
+        'commissions' => $commissions
+    ];
+}
+
+/**
+ * علامت‌گذاری تسویه به عنوان انجام شده
+ */
+public function mark_payout_as_done($payout_id, $reference_code = '') {
+    if (!$this->ensure_tables_exist()) {
+        return false;
+    }
+
+    global $wpdb;
+    
+    // شروع تراکنش
+    $wpdb->query('START TRANSACTION');
+    
+     error_log("Email sent for payout ID: " . $result);
+    
+    try {
+        // آپدیت وضعیت تسویه
+        $payout_result = $wpdb->update(
+            $this->payouts_table,
+            [
+                'status' => 'done',
+                'reference_code' => $reference_code,
+                'paid_at' => current_time('mysql')
+            ],
+            ['id' => $payout_id],
+            ['%s', '%s', '%s'],
+            ['%d']
+        );
+        
+        if ($payout_result === false) {
+            throw new Exception('خطا در آپدیت تسویه');
+        }
+        
+        // آپدیت وضعیت کمیسیون‌های مرتبط
+        $commissions_result = $wpdb->update(
+            $this->commissions_table,
+            ['status' => 'paid'],
+            ['payout_id' => $payout_id],
+            ['%s'],
+            ['%d']
+        );
+        
+        if ($commissions_result === false) {
+            throw new Exception('خطا در آپدیت کمیسیون‌ها');
+        }
+        
+        // کامیت تراکنش
+        $wpdb->query('COMMIT');
+        return true;
+        
+    } catch (Exception $e) {
+        // رولبک در صورت خطا
+        $wpdb->query('ROLLBACK');
+        error_log('[Payout Manager] Error marking payout as done: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * ایجاد تسویه جدید
+ */
+public function create_payout($data) {
+    if (!$this->ensure_tables_exist()) {
+        return false;
+    }
+
+    global $wpdb;
+    
+    $defaults = [
+        'consultant_id' => 0,
+        'amount' => 0,
+        'period_start' => '',
+        'period_end' => '',
+        'payment_method' => 'manual',
+        'reference_code' => '',
+        'status' => 'pending'
+    ];
+    
+    $data = wp_parse_args($data, $defaults);
+    
+    if (!$data['consultant_id'] || !$data['amount'] || !$data['period_start'] || !$data['period_end']) {
+        return false;
+    }
+    
+    // شروع تراکنش
+    $wpdb->query('START TRANSACTION');
+    
+    try {
+        // ایجاد رکورد تسویه
+        $payout_result = $wpdb->insert(
+            $this->payouts_table,
+            $data,
+            ['%d', '%f', '%s', '%s', '%s', '%s', '%s']
+        );
+        
+        if (!$payout_result) {
+            throw new Exception('خطا در ایجاد تسویه');
+        }
+        
+        $payout_id = $wpdb->insert_id;
+        
+        // آپدیت کمیسیون‌های انتخاب شده
+        if (!empty($data['commission_ids'])) {
+            $commission_ids = array_map('intval', $data['commission_ids']);
+            $placeholders = implode(',', array_fill(0, count($commission_ids), '%d'));
+            
+            $update_query = $wpdb->prepare("
+                UPDATE {$this->commissions_table} 
+                SET payout_id = %d, status = 'paid' 
+                WHERE id IN ($placeholders) AND consultant_id = %d AND status = 'pending'
+            ", array_merge([$payout_id], $commission_ids, [$data['consultant_id']]));
+            
+            $update_result = $wpdb->query($update_query);
+            
+            if ($update_result === false) {
+                throw new Exception('خطا در آپدیت کمیسیون‌ها');
+            }
+        }
+        
+        // کامیت تراکنش
+        $wpdb->query('COMMIT');
+        return $payout_id;
+        
+    } catch (Exception $e) {
+        // رولبک در صورت خطا
+        $wpdb->query('ROLLBACK');
+        error_log('[Payout Manager] Error creating payout: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * دریافت کمیسیون‌های پرداخت نشده یک مشاور
+ */
+public function get_unpaid_commissions($consultant_id) {
+    if (!$this->ensure_tables_exist()) {
+        return [];
+    }
+
+    global $wpdb;
+    
+    return $wpdb->get_results($wpdb->prepare("
+        SELECT * 
+        FROM {$this->commissions_table} 
+        WHERE consultant_id = %d AND status = 'pending' 
+        ORDER BY created_at DESC
+    ", $consultant_id));
+}
+
+/**
+ * دریافت لیست مشاوران
+ */
+public function get_consultants_list() {
+    if (!$this->ensure_tables_exist()) {
+        return [];
+    }
+
+    global $wpdb;
+    
+    return $wpdb->get_results("
+        SELECT id, name, email 
+        FROM {$this->consultants_table} 
+        WHERE status = 'active' 
+        ORDER BY name ASC
+    ");
+}
+
+
+/**
+ * دریافت مشاوران با کمیسیون پرداخت نشده
+ */
+public function get_consultants_with_pending_commissions($filters = [], $page = 1, $per_page = 20) {
+    if (!$this->ensure_tables_exist()) {
+        return ['consultants' => [], 'pagination' => []];
+    }
+
+    global $wpdb;
+    
+    $where = ["c.status = 'pending'", "c.final_commission > 0", "cons.status = 'active'"];
+    $params = [];
+    
+    // فیلتر جستجو
+    if (!empty($filters['search'])) {
+        $where[] = "(cons.name LIKE %s OR cons.email LIKE %s)";
+        $search_term = '%' . $wpdb->esc_like($filters['search']) . '%';
+        $params[] = $search_term;
+        $params[] = $search_term;
+    }
+    
+    // فیلتر حداقل مبلغ
+    if (!empty($filters['min_amount'])) {
+        $where[] = "c.final_commission >= %d";
+        $params[] = $filters['min_amount'];
+    }
+    
+    // فیلتر حداکثر مبلغ
+    if (!empty($filters['max_amount'])) {
+        $where[] = "c.final_commission <= %d";
+        $params[] = $filters['max_amount'];
+    }
+    
+    // تبدیل آرایه به رشته SQL
+    $where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+        
+    
+    // شمارش کل
+    $count_query = "
+        SELECT COUNT(DISTINCT c.consultant_id) 
+        FROM {$this->commissions_table} c 
+        INNER JOIN {$this->consultants_table} cons ON c.consultant_id = cons.id 
+        WHERE c.status = 'pending' AND c.final_commission > 0
+        AND cons.status = 'active'
+    ";
+    
+    $count_query = "
+        SELECT COUNT(DISTINCT cons.id)
+        FROM {$this->commissions_table} c
+        INNER JOIN {$this->consultants_table} cons ON c.consultant_id = cons.id
+        {$where_sql}
+    ";
+    
+    $total_items = $wpdb->get_var($wpdb->prepare($count_query, ...$params));
+    $total_pages = ceil($total_items / $per_page);
+    $offset = ($page - 1) * $per_page;
+    
+    $query = "
+        SELECT 
+            cons.id,
+            cons.name,
+            cons.email,
+            COUNT(c.id) as pending_count,
+            SUM(c.final_commission) as total_pending,
+            AVG(c.final_commission) as average_amount,
+            MIN(c.created_at) as oldest_date
+        FROM {$this->commissions_table} c
+        INNER JOIN {$this->consultants_table} cons ON c.consultant_id = cons.id
+        {$where_sql}
+        GROUP BY cons.id, cons.name, cons.email
+        HAVING total_pending > 0
+        ORDER BY total_pending DESC
+        LIMIT %d OFFSET %d
+    ";
+    
+    $params[] = $per_page;
+    $params[] = $offset;
+    
+    $consultants = $wpdb->get_results($wpdb->prepare($query, ...$params));
+
+    
+    return [
+        'consultants' => $consultants,
+        'pagination' => [
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+            'total_items' => $total_items,
+            'per_page' => $per_page,
+            'start_item' => $offset + 1,
+            'end_item' => min($offset + $per_page, $total_items)
+        ]
+    ];
+}
+
+/**
+ * دریافت تعداد کل تسویه‌ها و مشاوران برای badgeها
+ */
+public function get_counts_for_tabs() {
+    if (!$this->ensure_tables_exist()) {
+        return ['payouts_count' => 0, 'consultants_count' => 0];
+    }
+
+    global $wpdb;
+    
+    $payouts_count = $wpdb->get_var("SELECT COUNT(*) FROM {$this->payouts_table}");
+    
+    $consultants_count = $wpdb->get_var("
+        SELECT COUNT(DISTINCT consultant_id) 
+        FROM {$this->commissions_table} 
+        WHERE status = 'pending' AND final_commission > 0
+    ");
+    
+    return [
+        'payouts_count' => $payouts_count,
+        'consultants_count' => $consultants_count
+    ];
+}
+        
+        
     /* ============================================================
        🔸  توابع کمکی
     ============================================================ */
@@ -830,9 +1320,11 @@ class AI_Assistant_Diet_Consultation_DB {
         return round($diff / 3600, 2);
     }
 
-    private function calculate_penalty($delay_hours, $full_payment_hours, $factor) {
-        if ($delay_hours <= $full_payment_hours) return 1;
-        $extra = $delay_hours - $full_payment_hours;
-        return pow($factor, $extra);
+    private function calculate_penalty($delay_hours, $factor) {
+        if ((int)$delay_hours === 0) return 1;
+        return max(pow($factor, $delay_hours),0.05);
+        
+
+
     }    
 }

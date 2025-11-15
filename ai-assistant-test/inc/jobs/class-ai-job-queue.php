@@ -263,7 +263,7 @@ class AI_Job_Queue {
         // Load job row
         $job = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->table_name} WHERE id = %d", $job_id));
         if (!$job) {
-            error_log('❌ [WORKER] Job #' . $job_id . ' not found');
+            error_log('❌ [WORKER-1] Job #' . $job_id . ' not found');
             delete_option($this->current_job_option_key);
             return false;
         }
@@ -299,7 +299,7 @@ class AI_Job_Queue {
 
             if ($update_result) {
                 // موفق
-                error_log('✅ [ACTION] Status updated successfully for ' . $history_id);
+                error_log('✅ [ACTION-1] Status updated successfully for ' . $history_id);
             } else {
                 // ناموفق
                 error_log('❌ [ACTION] Failed to update status for '  . $history_id);
@@ -312,7 +312,6 @@ class AI_Job_Queue {
             $userData = $history-> user_data;
             
             $decodedData = json_decode($userData, true); // true برای تبدیل به آرایه
-            
             
             // استخراج داده‌ها
             $userInfo = $decodedData['userInfo'] ?? [];
@@ -366,50 +365,64 @@ class AI_Job_Queue {
             $prompt = $system_prompt . "\n\n" . $userInfoString;
             $payment_handler = AI_Assistant_Payment_Handler::get_instance();
             
-            
             //// DISCOUNT
                         
             try {
-                $discountInfo_discount_code = $discountInfo['discountCode'] ?? null;
-                $discountInfo_discountApplied = $discountInfo['discountApplied'] ?? null;
+                $discountDetails = $decodedData['discountDetails'] ?? [];
+                $discountInfo = $decodedData['discountInfo'] ?? [];
                 
-                // اگر کد تخفیف وارد شده بود اما معتبر نبود
-                if ($discountInfo_discount_code && !empty($discountInfo_discount_code && $discountInfo_discountApplied)) {
-                    // اعتبارسنجی کد تخفیف
-                    $validation_result = AI_Assistant_Discount_Manager::validate_discount(
-                        $discountInfo_discount_code, 
-                        $service_id, 
-                        $user_id
-                    );
+                error_log('🎯 [DISCOUNT DEBUG] Using discountDetails: ' . print_r($discountDetails, true));
+                
+                // این منطق را جایگزین کنید:
+                if (!empty($discountDetails) && isset($discountDetails['finalPrice'])) {
+                    $final_price = floatval($discountDetails['finalPrice']);
+                    $original_price = floatval($discountDetails['originalPrice'] ?? $final_price);
                     
-                    if ($validation_result['valid']) {
-                        // محاسبه قیمت با تخفیف
-                        $discounted_price = AI_Assistant_Discount_Manager::calculate_discounted_price(
-                            $original_price, 
-                            $validation_result['discount']
+                    // تشخیص خودکار اینکه تخفیف اعمال شده یا نه
+                    $discount_applied = ($final_price < $original_price);
+                    
+                    error_log('✅ [DISCOUNT] Using discountDetails - Final price: ' . $final_price);
+                    error_log('🎯 [DISCOUNT] Auto-detected discount applied: ' . ($discount_applied ? 'YES' : 'NO'));
+                } 
+                else if (!empty($discountInfo)) {
+    
+                    $discountInfo_discount_code = $discountInfo['discountCode'] ?? null;
+                    $discountInfo_discountApplied = $discountInfo['discountApplied'] ?? null;
+                    
+                    // اگر کد تخفیف وارد شده بود اما معتبر نبود
+                    if ($discountInfo_discount_code && !empty($discountInfo_discount_code && $discountInfo_discountApplied)) {
+                        // اعتبارسنجی کد تخفیف
+                        $validation_result = AI_Assistant_Discount_Manager::validate_discount(
+                            $discountInfo_discount_code, 
+                            $service_id, 
+                            $user_id
                         );
                         
-                        // استفاده از قیمت با تخفیف
-                        $final_price = $discounted_price;
-                        $discount_applied = true;
-                        
-                    } else {
-                        throw new Exception("کد تخفیف نامعتبر: " . $validation_result['message']);
-                        
+                        if ($validation_result['valid']) {
+                            // محاسبه قیمت با تخفیف
+                            $discounted_price = AI_Assistant_Discount_Manager::calculate_discounted_price(
+                                $original_price, 
+                                $validation_result['discount']
+                            );
+                            
+                            // استفاده از قیمت با تخفیف
+                            $final_price = $discounted_price;
+                            $discount_applied = true;
+                            
+                        } else {
+                            throw new Exception("کد تخفیف نامعتبر: " . $validation_result['message']);
+                            
+                        }
                     }
                 } else {
-                    // اگر کد تخفیف وارد نشده بود
                     $final_price = $original_price;
                     $discount_applied = false;
+                    error_log('ℹ️ [DISCOUNT] No discount data found, using original price: ' . $original_price);
                 }
-                
-                // ادامه پردازش با $final_price
-                
+   
             } catch (Exception $e) {
                 // مدیریت خطا
                 error_log('Discount Error: ' . $e->getMessage());
-                
-                
             }
             
     
@@ -463,15 +476,16 @@ class AI_Job_Queue {
                     $cleaned_response
                 );
                 
-            if ($update_result) {
-                // موفق
-                error_log('✅ [ACTION] Status updated successfully for ' . $history_id);
-            } else {
-                // ناموفق
-                error_log('❌ [ACTION] Failed to update status for '  . $history_id);
-                throw new Exception('Failed to update history step 0');
-            }
+                if ($update_result) {
+                    // موفق
+                    error_log('✅ [ACTION-2] Status updated successfully for ' . $history_id);
+                } else {
+                    // ناموفق
+                    error_log('❌ [ACTION] Failed to update status for '  . $history_id);
+                    throw new Exception('Failed to update history step 0');
+                }
             
+               
                 
                 // ✅ افزایش usage_count برای تخفیف‌های کوپن
                 if ($discount_applied && 
@@ -493,8 +507,21 @@ class AI_Job_Queue {
                 // 7. در صورت نیاز، ثبت درخواست مشاوره
                 $Consultant_Rec = null;
                 if ($service_id === 'diet' && $serviceSelectionDietType === 'with-specialist') {
+                    
+                    
+                    $Consultation_DB = AI_Assistant_Diet_Consultation_DB::get_instance();
+                    $consultant = $Consultation_DB -> get_consultant($selectedSpecialistId);
+                    
+                    $contract = $Consultation_DB->get_active_contract($consultant->id);
+                    
+                                    
+                    if ($contract === false || empty($contract)) {
+                        throw new Exception('not valid contract');
+                    }                     
+                    
+                    
                     $Nutrition_Consultant_Manager = AI_Assistant_Nutrition_Consultant_Manager::get_instance();
-                    $Consultant_Rec = $Nutrition_Consultant_Manager->submit_consultation_request($history_id, 6000);
+                    $Consultant_Rec = $Nutrition_Consultant_Manager->submit_consultation_request($history_id ,  $consultant->id , $contract->commission_value);
     
                     if ($Consultant_Rec === false || (is_array($Consultant_Rec) && isset($Consultant_Rec['error']))) {
                         $err = is_array($Consultant_Rec) && isset($Consultant_Rec['error']) ? $Consultant_Rec['error'] : 'submit_consultation_request failed';
@@ -525,7 +552,7 @@ class AI_Job_Queue {
                 
                 // 8. همه چی موفق بود -> commit
                 $wpdb->query('COMMIT');
-                
+                error_log('✅ [COMMITED] Job #' . $job_id);
                     
                 $api_time = round(microtime(true) - $start_time, 2);
     
@@ -562,13 +589,14 @@ class AI_Job_Queue {
                 // هر خطایی رخ داد، rollback و لاگ
                 try {
                     $wpdb->query('ROLLBACK');
+                    error_log('✅ [ROLLBACK] Job #' . $job_id);
                 } catch (Exception $rollbackEx) {
                     // اگر rollback هم خطا داد، لاگش کن
                     error_log('Rollback failed: ' . $rollbackEx->getMessage());
                 }
     
                 $error_message = $e->getMessage();
-                error_log('❌ [WORKER] Job #' . $job_id . ' failed: ' . $error_message);
+                error_log('❌ [WORKER-2] Job #' . $job_id . ' failed: ' . $error_message);
     
                 $wpdb->update(
                     $this->table_name,
@@ -612,7 +640,7 @@ class AI_Job_Queue {
 
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-            error_log('❌ [WORKER] Job #' . $job_id . ' failed: ' . $error_message);
+            error_log('❌ [WORKER-3] Job #' . $job_id . ' failed: ' . $error_message);
 
             $wpdb->update(
                 $this->table_name,

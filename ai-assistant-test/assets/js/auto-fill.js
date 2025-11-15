@@ -88,6 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         lastNameInput.dispatchEvent(new Event('input'));
                     }
                     
+                    const ageInput = document.getElementById('age-input');
+                    if (ageInput) {
+                        ageInput.value = testData.userInfo.age;
+                        ageInput.dispatchEvent(new Event('input'));
+                    }
+                    
                     clickNextButton(NEXT_BUTTON_DELAY);
                 }
             }
@@ -104,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function fillNumberSteps() {
                 const fieldMap = {
-                    [STEPS.AGE]: {id: 'age-input', value: testData.userInfo.age, name: 'سن'},
+                    [STEPS.PERSONAL_INFO]: {id: 'age-input', value: testData.userInfo.age, name: 'سن'},
                     [STEPS.HEIGHT]: {id: 'height-input', value: testData.userInfo.height, name: 'قد'},
                     [STEPS.WEIGHT]: {id: 'weight-input', value: testData.userInfo.weight, name: 'وزن'},
                     [STEPS.TARGET_WEIGHT]: {id: 'target-weight-input', value: testData.userInfo.targetWeight, name: 'وزن هدف'}
@@ -281,9 +287,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                     case STEPS.GOAL:
                         fillGoalStep();
-                        break;
-                    case STEPS.AGE:
-                        fillNumberSteps();
                         break;
                     case STEPS.HEIGHT:
                         fillNumberSteps();

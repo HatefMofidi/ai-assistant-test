@@ -273,7 +273,7 @@ require_once __DIR__ . '/inc/admin/services-admin.php';
 //--------------------------------------------------------------
 
 
-require_once get_template_directory() . '/inc/class-history-manager.php';
+// require_once get_template_directory() . '/inc/class-history-manager.php';
 
 
 function ai_service_history_output() {
@@ -675,6 +675,7 @@ require_once get_template_directory() . '/inc/class-comments-frontend-admin.php'
 require_once get_template_directory() . '/functions/discounts-functions.php';
 require_once get_template_directory() . '/functions/discount-core-functions.php';
 
+require_once get_template_directory() . '/templates/page-admin-payout-manager-functions.php';
 
 require_once get_template_directory() . '/templates/consultant-dashboard-functions.php';
 

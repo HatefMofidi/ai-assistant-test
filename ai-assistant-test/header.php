@@ -69,8 +69,12 @@
                             
                             <?php if ( current_user_can('nutrition_consultant') || current_user_can('administrator')): ?>
                                 <a href="<?php echo home_url('/consultant-dashboard'); ?>" class="">
-                                    کارتابل مشاور تغذیه
+                                    کارتابل
                                 </a>
+                                
+                                <a href="<?php echo home_url('/consultant-financial'); ?>" class="">
+                                   داشبورد مالی
+                                </a>                                
                                 
                             <?php endif; ?>                             
                             
@@ -194,8 +198,13 @@
                             <?php if ( current_user_can('nutrition_consultant') || current_user_can('administrator')): ?>
                                 <a href="<?php echo home_url('/consultant-dashboard'); ?>" class="menu-item-card <?php if ( untrailingslashit($_SERVER['REQUEST_URI']) == '/consultant-dashboard' ) echo 'menu-active'; ?>">
                                     <span class="dashicons dashicons-plus-alt"></span>
-                                    کارتابل مشاور تغذیه
+                                    کارتابل
                                 </a>
+                                
+                                <a href="<?php echo home_url('/consultant-financial'); ?>" class="menu-item-card <?php if ( untrailingslashit($_SERVER['REQUEST_URI']) == '/consultant-financial' ) echo 'menu-active'; ?>">
+                                    <span class="dashicons dashicons-money-alt"></span>
+                                    داشبورد مالی
+                                </a>                                
                                 
                             <?php endif; ?>                            
                             

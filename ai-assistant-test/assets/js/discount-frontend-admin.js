@@ -459,14 +459,25 @@ jQuery(document).ready(function($) {
         // تغییر وضعیت
         $('.discount-toggle-status').on('click', function() {
             const discountId = $(this).data('discount-id');
-            const action = $(this).find('.fa-play').length ? 'فعال' : 'غیرفعال';
             
-            if (!confirm(discountFrontendAdminVars.i18n.confirm_deactivate)) {
+            // چک کردن اینکه دکمه play (فعال‌سازی) است یا pause (غیرفعال‌سازی)
+            const isActivating = $(this).find('.fa-play').length > 0;
+            
+            // تعیین پیام مناسب
+            let confirmMessage;
+            if (isActivating) {
+                confirmMessage = 'آیا از فعال کردن این کد تخفیف مطمئن هستید؟';
+            } else {
+                confirmMessage = discountFrontendAdminVars.i18n.confirm_deactivate;
+            }
+            
+            if (!confirm(confirmMessage)) {
                 return;
             }
             
             toggleDiscountStatus(discountId);
         });
+
 
         // حذف تخفیف
         $('.discount-delete').on('click', function() {

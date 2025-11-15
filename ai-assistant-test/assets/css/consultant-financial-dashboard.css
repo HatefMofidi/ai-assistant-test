@@ -1,0 +1,374 @@
+.consultant-financial-panel {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    font-family: Vazir, Tahoma, sans-serif;
+}
+
+.consultant-financial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #4e54c8;
+}
+
+.consultant-financial-header h2 {
+    color: #2d3748;
+    margin: 0;
+}
+
+/* کارت‌های خلاصه وضعیت مالی */
+.financial-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.financial-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #4e54c8;
+}
+
+.financial-card.pending {
+    border-left-color: #ed8936;
+}
+
+.financial-card.paid {
+    border-left-color: #48bb78;
+}
+
+.financial-card.contract {
+    border-left-color: #9f7aea;
+}
+
+.financial-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.financial-card-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 600;
+}
+
+.financial-card-amount {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2d3748;
+    margin: 0;
+}
+
+.financial-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.financial-card.pending .financial-card-icon {
+    background: #fffaf0;
+    color: #ed8936;
+}
+
+.financial-card.paid .financial-card-icon {
+    background: #f0fff4;
+    color: #48bb78;
+}
+
+.financial-card.contract .financial-card-icon {
+    background: #faf5ff;
+    color: #9f7aea;
+}
+
+/* بخش‌بندی‌های اصلی */
+.financial-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .financial-sections {
+        grid-template-columns: 1fr;
+    }
+}
+
+.financial-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.financial-section-header {
+    padding: 1.25rem 1.5rem;
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.financial-section-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.financial-section-content {
+    padding: 1.5rem;
+}
+
+/* لیست پرداخت‌ها */
+.payouts-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.payout-item {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payout-item:last-child {
+    border-bottom: none;
+}
+
+.payout-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.payout-period {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.payout-date {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+.payout-reference {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    font-family: monospace;
+}
+
+.payout-amount {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.payout-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.payout-status.pending {
+    background: #fffaf0;
+    color: #ed8936;
+}
+
+.payout-status.done {
+    background: #f0fff4;
+    color: #48bb78;
+}
+
+.payout-status.failed {
+    background: #fed7d7;
+    color: #e53e3e;
+}
+
+/* اطلاعات قرارداد */
+.contract-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contract-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f7fafc;
+}
+
+.contract-field:last-child {
+    border-bottom: none;
+}
+
+.contract-label {
+    color: #718096;
+    font-weight: 500;
+}
+
+.contract-value {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.contract-value.percent {
+    color: #48bb78;
+}
+
+.contract-value.fixed {
+    color: #4e54c8;
+}
+
+/* جدول کمیسیون‌ها */
+.commissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.commissions-table th,
+.commissions-table td {
+    padding: 0.75rem;
+    text-align: right;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.commissions-table th {
+    background: #f7fafc;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.85rem;
+}
+
+.commissions-table tr:hover {
+    background: #f7fafc;
+}
+
+.commission-amount {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.commission-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.commission-status.pending {
+    background: #fffaf0;
+    color: #ed8936;
+}
+
+.commission-status.paid {
+    background: #f0fff4;
+    color: #48bb78;
+}
+
+.commission-status.cancelled {
+    background: #fed7d7;
+    color: #e53e3e;
+}
+
+/* پیام خالی */
+.financial-empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #a0aec0;
+}
+
+.financial-empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* تب‌های داخلی */
+.financial-tabs {
+    display: flex;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+}
+
+.financial-tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: #718096;
+    transition: all 0.3s ease;
+}
+
+.financial-tab.active {
+    color: #4e54c8;
+    border-bottom-color: #4e54c8;
+}
+
+.financial-tab-content {
+    display: none;
+}
+
+.financial-tab-content.active {
+    display: block;
+    overflow: auto;
+}
+
+/* رسپانسیو */
+@media (max-width: 768px) {
+    .consultant-financial-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .financial-summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .payout-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .contract-field {
+        /*flex-direction: column;*/
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .commissions-table {
+        font-size: 0.8rem;
+    }
+    
+    .commissions-table th,
+    .commissions-table td {
+        padding: 0.5rem;
+    }
+}

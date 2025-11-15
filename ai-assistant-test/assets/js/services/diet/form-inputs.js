@@ -170,7 +170,10 @@ window.setupTextInput = function(inputId, displayId, field) {
             if (inputId === "first-name-input") {
                 // از فیلد نام به فیلد نام خانوادگی برو
                 document.getElementById("last-name-input").focus();
-            } else if (inputId === "last-name-input" && input.value.trim()) {
+            } else if (inputId === "last-name-input") {
+                // از فیلد نام به فیلد نام خانوادگی برو
+                document.getElementById("age-input").focus();
+            } else if (inputId === "age-input" && input.value.trim()) {
                 // از فیلد نام خانوادگی به مرحله بعد برو
                 if (nextButton && !nextButton.disabled) {
                     nextButton.click();
@@ -209,13 +212,18 @@ window.setupInput = function(inputId, displayId, field) {
             `${value} ${field === "age" ? "سال" : field === "height" ? "سانتی‌متر" : "کیلوگرم"}` : 
             `0 ${field === "age" ? "سال" : field === "height" ? "سانتی‌متر" : "کیلوگرم"}`;
         
-        // تغییر این خط برای استفاده از متغیرهای CSS
         display.style.color = value ? "var(--text-color)" : "var(--light-text-color)";
         
         state.updateFormData(field, value ? parseInt(value) : null);
         
-        if (field === "weight" && state.formData.height && value) {
-            calculateBMI(state.formData.height, parseInt(value));
+        // این خط را اضافه کنید - محاسبه BMI هنگام تغییر وزن
+        if (field === "weight" && state.formData.userInfo.height && value) {
+            calculateBMI(state.formData.userInfo.height, parseInt(value));
+        }
+        
+        // این خط را نیز اضافه کنید - محاسبه BMI هنگام تغییر قد
+        if (field === "height" && state.formData.userInfo.weight && value) {
+            calculateBMI(parseInt(value), state.formData.userInfo.weight);
         }
     };
 
@@ -331,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // فقط اجازه کار Enter در مراحل خاص
         if (event.key === "Enter") {
             const allowedSteps = [
-                STEPS.AGE, 
+                STEPS.PERSONAL_INFO,
                 STEPS.HEIGHT, 
                 STEPS.WEIGHT, 
                 STEPS.TARGET_WEIGHT,

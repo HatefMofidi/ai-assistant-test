@@ -20,9 +20,21 @@ class AI_Assistant_Notification_Manager {
             error_log('[Notification] Consultant not found: ' . $consultant_id);
             return false;
         }
+        
+        
+                    
+        $Consultation_DB = AI_Assistant_Diet_Consultation_DB::get_instance();
+        $contract = $Consultation_DB->get_active_contract($consultant_id);  
+        $full_payment_hours = $contract ->full_payment_hours;
+        
+        $deadline_date = date_i18n('j F Y - H:i', strtotime("+{$full_payment_hours} hours"));
 
-        $consultation_url = admin_url("admin.php?page=nutrition-consultation&action=review&id={$request_id}");
-        $deadline_date = date_i18n('j F Y - H:i', strtotime('+3 days'));
+
+        // $consultation_url = admin_url("admin.php?page=nutrition-consultation&action=review&id={$request_id}");
+        
+        $consultation_url = home_url("/consultant-dashboard");
+         
+        $deadline_date = date_i18n('j F Y - H:i', strtotime('+1 days'));
         
         // محتوای ایمیل با قالب جدید
         $email_content = "
@@ -59,7 +71,7 @@ class AI_Assistant_Notification_Manager {
             return false;
         }
 
-        $history_url = home_url("/service-history");
+        $history_url = home_url("/page-user-history/");
         
         // محتوای ایمیل با قالب جدید
         $email_content = "

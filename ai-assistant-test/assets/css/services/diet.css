@@ -2002,7 +2002,7 @@ body.dark-mode .scroll-indicator:hover {
     padding-right: 10px;
 }
 
-#first-name-display, #last-name-display {
+#first-name-display, #last-name-display, #age-display {
     color: var(--light-text-color);
     transition: color 0.3s ease;
 }
@@ -2102,10 +2102,10 @@ body.dark-mode .floating-document {
   animation: input-pulse 2s infinite;
 }
 
-.input-container input:not(:placeholder-shown) {
-  background: linear-gradient(135deg, #e6f7f5 0%, #ffffff 100%);
-  border-color: #00857a;
-}
+/*.input-container input:not(:placeholder-shown) {*/
+/*  background: linear-gradient(135deg, #e6f7f5 0%, #ffffff 100%);*/
+/*  border-color: #00857a;*/
+/*}*/
 
 @keyframes input-pulse {
   0%, 100% { box-shadow: 0 8px 25px rgba(0, 133, 122, 0.2), 0 0 0 4px rgba(0, 133, 122, 0.1); }

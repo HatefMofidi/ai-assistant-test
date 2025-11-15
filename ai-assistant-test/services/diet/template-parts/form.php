@@ -54,10 +54,15 @@ $theme_assets = get_stylesheet_directory_uri();
             <span id="first-name-display"></span>
         </div>
         
-        <div class="input-container">
+        <div class="input-container" style="margin-bottom: 15px;">
             <input type="text" id="last-name-input" dir="rtl" placeholder=" ">
             <span id="last-name-display"></span>
         </div>        
+        
+        <div class="input-container">
+            <input type="text" inputmode="numeric" id="age-input">
+            <span id="age-display">0 سال</span>
+        </div>
         
         <!-- Animated Illustration Container -->
         <div class="name-input-illustration">
@@ -99,28 +104,6 @@ $theme_assets = get_stylesheet_directory_uri();
                 <div class="goal-details">
                     <h3>حفظ سلامت و تناسب</h3>
                     <p>برنامه‌ای برای حفظ وزن فعلی و بهبود سلامت عمومی</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 3: Age Input -->
-    <div id="age-input-step" class="step">
-        <h2>سن شما چند سال است؟</h2>
-        <div class="input-container">
-            <input type="text" inputmode="numeric" id="age-input">
-            <span id="age-display">0 سال</span>
-        </div>
-        <div id="age-validation-container">
-            <p id="age-error" class="error-message"></p>
-            <div class="separator-dotted"></div>
-            <div class="info-box">
-                <div class="info-content">
-                    <img src="<?php echo $theme_assets; ?>/assets/images/png/age-min.png" width="30" height="30" alt="سن">
-                    <div class="info-text">
-                        <span class="first-line">سن شما را می‌پرسیم تا برنامه شخصی شما را ایجاد کنیم.</span>
-                        <span class="second-line">افراد مسن‌تر نسبت به افراد جوان‌تر با همان شاخص توده بدنی (BMI)، معمولاً چربی بدن بیشتری دارند</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1480,11 +1463,15 @@ $theme_assets = get_stylesheet_directory_uri();
                     </div>
                     
                     <div class="card-footer">
-                        <div class="price-section">
-                            <div class="price-amount" id="with-specialist-price">در حال دریافت قیمت...</div>
+                        <p class="specialist-price-note" style="text-align: center; color: #666; font-size: 13px; margin: 0;">
+                            قیمت براساس مشاور انتخابی
+                        </p>
+                        <div class="price-section" id="with-specialist-price-container" style="display: none;">
+                            <div class="price-amount" id="with-specialist-price">...</div>
                             <div class="price-currency">تومان</div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

@@ -76,58 +76,122 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollIndicator('medications-selection');
 });
 
-// /assets/js/services/diet/form-events.js
 async function loadServicePrices() {
     try {
-        const response = await fetch(aiAssistantVars.ajaxurl, {
+        // دریافت قیمت با تخفیف برای سرویس ai-only
+        const aiOnlyResponse = await fetch(aiAssistantVars.ajaxurl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-                'action': 'get_diet_service_prices', // تغییر نام action
-                'security': aiAssistantVars.nonce
+                action: 'get_service_price_with_discount',
+                service_id: 'diet', // یا ID مربوط به ai-only
+                include_consultant_fee: '0',
+                consultant_fee: '0',
+                nonce: aiAssistantVars.nonce
             })
         });
 
-        const data = await response.json();
+        const aiOnlyData = await aiOnlyResponse.json();
         
-        if (data.success) {
-            const aiOnlyPrice = data.data.base_price;
-            const consultantPrice = data.data.consultant_price;
-            
-            // به‌روزرسانی قیمت‌ها در HTML
-            document.getElementById('ai-only-price').textContent = new Intl.NumberFormat('fa-IR').format(aiOnlyPrice);
-            document.getElementById('with-specialist-price').textContent = new Intl.NumberFormat('fa-IR').format(aiOnlyPrice + consultantPrice);
-            
-            // ذخیره قیمت‌ها در state
-            if (window.state && window.state.formData) {
-                window.state.formData.servicePrices = {
-                    aiOnly: aiOnlyPrice,
-                    consultantFee: consultantPrice, // هزینه مشاور جداگانه ذخیره شود
-                    withSpecialist: aiOnlyPrice + consultantPrice,
-                    loaded: true,
-                    error: false
-                };
-            }
-            
-            console.log('💰 قیمت‌ها با موفقیت بارگذاری و در state ذخیره شد:', {
-                aiOnly: aiOnlyPrice,
-                consultantFee: consultantPrice,
-                withSpecialist: aiOnlyPrice + consultantPrice
-            });
-        } else {
-            throw new Error(data.data?.message || 'خطا در دریافت قیمت');
+        if (!aiOnlyData.success) {
+            throw new Error(aiOnlyData.data?.message || 'خطا در دریافت قیمت');
         }
+
+        // دریافت هزینه مشاور از endpoint قبلی
+        const consultantResponse = await fetch(aiAssistantVars.ajaxurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'get_diet_service_prices',
+                security: aiAssistantVars.nonce
+            })
+        });
+
+        const consultantData = await consultantResponse.json();
+        
+        if (!consultantData.success) {
+            throw new Error(consultantData.data?.message || 'خطا در دریافت قیمت مشاور');
+        }
+
+        const aiOnlyFinalPrice = aiOnlyData.data.final_price;
+        const aiOnlyOriginalPrice = aiOnlyData.data.original_price;
+        const hasAiOnlyDiscount = aiOnlyData.data.has_discount;
+        const consultantFee = consultantData.data.consultant_price;
+
+        // نمایش قیمت ai-only با تخفیف
+        const aiOnlyPriceElement = document.getElementById('ai-only-price');
+        if (aiOnlyPriceElement) {
+            if (hasAiOnlyDiscount) {
+                aiOnlyPriceElement.innerHTML = `
+                    <span style="text-decoration: line-through; color: #999; font-size: 0.9em; margin-left: 8px;">
+                        ${new Intl.NumberFormat('fa-IR').format(aiOnlyOriginalPrice)}
+                    </span>
+                    <span style="color: #00857a; font-weight: bold;">
+                        ${new Intl.NumberFormat('fa-IR').format(aiOnlyFinalPrice)}
+                    </span>
+                `;
+            } else {
+                aiOnlyPriceElement.textContent = new Intl.NumberFormat('fa-IR').format(aiOnlyFinalPrice);
+            }
+        }
+
+        // نمایش قیمت with-specialist با تخفیف
+        const specialistPriceElement = document.getElementById('with-specialist-price');
+        if (specialistPriceElement) {
+            const specialistFinalPrice = aiOnlyFinalPrice + consultantFee;
+            const specialistOriginalPrice = aiOnlyOriginalPrice + consultantFee;
+            
+            if (hasAiOnlyDiscount) {
+                specialistPriceElement.innerHTML = `
+                    <span style="text-decoration: line-through; color: #999; font-size: 0.9em; margin-left: 8px;">
+                        ${new Intl.NumberFormat('fa-IR').format(specialistOriginalPrice)}
+                    </span>
+                    <span style="color: #00857a; font-weight: bold;">
+                        ${new Intl.NumberFormat('fa-IR').format(specialistFinalPrice)}
+                    </span>
+                `;
+            } else {
+                specialistPriceElement.textContent = new Intl.NumberFormat('fa-IR').format(specialistFinalPrice);
+            }
+        }
+
+        // ذخیره در state
+        if (window.state && window.state.formData) {
+            window.state.formData.servicePrices = {
+                aiOnly: aiOnlyFinalPrice,
+                aiOnlyOriginal: aiOnlyOriginalPrice,
+                consultantFee: consultantFee,
+                withSpecialist: aiOnlyFinalPrice + consultantFee,
+                withSpecialistOriginal: aiOnlyOriginalPrice + consultantFee,
+                hasDiscount: hasAiOnlyDiscount,
+                loaded: true,
+                error: false
+            };
+
+            console.log('قیمت‌ها با تخفیف بارگذاری شد:', {
+                aiOnlyFinal: aiOnlyFinalPrice,
+                aiOnlyOriginal: aiOnlyOriginalPrice,
+                hasDiscount: hasAiOnlyDiscount,
+                consultantFee: consultantFee
+            });
+        }
+
     } catch (error) {
-        console.error('Error loading service prices:', error);
+        console.error('خطا در بارگذاری قیمت‌های سرویس:', error);
         
-        // نمایش پیغام خطا
-        const errorMessage = 'عدم ارتباط با سرور - لطفاً صفحه را رفرش کنید';
-        document.getElementById('ai-only-price').textContent = errorMessage;
-        document.getElementById('with-specialist-price').textContent = errorMessage;
+        const errorMessage = 'خطا در دریافت قیمت‌ها';
         
-        // ذخیره وضعیت خطا در state
+        const aiOnlyPriceElement = document.getElementById('ai-only-price');
+        const specialistPriceElement = document.getElementById('with-specialist-price');
+        
+        if (aiOnlyPriceElement) aiOnlyPriceElement.textContent = errorMessage;
+        if (specialistPriceElement) specialistPriceElement.textContent = errorMessage;
+
+        // ذخیره خطا در state
         if (window.state && window.state.formData) {
             window.state.formData.servicePrices = {
                 loaded: false,
@@ -135,15 +199,15 @@ async function loadServicePrices() {
                 errorMessage: errorMessage
             };
         }
-        
-        // نمایش نوتیفیکیشن به کاربر
+
         if (typeof showNotification === 'function') {
-            showNotification('خطا در دریافت قیمت‌ها', 'error');
+            showNotification('خطا در بارگذاری قیمت‌ها، لطفا صفحه را رفرش کنید', 'error');
         } else {
-            console.warn('⚠️ ' + errorMessage);
+            console.warn(errorMessage);
         }
     }
 }
+
 
 // /assets/js/services/diet/form-events.js
 function showNotification(message, type = 'info') {
@@ -383,89 +447,6 @@ function resetChronicDiabetesSelections() {
     
     if (fastingInput) fastingInput.value = '';
     if (hba1cInput) hba1cInput.value = '';
-}
-
-// تابع برای دریافت آدرس پایه بر اساس محیط
-function getBaseUrl() {
-    if (typeof siteEnv !== 'undefined' && siteEnv.baseUrl) {
-        return siteEnv.baseUrl;
-    }
-    
-    // Fallback در صورت عدم وجود متغیر
-    return window.location.origin;
-}
-
-function fetchUserBalance(servicePrice, formData) {
-    fetch(aiAssistantVars.ajaxurl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            'action': 'get_user_wallet_credit',
-            'security': aiAssistantVars.nonce
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const balanceElement = document.getElementById('current-balance');
-        
-            let formattedBalance = '';
-            if (balance !== null && balance !== undefined) {
-                formattedBalance = new Intl.NumberFormat('fa-IR').format(balance);
-            }     
-            
-            balanceElement.textContent = formattedBalance + ' تومان';
-            
-            const confirmBtn = document.getElementById('confirm-payment');
-            if (confirmBtn) {
-                confirmBtn.disabled = false;
-                
-                if (data.data.credit < servicePrice) {
-                    const neededAmount = servicePrice - data.data.credit;
-                    balanceElement.style.color = '#e53935';
-                    
-                    confirmBtn.querySelector('.btn-text').textContent = 'افزایش موجودی کیف پول';
-                    
-                    // استفاده از متغیر محیطی برای آدرس دهی
-                    confirmBtn.onclick = function() {
-                        const baseUrl = (typeof siteEnv !== 'undefined' && siteEnv.baseUrl) 
-                            ? siteEnv.baseUrl 
-                            : window.location.origin;
-                        
-                        window.location.href = `${baseUrl}/wallet-charge/?needed_amount=${neededAmount}`;
-                    };
-                } else {
-                    // عملکرد عادی برای موجودی کافی
-                    confirmBtn.onclick = function() {
-                        const btn = this;
-                        const btnText = btn.querySelector('.btn-text');
-                        const btnLoading = btn.querySelector('.btn-loading');
-                        
-                        btn.disabled = true;
-                        btnText.style.display = 'none';
-                        btnLoading.style.display = 'inline-block';
-                        
-                        setTimeout(() => {
-                            window.dispatchEvent(new CustomEvent('formSubmitted', {
-                                detail: { formData }
-                            }));
-                        }, 500);
-                    };
-                }
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching balance:', error);
-        document.getElementById('current-balance').textContent = 'خطا در دریافت موجودی';
-        
-        const confirmBtn = document.getElementById('confirm-payment');
-        if (confirmBtn) {
-            confirmBtn.disabled = false;
-        }
-    });
 }
 
 window.handleFormSubmit = function(event) {

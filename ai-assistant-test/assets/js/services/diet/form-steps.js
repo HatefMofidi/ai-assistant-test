@@ -582,7 +582,6 @@ window.showStep = function(step) {
         "gender-selection-step",        // 1
         "personal-info-step",           // 2
         "goal-selection-step",          // 3
-        "age-input-step",               // 4
         "height-input-step",            // 5
         "weight-input-step",            // 6
         "target-weight-step",           // 7
@@ -692,8 +691,8 @@ window.showStep = function(step) {
         submitButtonContainer.style.display = (step === STEPS.CONFIRMATION) ? "block" : "none";
     }
     
-    if ([STEPS.PERSONAL_INFO, STEPS.AGE, STEPS.HEIGHT, STEPS.WEIGHT, STEPS.TARGET_WEIGHT].includes(step)) {
-        const inputId = `${["first-name", "last-name", "age", "height", "weight", "target-weight"][step - 2]}-input`;
+    if ([STEPS.PERSONAL_INFO, STEPS.HEIGHT, STEPS.WEIGHT, STEPS.TARGET_WEIGHT].includes(step)) {
+        const inputId = `${["first-name", "last-name", "height", "weight", "target-weight"][step - 2]}-input`;
         const inputElement = document.getElementById(inputId);
         if (inputElement) inputElement.focus();
         
@@ -877,7 +876,6 @@ window.handleBackStep = function() {
 window.handleEnterKey = function(event) {
     // فقط در مراحل عددی (سن، قد، وزن، وزن هدف) و مرحله نهایی اجازه کار با Enter را بده
     const allowedSteps = [
-        STEPS.AGE, 
         STEPS.HEIGHT, 
         STEPS.WEIGHT, 
         STEPS.TARGET_WEIGHT,

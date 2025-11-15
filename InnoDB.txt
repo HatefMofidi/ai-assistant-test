@@ -1,0 +1,14 @@
+
+ALTER TABLE ai_service_comments ENGINE=InnoDB;
+ALTER TABLE ai_assistant_discounts ENGINE=InnoDB;
+ALTER TABLE ai_wallet_history ENGINE=InnoDB;
+ALTER TABLE ai_diet_consultants ENGINE=InnoDB;
+ALTER TABLE ai_job_queue ENGINE=InnoDB;
+ALTER TABLE ai_assistant_services ENGINE=InnoDB;
+ALTER TABLE ai_assistant_discount_users ENGINE=InnoDB;
+ALTER TABLE ai_comments ENGINE=InnoDB;
+ALTER TABLE ai_consultant_commissions ENGINE=InnoDB;
+ALTER TABLE ai_wallet_pending_payments ENGINE=InnoDB;
+ALTER TABLE ai_nutrition_consultants ENGINE=InnoDB;
+
+
